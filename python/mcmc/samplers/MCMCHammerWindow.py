@@ -1,5 +1,3 @@
-from classes.Output.PlottingOutput import PlottingOutput
-from classes.Output.ProgressOutput import ProgressOutput
 from classes.distribution.Ring import Ring
 from classes.kernel.GaussianKernel import GassianKernel
 from classes.mcmc.MCMCChain import MCMCChain

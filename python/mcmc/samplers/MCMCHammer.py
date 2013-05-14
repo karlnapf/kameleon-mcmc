@@ -1,5 +1,3 @@
-from classes.Output.PlottingOutput import PlottingOutput
-from classes.Output.ProgressOutput import ProgressOutput
 from classes.distribution.Gaussian import Gaussian
 from classes.distribution.Ring import Ring
 from classes.kernel.GaussianKernel import GassianKernel
@@ -7,6 +5,8 @@ from classes.kernel.Kernel import Kernel
 from classes.mcmc.MCMCChain import MCMCChain
 from classes.mcmc.MCMCParams import MCMCParams
 from classes.mcmc.samplers.MCMCSampler import MCMCSampler
+from classes.output.PlottingOutput import PlottingOutput
+from classes.output.ProgressOutput import ProgressOutput
 from classes.tools.Visualise import Visualise
 from numpy.core.function_base import linspace
 from numpy.core.numeric import array
