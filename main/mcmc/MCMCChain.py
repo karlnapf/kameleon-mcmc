@@ -23,7 +23,7 @@ class MCMCChain(object):
         for out in self.mcmc_outputs:
             out.prepare(self.distribution)
         
-        # init sampler starting point
+        # init sampler with starting point
         self.mcmc_sampler.init(self.mcmc_params.start.copy())
         
         self.is_initialised = True
