@@ -8,6 +8,7 @@ from numpy.ma.core import sqrt, cos, sin, arctan2
 from numpy.matlib import rand, randn
 from scipy.constants.constants import pi
 
+#a small comment here
 class Flower(Distribution):
     def __init__(self, amplitude=1, frequency=7, variance=0.05, radius=3.5, dimension=2):
         Distribution.__init__(self, dimension)
