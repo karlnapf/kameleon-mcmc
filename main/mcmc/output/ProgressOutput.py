@@ -1,4 +1,4 @@
-from classes.mcmc.output.Output import Output
+from main.mcmc.output.Output import Output
 
 class ProgressOutput(Output):
     def __init__(self):

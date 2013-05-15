@@ -1,4 +1,4 @@
-from kernel.Kernel import Kernel
+from main.kernel.Kernel import Kernel
 
 class LinearKernel(Kernel):
     def __init__(self, sigma):

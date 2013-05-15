@@ -1,4 +1,4 @@
-from classes.kernel.Kernel import Kernel
+from main.kernel.Kernel import Kernel
 from numpy.ma.core import exp
 from scipy.spatial.distance import squareform, pdist, cdist
 

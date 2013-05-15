@@ -1,6 +1,6 @@
-from classes.distribution.Distribution import Distribution
-from classes.distribution.Gaussian import Gaussian
-from classes.tools.Visualise import Visualise
+from main.distribution.Distribution import Distribution
+from main.distribution.Gaussian import Gaussian
+from main.tools.Visualise import Visualise
 from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
 from numpy.dual import norm

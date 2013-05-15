@@ -1,5 +1,5 @@
-from classes.mcmc.output.Output import Output
-from classes.tools.Visualise import Visualise
+from main.mcmc.output.Output import Output
+from main.tools.Visualise import Visualise
 from matplotlib.pyplot import subplot, plot, xlabel, ylabel, title, hist, show, \
     draw, clf, figure
 from numpy.core.numeric import zeros

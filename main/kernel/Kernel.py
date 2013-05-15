@@ -1,5 +1,6 @@
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import shape
+
 class Kernel(object):
     def __init__(self):
         pass

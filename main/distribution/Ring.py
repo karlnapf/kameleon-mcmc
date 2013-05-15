@@ -1,5 +1,5 @@
-from classes.distribution.Flower import Flower
-from classes.tools.Visualise import Visualise
+from main.distribution.Flower import Flower
+from main.tools.Visualise import Visualise
 
 class Ring(Flower):
     def __init__(self, variance=0.05, radius=3.5, dimension=2):

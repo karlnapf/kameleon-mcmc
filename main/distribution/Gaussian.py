@@ -1,6 +1,6 @@
-from classes.distribution.Distribution import Distribution
-from classes.tools.MatrixTools import MatrixTools
-from classes.tools.Visualise import Visualise
+from main.distribution.Distribution import Distribution
+from main.tools.MatrixTools import MatrixTools
+from main.tools.Visualise import Visualise
 from numpy.dual import cholesky
 from numpy.lib.twodim_base import eye, diag
 from numpy.ma.core import array, shape, log, zeros
