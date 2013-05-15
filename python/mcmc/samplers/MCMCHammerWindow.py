@@ -2,6 +2,8 @@ from classes.distribution.Ring import Ring
 from classes.kernel.GaussianKernel import GassianKernel
 from classes.mcmc.MCMCChain import MCMCChain
 from classes.mcmc.MCMCParams import MCMCParams
+from classes.mcmc.output.PlottingOutput import PlottingOutput
+from classes.mcmc.output.ProgressOutput import ProgressOutput
 from classes.mcmc.samplers.MCMCHammer import MCMCHammer
 from classes.mcmc.samplers.MCMCSampler import MCMCSampler
 from classes.tools.Visualise import Visualise
