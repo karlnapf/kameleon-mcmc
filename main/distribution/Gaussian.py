@@ -4,7 +4,7 @@ from main.tools.Visualise import Visualise
 from numpy.dual import cholesky
 from numpy.lib.twodim_base import eye, diag
 from numpy.ma.core import array, shape, log, zeros
-from numpy.matlib import randn
+from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular
 

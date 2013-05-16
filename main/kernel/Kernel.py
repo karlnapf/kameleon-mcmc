@@ -1,4 +1,4 @@
-from numpy.lib.twodim_base import eye
+from numpy import eye
 from numpy.ma.core import shape
 
 class Kernel(object):

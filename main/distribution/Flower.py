@@ -5,7 +5,7 @@ from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
 from numpy.dual import norm
 from numpy.ma.core import sqrt, cos, sin, arctan2
-from numpy.matlib import rand, randn
+from numpy.random import rand, randn
 from scipy.constants.constants import pi
 
 class Flower(Distribution):

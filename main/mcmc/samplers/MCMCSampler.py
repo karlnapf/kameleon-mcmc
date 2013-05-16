@@ -1,5 +1,5 @@
 from numpy.ma.core import log
-from numpy.matlib import rand
+from numpy.random import rand
 from numpy.core.numeric import Inf
 
 class MCMCSampler(object):

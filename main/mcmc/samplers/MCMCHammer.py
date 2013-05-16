@@ -11,7 +11,7 @@ from main.tools.Visualise import Visualise
 from numpy.core.function_base import linspace
 from numpy.core.numeric import array
 from numpy.dual import cholesky
-from numpy.lib.twodim_base import eye
+from numpy import eye
 from numpy.ma.core import shape
 
 class MCMCHammer(MCMCSampler):
