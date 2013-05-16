@@ -1,3 +1,5 @@
+from main.distribution.Banana import Banana
+from main.distribution.Flower import Flower
 from main.distribution.Gaussian import Gaussian
 from main.distribution.Ring import Ring
 from main.mcmc.MCMCChain import MCMCChain
@@ -47,17 +49,17 @@ class AdaptiveMetropolis(MCMCSampler):
         return Gaussian(y, self.L_R, is_cholesky=True)
     
 if __name__ == '__main__':
-    distribution = Ring()
-    am_sampler = AdaptiveMetropolis(distribution,adapt_scale=False)
+    distribution = Banana()
+    am_sampler = AdaptiveMetropolis(distribution,adapt_scale=True)
     
     start = array([[-2, -2]])
     mcmc_params = MCMCParams(start=start, num_iterations=10000)
     chain = MCMCChain(distribution, am_sampler, mcmc_params)
     
     chain.append_mcmc_output(ProgressOutput())
-    Xs = linspace(-5, 5, 50)
-    Ys = linspace(-5, 5, 50)
-    chain.append_mcmc_output(PlottingOutput(Xs, Ys, plot_from=3000))
+    Xs = linspace(-20, 20, 50)
+    Ys = linspace(-8, 20, 50)
+    chain.append_mcmc_output(PlottingOutput(Xs, Ys, plot_from=520))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)
