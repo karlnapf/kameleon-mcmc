@@ -47,6 +47,12 @@ class MCMCChain(object):
             self.mcmc_sampler.update(self.samples[0:i], self.ratios[0:i])
             
             # store old proposal for outputs
+            """
+            there is a problem here: as Q is first
+            initialised in the step() method,
+            on the first call Q_old is always None
+            -dino
+            """
             Q_old = self.mcmc_sampler.Q
             
             # mcmc step

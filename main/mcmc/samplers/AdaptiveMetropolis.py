@@ -57,7 +57,7 @@ if __name__ == '__main__':
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-5, 5, 50)
     Ys = linspace(-5, 5, 50)
-    chain.append_mcmc_output(PlottingOutput(Xs, Ys, plot_from=5000))
+    chain.append_mcmc_output(PlottingOutput(Xs, Ys, plot_from=3000))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)
