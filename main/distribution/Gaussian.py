@@ -13,7 +13,11 @@ class Gaussian(Distribution):
         Distribution.__init__(self, len(Sigma))
         
         self.mu = mu
-        self.ell = ell
+        
+        assert(ell>=0)
+        if ell:
+            self.ell = ell
+            
         if is_cholesky:
             assert(shape(Sigma)[0] == shape(Sigma)[0])
             self.L = Sigma
