@@ -1,3 +1,4 @@
+from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
 from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GassianKernel
@@ -8,10 +9,10 @@ from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from main.tools.Visualise import Visualise
+from numpy import eye
 from numpy.core.function_base import linspace
 from numpy.core.numeric import array
 from numpy.dual import cholesky
-from numpy import eye
 from numpy.ma.core import shape
 
 class MCMCHammer(MCMCSampler):
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-5, 5, 50)
     Ys = linspace(-5, 5, 50)
-    chain.append_mcmc_output(PlottingOutput(Xs, Ys, plot_from=1000))
+    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)

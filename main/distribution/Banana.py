@@ -32,6 +32,12 @@ class Banana(Distribution):
         phi = Gaussian(array([0, 0]), array([[self.V, 0.], [ 0., 1.]]))
         return phi.log_pdf(transformed)
     
+    def get_plotting_bounds(self):
+        if self.bananicity == 0.03 and self.V == 100.0 and self.dimension == 2:
+            return [(-20, 20), (-5, 10)]
+        else:
+            return Distribution.get_plotting_bounds(self)
+
 if __name__ == '__main__':
     banana = Banana()
     Visualise.visualise_distribution(Banana())

@@ -6,10 +6,10 @@ from numpy.core.numeric import zeros
 from numpy.ma.core import array, exp
 
 class PlottingOutput(Output):
-    def __init__(self, Xs, Ys, plot_from=0):
-        self.Xs = Xs
-        self.Ys = Ys
+    def __init__(self, distribution, plot_from=0):
+        self.distribution=distribution
         self.plot_from = plot_from
+        self.Xs, self.Ys=Visualise.get_plotting_arrays(distribution)
     
     def update(self, mcmc_params, proposal, samples, log_liks, Q):
         if len(samples) > self.plot_from:
@@ -50,12 +50,12 @@ class PlottingOutput(Output):
             draw()
             clf()
     
-    def prepare(self, distribution):
+    def prepare(self):
         figure(figsize=(20, 13))
         self.P = zeros((len(self.Xs), len(self.Ys)))
         for i in range(len(self.Xs)):
             for j in range(len(self.Ys)):
                 x = array([[self.Xs[i], self.Ys[j]]])
-                self.P[j, i] = distribution.log_pdf(x)
+                self.P[j, i] = self.distribution.log_pdf(x)
         
         self.P = exp(self.P)

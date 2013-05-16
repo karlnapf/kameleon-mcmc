@@ -45,6 +45,7 @@ class AdaptiveMetropolis(MCMCSampler):
                 acc = ratios[len(ratios) - 1]
                 self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(acc) - self.accstar))
             self.L_R = cholesky(self.globalscale * self.cov_est)
+            
     def construct_proposal(self, y):
         return Gaussian(y, self.L_R, is_cholesky=True)
     
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-20, 20, 50)
     Ys = linspace(-8, 20, 50)
-    chain.append_mcmc_output(PlottingOutput(Xs, Ys, plot_from=520))
+    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=520))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)

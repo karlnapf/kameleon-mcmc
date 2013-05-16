@@ -21,7 +21,7 @@ class MCMCChain(object):
         
         # init output instances
         for out in self.mcmc_outputs:
-            out.prepare(self.distribution)
+            out.prepare()
         
         # init sampler with starting point
         self.mcmc_sampler.init(self.mcmc_params.start.copy())

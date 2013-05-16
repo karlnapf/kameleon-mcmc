@@ -7,6 +7,14 @@ class Visualise(object):
         pass
     
     @staticmethod
+    def get_plotting_arrays(distribution):
+        bounds = distribution.get_plotting_bounds()
+        assert(len(bounds) == 2)
+        Xs = linspace(bounds[0][0], bounds[0][1])
+        Ys = linspace(bounds[1][0], bounds[1][1])
+        return Xs, Ys
+    
+    @staticmethod
     def visualise_distribution(distribution, Z=None, log_density=False):
         """
         Plots the density of a given Distribution instance and plots some
@@ -16,8 +24,8 @@ class Visualise(object):
         if Z is None:
             Z = distribution.sample(1000)
             
-        Xs = linspace(Z[:, 0].min(), Z[:, 0].max())
-        Ys = linspace(Z[:, 1].min(), Z[:, 1].max())
+        Xs, Ys = Visualise.get_plotting_arrays(distribution)
+        
         Visualise.plot_density(distribution, Xs, Ys)
         hold(True)
         Visualise.plot_data(Z)

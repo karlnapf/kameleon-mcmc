@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from numpy import eye
 from numpy.ma.core import shape
 
@@ -5,9 +6,11 @@ class Kernel(object):
     def __init__(self):
         pass
     
+    @abstractmethod
     def kernel(self, X, Y=None):
         raise NotImplementedError()
     
+    @abstractmethod
     def gradient(self, x, Y):
         raise NotImplementedError()
     
