@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABCMeta
-from numpy.ma.core import ceil
+from numpy.ma.core import ceil, arange
 class Distribution(object):
     __metaclass__ = ABCMeta
      
@@ -12,6 +12,9 @@ class Distribution(object):
     
     @abstractmethod
     def log_pdf(self, X):
+        raise NotImplementedError()
+    
+    def emp_quantiles(self,X,quantiles=arange(0.9,0,-0.1)):
         raise NotImplementedError()
     
     def get_plotting_bounds(self):

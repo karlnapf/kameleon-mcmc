@@ -1,12 +1,13 @@
 from main.distribution.Distribution import Distribution
 from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
-from numpy.dual import cholesky
+from numpy.dual import cholesky, norm, eig
 from numpy.lib.twodim_base import eye, diag
-from numpy.ma.core import array, shape, log, zeros
+from numpy.ma.core import array, shape, log, zeros, arange, mean, ones
 from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular
+from scipy.stats.distributions import chi2
 
 class Gaussian(Distribution):
     def __init__(self, mu=array([0, 0]), Sigma=eye(2), is_cholesky=False, ell=0):
@@ -50,5 +51,28 @@ class Gaussian(Distribution):
         
         return const_part + log_determinant_part + quadratic_parts;
     
+    def emp_quantiles(self,X,quantiles=arange(0.1,1,0.1)):
+        #need inverse chi2 cdf with self.dimension degrees of freedom
+        chi2_instance=chi2(self.dimension)
+        cutoffs=chi2_instance.isf(1-quantiles)
+        #whitening
+        D,U = eig(Sigma)
+        D = D ** (-0.5)
+        W=(diag(D).dot(U.T).dot((X-self.mu).T)).T
+        norms_squared = array([norm(w)**2 for w in W])
+        results = zeros([len(quantiles)])
+        for jj in range(0,len(quantiles)):
+            results[jj] = mean(norms_squared<cutoffs[jj])
+        return results
+    
+    
 if __name__ == '__main__':
-    Visualise.visualise_distribution(Gaussian())
+    mu=array([5,2])
+    Sigma=eye(2)
+    Sigma[0,0]=20
+    R=MatrixTools.rotation_matrix(pi/4)
+    Sigma=R.dot(Sigma).dot(R.T)
+    gaussian_instance=Gaussian(mu, Sigma)
+    X=gaussian_instance.sample(1000)
+    print gaussian_instance.emp_quantiles(X)
+    Visualise.visualise_distribution(gaussian_instance)
