@@ -22,7 +22,9 @@ class Gaussian(Distribution):
         if is_cholesky:
             assert(shape(Sigma)[0] == shape(Sigma)[0])
             self.L = Sigma
+            self.Sigma=None
         else:
+            self.Sigma=Sigma
             if ell:
                 self.L, _, _ = MatrixTools.low_rank_approx(Sigma, ell)
                 self.L = self.L.T
@@ -56,7 +58,7 @@ class Gaussian(Distribution):
         chi2_instance=chi2(self.dimension)
         cutoffs=chi2_instance.isf(1-quantiles)
         #whitening
-        D,U = eig(Sigma)
+        D,U = eig(self.Sigma)
         D = D ** (-0.5)
         W=(diag(D).dot(U.T).dot((X-self.mu).T)).T
         norms_squared = array([norm(w)**2 for w in W])
