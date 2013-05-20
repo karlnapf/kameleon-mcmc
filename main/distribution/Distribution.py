@@ -14,7 +14,7 @@ class Distribution(object):
     def log_pdf(self, X):
         raise NotImplementedError()
     
-    def emp_quantiles(self,X,quantiles=arange(0.9,0,-0.1)):
+    def emp_quantiles(self,X,quantiles=arange(0.1,1,0.1)):
         raise NotImplementedError()
     
     def get_plotting_bounds(self):

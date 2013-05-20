@@ -14,5 +14,8 @@ class Ring(Flower):
             return Flower.get_plotting_bounds(self)
 
 if __name__ == '__main__':
+    ring_instance=Ring()
+    X=ring_instance.sample(10000)
+    print ring_instance.emp_quantiles(X)
     Visualise.visualise_distribution(Ring())
 
