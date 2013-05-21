@@ -1,8 +1,7 @@
 from numpy.ma.core import zeros
 
 class MCMCChain(object):
-    def __init__(self, distribution, mcmc_sampler, mcmc_params):
-        self.distribution = distribution
+    def __init__(self, mcmc_sampler, mcmc_params):
         self.mcmc_sampler = mcmc_sampler
         self.mcmc_params = mcmc_params
         self.mcmc_outputs = []
@@ -11,7 +10,7 @@ class MCMCChain(object):
     def init(self):
         # fields for the chain
         num_iterations = self.mcmc_params.num_iterations
-        self.samples = zeros((num_iterations, self.distribution.dimension))
+        self.samples = zeros((num_iterations, self.mcmc_sampler.distribution.dimension))
         self.ratios = zeros(num_iterations)
         self.log_liks = zeros(num_iterations)
         self.accepteds = zeros(num_iterations)
@@ -25,12 +24,11 @@ class MCMCChain(object):
         
         # init sampler with starting point
         self.mcmc_sampler.init(self.mcmc_params.start.copy())
-        
         self.is_initialised = True
         
     
     def has_finished(self):
-        return self.iteration == self.mcmc_params.num_iterations - 1
+        return self.iteration >= self.mcmc_params.num_iterations - 1
     
     def append_mcmc_output(self, output):
         self.mcmc_outputs.append(output)

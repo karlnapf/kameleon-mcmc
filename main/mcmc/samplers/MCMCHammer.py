@@ -74,7 +74,7 @@ if __name__ == '__main__':
     
     start = array([[-2, -2]])
     mcmc_params = MCMCParams(start=start, num_iterations=10000)
-    chain = MCMCChain(distribution, mcmc_sampler, mcmc_params)
+    chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-5, 5, 50)

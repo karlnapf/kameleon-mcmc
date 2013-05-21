@@ -4,7 +4,7 @@ from main.tools.Visualise import Visualise
 from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
 from numpy.dual import norm
-from numpy.ma.core import sqrt, cos, sin, arctan2, arange, mean
+from numpy.ma.core import sqrt, cos, sin, arctan2, arange
 from numpy.random import rand, randn
 from scipy.constants.constants import pi
 
@@ -53,23 +53,24 @@ class Flower(Distribution):
             log_pdf[i] = gaussian.log_pdf(array([[norms[i]]]))
         
         return log_pdf
-    def emp_quantiles(self,X,quantiles=arange(0.1,1,0.1)):
+    
+    def emp_quantiles(self, X, quantiles=arange(0.1, 1, 0.1)):
         norms = array([norm(x) for x in X])
         angles = arctan2(X[:, 1], X[:, 0])
-        if self.amplitude==0:
-            gaussian = Gaussian(array([self.radius]),array([[self.variance]]))
-            return gaussian.emp_quantiles(array([norms]).T,quantiles)
+        if self.amplitude == 0:
+            gaussian = Gaussian(array([self.radius]), array([[self.variance]]))
+            return gaussian.emp_quantiles(array([norms]).T, quantiles)
         else:
             mu = self.radius + self.amplitude * cos(self.frequency * angles)
-            overall = zeros([len(X),len(quantiles)])
+            overall = zeros([len(X), len(quantiles)])
             gaussian = Gaussian(array([mu[0]]), array([[self.variance]]))
             for i in range(len(X)):
                 gaussian.mu = mu[i]
-                overall[i,:] = gaussian.emp_quantiles(array([[norms[i]]]),quantiles)
-            return sum(overall)/len(X)
+                overall[i, :] = gaussian.emp_quantiles(array([[norms[i]]]), quantiles)
+            return sum(overall) / len(X)
     
 if __name__ == '__main__':
-    flower_instance=Flower()
-    X=flower_instance.sample(1000)
+    flower_instance = Flower()
+    X = flower_instance.sample(1000)
     print flower_instance.emp_quantiles(X)
     Visualise.visualise_distribution(flower_instance)

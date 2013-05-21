@@ -3,7 +3,7 @@ from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
 from numpy.dual import cholesky, norm, eig
 from numpy.lib.twodim_base import eye, diag
-from numpy.ma.core import array, shape, log, zeros, arange, mean, ones
+from numpy.ma.core import array, shape, log, zeros, arange, mean
 from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular
@@ -75,6 +75,6 @@ if __name__ == '__main__':
     R=MatrixTools.rotation_matrix(pi/4)
     Sigma=R.dot(Sigma).dot(R.T)
     gaussian_instance=Gaussian(mu, Sigma)
-    X=gaussian_instance.sample(1000)
+    X=gaussian_instance.sample(10000)
     print gaussian_instance.emp_quantiles(X)
     Visualise.visualise_distribution(gaussian_instance)

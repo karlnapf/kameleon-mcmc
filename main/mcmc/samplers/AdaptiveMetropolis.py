@@ -1,7 +1,6 @@
 from main.distribution.Banana import Banana
 from main.distribution.Flower import Flower
 from main.distribution.Gaussian import Gaussian
-from main.distribution.Ring import Ring
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.PlottingOutput import PlottingOutput
@@ -55,7 +54,7 @@ if __name__ == '__main__':
     
     start = array([[-2, -2]])
     mcmc_params = MCMCParams(start=start, num_iterations=10000)
-    chain = MCMCChain(distribution, am_sampler, mcmc_params)
+    chain = MCMCChain(am_sampler, mcmc_params)
     
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-20, 20, 50)

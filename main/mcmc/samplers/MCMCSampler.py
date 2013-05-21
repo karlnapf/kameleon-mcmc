@@ -1,6 +1,7 @@
+from abc import abstractmethod
+from numpy.core.numeric import Inf
 from numpy.ma.core import log
 from numpy.random import rand
-from numpy.core.numeric import Inf
 
 class MCMCSampler(object):
     def __init__(self, distribution):
@@ -9,11 +10,13 @@ class MCMCSampler(object):
     
     def init(self, start):
         self.current = start
-        self.log_lik_current=-Inf
+        self.log_lik_current = -Inf
     
+    @abstractmethod
     def update(self, samples, ratios):
         raise NotImplementedError()
     
+    @abstractmethod
     def construct_proposal(self, y):
         raise NotImplementedError()
     
