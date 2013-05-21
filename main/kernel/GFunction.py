@@ -11,11 +11,11 @@ from numpy.lib.function_base import meshgrid
 from numpy.ma.core import array, shape, exp
 
 class GFunction(object):
-    def __init__(self, gaussian_width, distribution, eta=0.1, gamma=0.1, ell=15):
+    def __init__(self, distribution, gaussian_width=1, eta=0.2, gamma=0.1, ell=15):
         self.kernel = GaussianKernel(gaussian_width)
         self.distribution = distribution
-        self.gamma = gamma
         self.eta = eta
+        self.gamma = gamma
         self.ell = ell
         
     def compute(self, x, y, Z, beta):
@@ -115,9 +115,8 @@ class GFunction(object):
         show()
 
 if __name__ == '__main__':
-    gaussian_width = 1
     distribution = Banana()
-    epsilon = 200
-    ell = 10
-    g_func = GFunction(gaussian_width, distribution, epsilon, ell)
-    g_func.plot()
+    g_func = GFunction(distribution)
+    
+    y = array([[0, -3]])
+    g_func.plot(y, n=1000)
