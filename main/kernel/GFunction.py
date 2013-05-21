@@ -50,22 +50,11 @@ class GFunction(object):
     def plot(self, y=array([[-2, -2]]), n=200):
         Z = self.distribution.sample(n)
         
-        # plot points
-    #    figure(figsize=(15,10))
-    #    plot(Z[:, 0], Z[:, 1], '*')
-    #    show()
-        
         # evaluate and center kernel and scale
         K = self.kernel.kernel(Z, None)
         K = Kernel.center_kernel_matrix(K)
         
-    #    # plot kernel matrix
-    #    figure(figsize=(15,10))
-    #    imshow(Kc, interpolation='nearest')
-    #    show()
-        
         # sample beta and fix current point y
-    #    beta = sample_gaussian(L, 1, is_cholesky=True)
         gaussian = Gaussian(mu=zeros(n), Sigma=K, is_cholesky=False, \
                           ell=self.ell)
         beta = gaussian.sample()
