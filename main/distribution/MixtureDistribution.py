@@ -28,7 +28,7 @@ class MixtureDistribution(Distribution):
                 for jj in range(self.NumComponents):
                     logpdfs[jj]=self.Components[jj].log_pdf([X[ii]])
                 lmax=max(logpdfs)
-                rez[ii]=lmax+log(sum(exp(logpdfs-lmax)))
+                rez[ii]=lmax+log(sum(self.MixingProportion.omega*exp(logpdfs-lmax)))
             return rez
         else:
             assert(ComponentIndexGiven<self.NumComponents)
