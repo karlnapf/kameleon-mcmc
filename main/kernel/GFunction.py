@@ -107,21 +107,13 @@ class GFunction(object):
     
         # plot g and Z points and y
         figure(figsize=(15, 10))
-        suptitle('g function')
-        Visualise.plot_array(GXs, GYs, G)
-        hold(True)
-        Visualise.plot_data(Z, y)
-        hold(False)
-        savefig("g_gunction.png")
-        
-        figure(figsize=(15, 10))
-        suptitle("g gradient field")
+        suptitle("g function with gradient")
         Visualise.plot_array(GXs, GYs, G)
         hold(True)
         Visualise.plot_data(Z, y)
         quiver(X, Y, U, V, color='y', scale=G.max() * 15)
         hold(False)
-        savefig("g_gradient_field.png")
+        savefig("g_function_with_gradient.png")
         
         figure(figsize=(15, 10))
         suptitle("Proposal density")
