@@ -1,7 +1,7 @@
 from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
 from main.distribution.Ring import Ring
-from main.kernel.GaussianKernel import GassianKernel
+from main.kernel.GaussianKernel import GaussianKernel
 from main.kernel.Kernel import Kernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
@@ -69,7 +69,7 @@ class MCMCHammer(MCMCSampler):
 if __name__ == '__main__':
     distribution = Ring()
     Z = distribution.sample(1000)
-    kernel = GassianKernel(sigma=1)
+    kernel = GaussianKernel(sigma=1)
     mcmc_sampler = MCMCHammer(distribution, kernel, Z)
     
     start = array([[-2, -2]])

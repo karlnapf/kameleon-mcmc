@@ -2,7 +2,7 @@ from main.kernel.Kernel import Kernel
 from numpy.ma.core import exp
 from scipy.spatial.distance import squareform, pdist, cdist
 
-class GassianKernel(Kernel):
+class GaussianKernel(Kernel):
     def __init__(self, sigma):
         Kernel.__init__(self)
         

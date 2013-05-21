@@ -1,5 +1,5 @@
 from main.distribution.Ring import Ring
-from main.kernel.GaussianKernel import GassianKernel
+from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.PlottingOutput import PlottingOutput
@@ -36,7 +36,7 @@ class MCMCHammerWindow(MCMCHammer):
         
 if __name__ == '__main__':
     distribution = Ring()
-    kernel = GassianKernel(sigma=1)
+    kernel = GaussianKernel(sigma=1)
     mcmc_sampler = MCMCHammerWindow(distribution, kernel)
     
     start = array([[-2, -2]])
