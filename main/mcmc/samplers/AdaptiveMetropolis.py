@@ -30,16 +30,25 @@ class AdaptiveMetropolis(MCMCSampler):
         self.sample_lag = sample_lag
         self.accstar = accstar
         self.L_R = cholesky(self.globalscale * self.cov_est)
-        
+    
+    def mean_and_cov_update(self,learn_scale):
+        self.cov_est = self.cov_est + learn_scale * (((self.current - self.mean_est).T).dot(self.current - self.mean_est) - self.cov_est)
+        self.mean_est = self.mean_est + learn_scale * (self.current - self.mean_est)
+    
+    def scale_update(self,learn_scale,acc,adapt_dw=False,direction=0):
+        if adapt_dw:
+            self.dwscale[direction] = exp(log(self.self.dwscale[direction]) + learn_scale * (exp(acc) - self.accstar))
+        else:
+            self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(acc) - self.accstar))
+    
     def update(self, samples, ratios):
         iter_no = len(samples)
         if iter_no > self.sample_discard and iter_no % self.sample_lag == 0:
             learn_scale = self.learn_rate(float(iter_no - self.sample_discard) / self.sample_lag)
-            self.cov_est = self.cov_est + learn_scale * (((self.current - self.mean_est).T).dot(self.current - self.mean_est) - self.cov_est)
-            self.mean_est = self.mean_est + learn_scale * (self.current - self.mean_est)
+            self.mean_and_cov_update(learn_scale)
             if self.adapt_scale:
                 acc = ratios[len(ratios) - 1]
-                self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(acc) - self.accstar))
+                self.scale_update(learn_scale,acc)
             self.L_R = cholesky(self.globalscale * self.cov_est)
             
     def construct_proposal(self, y):
@@ -47,8 +56,8 @@ class AdaptiveMetropolis(MCMCSampler):
     
 if __name__ == '__main__':
     distribution = Banana(5)
-    length = 260000
-    burnin = 60000
+    length = 26000
+    burnin = 6000
     lag = 10
     
     start = array([[-2, -2, 0, 0, 0]])
