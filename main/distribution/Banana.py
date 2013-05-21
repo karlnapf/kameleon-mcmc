@@ -26,7 +26,7 @@ class Banana(Distribution):
         return X
     
     def log_pdf(self, X):
-        assert(shape(X)[1] == 2)
+        #assert(shape(X)[1] == 2)
         transformed = X.copy()
         transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
         transformed[:, 0] = X[:, 0] / sqrt(self.V)

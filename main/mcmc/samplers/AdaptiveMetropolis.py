@@ -1,16 +1,20 @@
 from main.distribution.Banana import Banana
 from main.distribution.Flower import Flower
 from main.distribution.Gaussian import Gaussian
+from main.distribution.Ring import Ring
+from main.kernel.GaussianKernel import GassianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.ProgressOutput import ProgressOutput
+from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from main.tools.Visualise import Visualise
+from numpy import eye
 from numpy.core.function_base import linspace
+from numpy.core.numeric import inf
 from numpy.dual import cholesky
 from numpy.ma.core import array, sqrt, exp, log
-from numpy import eye
 
 class AdaptiveMetropolis(MCMCSampler):
     '''
@@ -49,17 +53,24 @@ class AdaptiveMetropolis(MCMCSampler):
         return Gaussian(y, self.L_R, is_cholesky=True)
     
 if __name__ == '__main__':
-    distribution = Banana()
-    am_sampler = AdaptiveMetropolis(distribution, adapt_scale=True)
+    distribution = Banana(5)
+    length=260000
+    burnin=60000
+    lag=10
     
-    start = array([[-2, -2]])
-    mcmc_params = MCMCParams(start=start, num_iterations=10000)
-    chain = MCMCChain(am_sampler, mcmc_params)
-    
+    start = array([[-2, -2, 0, 0, 0]])
+    mean_est= array([-2, -2, 0, 0, 0])
+    kernel = GassianKernel(sigma=1)
+    #mcmc_sampler = MCMCHammerWindow(distribution, kernel)
+    am_sampler = AdaptiveMetropolis(distribution, adapt_scale=False, mean_est=mean_est, cov_est=0.05 * eye(5))
+    mcmc_params = MCMCParams(start=start, num_iterations=length,burnin=burnin)
+    chain = MCMCChain(distribution, am_sampler, mcmc_params)
     chain.append_mcmc_output(ProgressOutput())
-    Xs = linspace(-20, 20, 50)
-    Ys = linspace(-8, 20, 50)
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=520))
+    #Xs = linspace(-20, 20, 50)
+    #Ys = linspace(-8, 20, 50)
+    #chain.append_mcmc_output(PlottingOutput(distribution, plot_from=inf))
     chain.run()
+    idx=range(burnin,length,lag)
+    print distribution.emp_quantiles(chain.samples[idx])
     
-    Visualise.visualise_distribution(distribution, chain.samples)
+    #Visualise.visualise_distribution(distribution, chain.samples)
