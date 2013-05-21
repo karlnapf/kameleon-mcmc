@@ -1,5 +1,6 @@
 from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
+from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GaussianKernel
 from main.kernel.Kernel import Kernel
 from main.mcmc.samplers.MCMCHammer import MCMCHammer
@@ -11,11 +12,11 @@ from numpy.lib.function_base import meshgrid
 from numpy.ma.core import array, shape, exp
 
 class GFunction(object):
-    def __init__(self, gaussian_width, distribution, eta=0.1, gamma=0.1, ell=15):
+    def __init__(self, distribution, gaussian_width=1, eta=0.1, gamma=0.1, ell=15):
         self.kernel = GaussianKernel(gaussian_width)
         self.distribution = distribution
-        self.gamma = gamma
         self.eta = eta
+        self.gamma = gamma
         self.ell = ell
         
     def compute(self, x, y, Z, beta):
@@ -50,22 +51,11 @@ class GFunction(object):
     def plot(self, y=array([[-2, -2]]), n=200):
         Z = self.distribution.sample(n)
         
-        # plot points
-    #    figure(figsize=(15,10))
-    #    plot(Z[:, 0], Z[:, 1], '*')
-    #    show()
-        
         # evaluate and center kernel and scale
         K = self.kernel.kernel(Z, None)
         K = Kernel.center_kernel_matrix(K)
         
-    #    # plot kernel matrix
-    #    figure(figsize=(15,10))
-    #    imshow(Kc, interpolation='nearest')
-    #    show()
-        
         # sample beta and fix current point y
-    #    beta = sample_gaussian(L, 1, is_cholesky=True)
         gaussian = Gaussian(mu=zeros(n), Sigma=K, is_cholesky=False, \
                           ell=self.ell)
         beta = gaussian.sample()
@@ -88,7 +78,11 @@ class GFunction(object):
         V = zeros(shape(Y))
     
         # evaluate g at a set of points in GXy and GYs
+        figure()
         gaussian = Gaussian(mu, L_R, is_cholesky=True)
+        print L_R.T.dot(L_R)
+        Visualise.visualise_distribution(gaussian)
+        figure()
         for i in range(len(GXs)):
             print i, "/", len(GXs)
             for j in range(len(GYs)):
@@ -107,21 +101,13 @@ class GFunction(object):
     
         # plot g and Z points and y
         figure(figsize=(15, 10))
-        suptitle('g function')
-        Visualise.plot_array(GXs, GYs, G)
-        hold(True)
-        Visualise.plot_data(Z, y)
-        hold(False)
-        savefig("g_gunction.png")
-        
-        figure(figsize=(15, 10))
-        suptitle("g gradient field")
+        suptitle("g function with gradient")
         Visualise.plot_array(GXs, GYs, G)
         hold(True)
         Visualise.plot_data(Z, y)
         quiver(X, Y, U, V, color='y', scale=G.max() * 15)
         hold(False)
-        savefig("g_gradient_field.png")
+        savefig("g_function_with_gradient.png")
         
         figure(figsize=(15, 10))
         suptitle("Proposal density")
@@ -134,9 +120,8 @@ class GFunction(object):
         show()
 
 if __name__ == '__main__':
-    gaussian_width = 1
-    distribution = Banana()
-    epsilon = 200
-    ell = 10
-    g_func = GFunction(gaussian_width, distribution, epsilon, ell)
-    g_func.plot()
+    distribution = Ring()
+    g_func = GFunction(distribution)
+    
+    y = array([[2, -3 ]])
+    g_func.plot(y, n=1000)

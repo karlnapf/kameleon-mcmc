@@ -44,12 +44,12 @@ class MCMCHammer(MCMCSampler):
         # we think that a=0 for every kernel
         mu = y
         
-        # M = 2\eta [\nabla_x k(x,z_i]|_x=y
-        M = 2 * self.eta * self.kernel.gradient(y, self.Z)
+        # M = 2 [\nabla_x k(x,z_i]|_x=y
+        M = 2 * self.kernel.gradient(y, self.Z)
         
-        # R = gamma^2 I + M H M^T
+        # R = gamma^2 I + \eta^2 * M H M^T
         H = Kernel.centring_matrix(len(self.Z))
-        R = self.gamma ** 2 * eye(dim) + M.T.dot(H.dot(M))
+        R = self.gamma ** 2 * eye(dim) + self.eta ** 2 * M.T.dot(H.dot(M))
         L_R = cholesky(R)
         
         return mu, L_R
