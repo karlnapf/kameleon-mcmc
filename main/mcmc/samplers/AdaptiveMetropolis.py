@@ -1,7 +1,6 @@
 from main.distribution.Banana import Banana
 from main.distribution.Flower import Flower
 from main.distribution.Gaussian import Gaussian
-from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GassianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
@@ -64,7 +63,7 @@ if __name__ == '__main__':
     #mcmc_sampler = MCMCHammerWindow(distribution, kernel)
     am_sampler = AdaptiveMetropolis(distribution, adapt_scale=False, mean_est=mean_est, cov_est=0.05 * eye(5))
     mcmc_params = MCMCParams(start=start, num_iterations=length,burnin=burnin)
-    chain = MCMCChain(distribution, am_sampler, mcmc_params)
+    chain = MCMCChain(am_sampler, mcmc_params)
     chain.append_mcmc_output(ProgressOutput())
     #Xs = linspace(-20, 20, 50)
     #Ys = linspace(-8, 20, 50)
