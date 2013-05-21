@@ -1,5 +1,6 @@
 from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
+from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GaussianKernel
 from main.kernel.Kernel import Kernel
 from main.mcmc.samplers.MCMCHammer import MCMCHammer
@@ -11,7 +12,7 @@ from numpy.lib.function_base import meshgrid
 from numpy.ma.core import array, shape, exp
 
 class GFunction(object):
-    def __init__(self, distribution, gaussian_width=1, eta=0.2, gamma=0.1, ell=15):
+    def __init__(self, distribution, gaussian_width=1, eta=0.1, gamma=0.1, ell=15):
         self.kernel = GaussianKernel(gaussian_width)
         self.distribution = distribution
         self.eta = eta
@@ -77,7 +78,11 @@ class GFunction(object):
         V = zeros(shape(Y))
     
         # evaluate g at a set of points in GXy and GYs
+        figure()
         gaussian = Gaussian(mu, L_R, is_cholesky=True)
+        print L_R.T.dot(L_R)
+        Visualise.visualise_distribution(gaussian)
+        figure()
         for i in range(len(GXs)):
             print i, "/", len(GXs)
             for j in range(len(GYs)):
@@ -115,8 +120,8 @@ class GFunction(object):
         show()
 
 if __name__ == '__main__':
-    distribution = Banana()
+    distribution = Ring()
     g_func = GFunction(distribution)
     
-    y = array([[0, -3]])
+    y = array([[2, -3 ]])
     g_func.plot(y, n=1000)

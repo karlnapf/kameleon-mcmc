@@ -1,7 +1,7 @@
 from main.distribution.Distribution import Distribution
 from main.distribution.Gaussian import Gaussian
 from numpy.core.shape_base import hstack
-from numpy.ma.core import shape, sqrt, arange, zeros
+from numpy.ma.core import sqrt, arange, zeros
 from numpy.random import randn
 from numpy.lib.twodim_base import eye
 
@@ -26,7 +26,6 @@ class Banana(Distribution):
         return X
     
     def log_pdf(self, X):
-        #assert(shape(X)[1] == 2)
         transformed = X.copy()
         transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
         transformed[:, 0] = X[:, 0] / sqrt(self.V)
