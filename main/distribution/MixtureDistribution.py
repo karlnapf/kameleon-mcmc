@@ -5,7 +5,7 @@ from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import cholesky
-from numpy.ma.core import array, zeros, log, exp
+from numpy.ma.core import array, zeros, log, exp, ones
 from scipy.constants.constants import pi
 
 class MixtureDistribution(Distribution):
@@ -13,14 +13,20 @@ class MixtureDistribution(Distribution):
     mixing_proportion is of class Distribution->Discrete
     components is a list of Distributions
     """
-    def __init__(self, mixing_proportion=Discrete([0.5, 0.5]), components=[Gaussian(array([-1, -1])), Gaussian(array([1, 1]))]):
-        Distribution.__init__(self, components[0].dimension)
-        
-        assert(mixing_proportion.num_objects == len(components))
-        
-        self.num_components = mixing_proportion.num_objects
-        self.mixing_proportion = mixing_proportion
-        self.components = components
+    def __init__(self, dimension=2, num_components=2, components=None, mixing_proportion=None):
+        Distribution.__init__(self, dimension)
+        self.num_components = num_components
+        if (components == None):
+            self.components = [Gaussian(mu=zeros(self.dimension)) for _ in range(self.num_components)]
+        else:
+            assert(len(components)==self.num_components)
+            self.components=components
+        if (mixing_proportion == None):
+            self.mixing_proportion=Discrete((1.0/num_components)*ones([num_components]))
+        else:
+            assert(num_components==mixing_proportion.num_objects)
+            self.mixing_proportion = mixing_proportion
+
         
     def log_pdf(self, X, component_index_given=None):
         """
@@ -56,7 +62,7 @@ if __name__ == '__main__':
     L = cholesky(Sigma)
     g1 = Gaussian(mu, L, is_cholesky=True)
     g2 = Gaussian()
-    m = MixtureDistribution(Discrete([0.7, 0.3]), [g1, g2])
+    m = MixtureDistribution(dimension=2, num_components=2, components=[g1,g2])
     Z1 = g1.sample(1000)
     Z = m.sample(100)
     Visualise.visualise_distribution(g1,Z1)
