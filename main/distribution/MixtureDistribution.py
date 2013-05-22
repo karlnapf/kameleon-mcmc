@@ -10,39 +10,41 @@ from scipy.constants.constants import pi
 
 class MixtureDistribution(Distribution):
     """
-    MixingProportion is of class Distribution->Discrete
-    Components is a list of Distributions
+    mixing_proportion is of class Distribution->Discrete
+    components is a list of Distributions
     """
-    def __init__(self, MixingProportion=Discrete([0.5, 0.5]), Components=[Gaussian(array([-1, -1])), Gaussian(array([1, 1]))]):
-        Distribution.__init__(self, Components[0].dimension)
-        assert(MixingProportion.NumObjects == len(Components))
-        self.NumComponents = MixingProportion.NumObjects
-        self.MixingProportion = MixingProportion
-        self.Components = Components
+    def __init__(self, mixing_proportion=Discrete([0.5, 0.5]), components=[Gaussian(array([-1, -1])), Gaussian(array([1, 1]))]):
+        Distribution.__init__(self, components[0].dimension)
         
-    def log_pdf(self, X, ComponentIndexGiven=None):
+        assert(mixing_proportion.num_objects == len(components))
+        
+        self.num_components = mixing_proportion.num_objects
+        self.mixing_proportion = mixing_proportion
+        self.components = components
+        
+    def log_pdf(self, X, component_index_given=None):
         """
-        If ComponentIndexGiven is given, then just condition on it,
+        If component_index_given is given, then just condition on it,
         otherwise, should compute the overall log_pdf
         """
-        if ComponentIndexGiven == None:
+        if component_index_given == None:
             rez = zeros([len(X)])
             for ii in range(len(X)):
-                logpdfs = zeros([self.NumComponents])
-                for jj in range(self.NumComponents):
-                    logpdfs[jj] = self.Components[jj].log_pdf([X[ii]])
+                logpdfs = zeros([self.num_components])
+                for jj in range(self.num_components):
+                    logpdfs[jj] = self.components[jj].log_pdf([X[ii]])
                 lmax = max(logpdfs)
-                rez[ii] = lmax + log(sum(self.MixingProportion.omega * exp(logpdfs - lmax)))
+                rez[ii] = lmax + log(sum(self.mixing_proportion.omega * exp(logpdfs - lmax)))
             return rez
         else:
-            assert(ComponentIndexGiven < self.NumComponents)
-            return self.Components[ComponentIndexGiven].log_pdf(X)
+            assert(component_index_given < self.num_components)
+            return self.components[component_index_given].log_pdf(X)
     
     def sample(self, n=1):
         rez = zeros([n, self.dimension])
         for ii in range(n):
-            jj = self.MixingProportion.sample()
-            rez[ii, :] = self.Components[int(jj)].sample()
+            jj = self.mixing_proportion.sample()
+            rez[ii, :] = self.components[int(jj)].sample()
         return rez
     
 if __name__ == '__main__':

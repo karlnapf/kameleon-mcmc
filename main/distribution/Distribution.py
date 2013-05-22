@@ -11,6 +11,13 @@ class Distribution(object):
     
     @abstractmethod
     def log_pdf(self, X):
+        """
+        parameters:
+        X - 2D array of row vectors to compute the log-pdf of
+        
+        returns:
+        1D array of log-pdfs of all inputs
+        """
         raise NotImplementedError()
     
     def emp_quantiles(self, X, quantiles=arange(0.1, 1, 0.1)):

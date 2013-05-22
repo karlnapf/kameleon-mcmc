@@ -1,9 +1,9 @@
 from main.distribution.Distribution import Distribution
 from main.distribution.Gaussian import Gaussian
 from numpy.core.shape_base import hstack
-from numpy.ma.core import sqrt, arange, zeros
-from numpy.random import randn
 from numpy.lib.twodim_base import eye
+from numpy.ma.core import sqrt, arange, zeros, shape
+from numpy.random import randn
 
 class Banana(Distribution):
     '''
@@ -26,6 +26,9 @@ class Banana(Distribution):
         return X
     
     def log_pdf(self, X):
+        assert(len(shape(X))==2)
+        assert(shape(X)[1]==self.dimension)
+        
         transformed = X.copy()
         transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
         transformed[:, 0] = X[:, 0] / sqrt(self.V)
@@ -33,6 +36,9 @@ class Banana(Distribution):
         return phi.log_pdf(transformed)
     
     def emp_quantiles(self, X, quantiles=arange(0.1, 1, 0.1)):
+        assert(len(shape(X))==2)
+        assert(shape(X)[1]==self.dimension)
+        
         transformed = X.copy()
         transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
         transformed[:, 0] = X[:, 0] / sqrt(self.V)

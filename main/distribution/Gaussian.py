@@ -3,7 +3,7 @@ from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
 from numpy.dual import cholesky, norm, eig
 from numpy.lib.twodim_base import eye, diag
-from numpy.ma.core import array, shape, log, zeros, arange, mean
+from numpy.ma.core import array, shape, log, zeros, arange, mean, reshape
 from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular
@@ -13,6 +13,8 @@ class Gaussian(Distribution):
     def __init__(self, mu=array([0, 0]), Sigma=eye(2), is_cholesky=False, ell=0):
         Distribution.__init__(self, len(Sigma))
         
+        assert(len(shape(mu))==1)
+        assert(max(shape(Sigma))==len(mu))
         self.mu = mu
         
         assert(ell >= 0)
@@ -36,9 +38,12 @@ class Gaussian(Distribution):
         return self.L.dot(V).T + self.mu
     
     def log_pdf(self, X):
+        assert(len(shape(X))==2)
+        assert(shape(X)[1]==self.dimension)
+        
         log_determinant_part = -sum(log(diag(self.L)))
         
-        quadratic_parts = zeros((len(X), 1))
+        quadratic_parts = zeros(len(X))
         for i in range(len(X)):
             x = X[i] - self.mu
             
@@ -75,5 +80,7 @@ if __name__ == '__main__':
     L = cholesky(Sigma)
     gaussian_instance = Gaussian(mu, L, is_cholesky=True)
     X = gaussian_instance.sample(100)
-    print gaussian_instance.emp_quantiles(X)
+    print "quantiles:", gaussian_instance.emp_quantiles(X)
+    print "log pdf of mu:", gaussian_instance.log_pdf(reshape(mu,(1,2)))
     Visualise.visualise_distribution(gaussian_instance,X)
+    

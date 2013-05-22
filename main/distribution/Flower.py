@@ -4,7 +4,7 @@ from main.tools.Visualise import Visualise
 from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
 from numpy.dual import norm
-from numpy.ma.core import sqrt, cos, sin, arctan2, arange
+from numpy.ma.core import sqrt, cos, sin, arctan2, arange, shape
 from numpy.random import rand, randn
 from scipy.constants.constants import pi
 
@@ -37,6 +37,9 @@ class Flower(Distribution):
         return X
     
     def log_pdf(self, X):
+        assert(len(shape(X))==2)
+        assert(shape(X)[1]==self.dimension)
+        
         # compute all norms
         norms = array([norm(x) for x in X])
         
