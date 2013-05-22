@@ -74,6 +74,6 @@ if __name__ == '__main__':
     Sigma = R.dot(Sigma).dot(R.T)
     L = cholesky(Sigma)
     gaussian_instance = Gaussian(mu, L, is_cholesky=True)
-    X = gaussian_instance.sample(10000)
+    X = gaussian_instance.sample(100)
     print gaussian_instance.emp_quantiles(X)
-    Visualise.visualise_distribution(gaussian_instance)
+    Visualise.visualise_distribution(gaussian_instance,X)

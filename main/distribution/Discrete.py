@@ -8,7 +8,7 @@ class Discrete(Distribution):
         Distribution.__init__(self, dimension=None)
         assert(sum(omega)==1)
         if support==None:
-            support=range(0,len(omega))
+            support=range(len(omega))
         else:
             assert(len(omega)==len(support))
         self.NumObjects=len(omega)
@@ -33,3 +33,4 @@ class Discrete(Distribution):
 if __name__ == '__main__':
     d=Discrete([0.65,0.1,0.25])
     X=d.sample(50)
+    print X
