@@ -25,7 +25,10 @@ class Discrete(Distribution):
                 jj += 1
             rez[ii] = self.support[jj]
         return rez
-    
+
+    def log_pdf(self,X):
+        return None
+
 if __name__ == '__main__':
     d = Discrete([0.65, 0.1, 0.25])
     X = d.sample(50)
