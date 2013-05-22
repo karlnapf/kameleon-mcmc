@@ -6,8 +6,8 @@ from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from numpy import eye
-from numpy.dual import cholesky
-from numpy.ma.core import array, sqrt, exp, log
+from numpy.linalg import cholesky
+from numpy.ma.core import array, sqrt, exp, log, shape
 
 class AdaptiveMetropolis(MCMCSampler):
     '''
@@ -52,6 +52,7 @@ class AdaptiveMetropolis(MCMCSampler):
             self.L_R = cholesky(self.globalscale * self.cov_est)
             
     def construct_proposal(self, y):
+        assert(len(shape(y))==1)
         return Gaussian(y, self.L_R, is_cholesky=True)
     
 if __name__ == '__main__':
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     burnin = 6000
     lag = 10
     
-    start = array([[-2, -2, 0, 0, 0]])
+    start = array([-2, -2, 0, 0, 0])
     mean_est = array([-2, -2, 0, 0, 0])
     kernel = GaussianKernel(sigma=1)
     # mcmc_sampler = MCMCHammerWindow(distribution, kernel)

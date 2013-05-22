@@ -1,4 +1,3 @@
-from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
 from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GaussianKernel
@@ -12,7 +11,7 @@ from main.tools.Visualise import Visualise
 from numpy import eye
 from numpy.core.function_base import linspace
 from numpy.core.numeric import array
-from numpy.dual import cholesky
+from numpy.linalg import cholesky
 from numpy.ma.core import shape
 
 class MCMCHammer(MCMCSampler):
@@ -39,25 +38,24 @@ class MCMCHammer(MCMCSampler):
         
         Returns (mu,L_R), where L_R is lower Cholesky factor of R
         """
-        dim = shape(y)[1]
-            
-        # we think that a=0 for every kernel
-        mu = y
+        assert(len(shape(y))==1)
         
         # M = 2 [\nabla_x k(x,z_i]|_x=y
         M = 2 * self.kernel.gradient(y, self.Z)
         
         # R = gamma^2 I + \eta^2 * M H M^T
         H = Kernel.centring_matrix(len(self.Z))
-        R = self.gamma ** 2 * eye(dim) + self.eta ** 2 * M.T.dot(H.dot(M))
+        R = self.gamma ** 2 * eye(len(y)) + self.eta ** 2 * M.T.dot(H.dot(M))
         L_R = cholesky(R)
         
-        return mu, L_R
+        return y.copy(), L_R
     
     def construct_proposal(self, y):
         """
         Returns the proposal distribution at point y given the current history
         """
+        assert(len(shape(y))==1)
+        
         mu, L_R = self.compute_constants(y)
         return Gaussian(mu, L_R, is_cholesky=True)
     
@@ -72,14 +70,14 @@ if __name__ == '__main__':
     kernel = GaussianKernel(sigma=1)
     mcmc_sampler = MCMCHammer(distribution, kernel, Z)
     
-    start = array([[-2, -2]])
+    start = array([-2, -2])
     mcmc_params = MCMCParams(start=start, num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-5, 5, 50)
     Ys = linspace(-5, 5, 50)
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
+    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1000))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)

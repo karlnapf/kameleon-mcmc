@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABCMeta
-from numpy.ma.core import ceil, arange
+from numpy.ma.core import ceil, arange, shape
 class Distribution(object):
     __metaclass__ = ABCMeta
      
@@ -18,6 +18,11 @@ class Distribution(object):
         returns:
         1D array of log-pdfs of all inputs
         """
+        
+        # ensure this in every implementation
+        assert(len(shape(X))==2)
+        assert(shape(X)[1]==self.dimension)
+        
         raise NotImplementedError()
     
     def emp_quantiles(self, X, quantiles=arange(0.1, 1, 0.1)):

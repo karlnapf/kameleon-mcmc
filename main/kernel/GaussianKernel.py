@@ -2,7 +2,7 @@ from main.distribution.Banana import Banana
 from main.kernel.Kernel import Kernel
 from matplotlib.pyplot import imshow, show
 from numpy.core.numeric import zeros
-from numpy.ma.core import exp
+from numpy.ma.core import exp, shape, reshape
 from scipy.spatial.distance import squareform, pdist, cdist
 
 class GaussianKernel(Kernel):
@@ -15,9 +15,14 @@ class GaussianKernel(Kernel):
         """
         Computes the standard Gaussian kernel k(x,y)=exp(-0.5* ||x-y||**2 / sigma**2)
         
-        X - samples on right hand side
-        Y - samples on left hand side, can be None in which case its replaced by X
+        X - 2d array, samples on right hand side
+        Y - 2d array, samples on left hand side, can be None in which case its replaced by X
         """
+        
+        assert(len(shape(X))==2)
+        assert(len(shape(Y))==2)
+        assert(shape(X)[1]==shape(Y)[1])
+        
         # if X=Y, use more efficient pdist call which exploits symmetry
         if Y is None:
             sq_dists = squareform(pdist(X, 'sqeuclidean'))
@@ -35,10 +40,15 @@ class GaussianKernel(Kernel):
         Given a set of row vectors Y, this computes the
         gradient for every pair (x,y) for y in Y.
         
-        x - single sample on right hand side
-        Y - samples on left hand side
+        x - single sample on right hand side (1D vector)
+        Y - samples on left hand side (2D matrix)
         """
-        k = self.kernel(x, Y)
+        assert(len(shape(x))==1)
+        assert(len(shape(Y))==2)
+        assert(len(x)==shape(Y)[1])
+        
+        x_2d=reshape(x, (1, len(x)))
+        k = self.kernel(x_2d, Y)
         differences = Y - x
         G = (1.0 / self.width ** 2) * (k.T * differences)
         return G

@@ -1,7 +1,7 @@
 from main.distribution.Distribution import Distribution
 from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
-from numpy.dual import cholesky, norm, eig
+from numpy.linalg import cholesky, norm, eig
 from numpy.lib.twodim_base import eye, diag
 from numpy.ma.core import array, shape, log, zeros, arange, mean, reshape
 from numpy.random import randn

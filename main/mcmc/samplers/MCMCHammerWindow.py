@@ -5,15 +5,15 @@ from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCHammer import MCMCHammer
-from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from main.tools.Visualise import Visualise
 from numpy.core.function_base import linspace
 from numpy.core.numeric import array
+from numpy.ma.core import reshape
 
 class MCMCHammerWindow(MCMCHammer):
     def __init__(self, distribution, kernel, eta=0.1, gamma=0.1, window_size=5000, thinning_factor=10):
         MCMCHammer.__init__(self, distribution, kernel, Z=None, eta=0.1, gamma=0.1)
-        
+        len
         self.kernel = kernel
         self.eta = eta
         self.gamma = gamma
@@ -21,8 +21,8 @@ class MCMCHammerWindow(MCMCHammer):
         self.thinning_factor = thinning_factor
     
     def init(self, start):
-        self.Z = start
-        MCMCSampler.init(self, start)
+        MCMCHammer.init(self, start)
+        self.Z = reshape(start, (1, len(start)))
     
     def update(self, samples, ratios):
         """
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     kernel = GaussianKernel(sigma=1)
     mcmc_sampler = MCMCHammerWindow(distribution, kernel)
     
-    start = array([[-2, -2]])
+    start = array([-2, -2])
     mcmc_params = MCMCParams(start=start, num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     

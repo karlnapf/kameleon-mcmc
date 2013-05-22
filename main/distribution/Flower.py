@@ -3,7 +3,7 @@ from main.distribution.Gaussian import Gaussian
 from main.tools.Visualise import Visualise
 from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
-from numpy.dual import norm
+from numpy.linalg import norm
 from numpy.ma.core import sqrt, cos, sin, arctan2, arange, shape
 from numpy.random import rand, randn
 from scipy.constants.constants import pi

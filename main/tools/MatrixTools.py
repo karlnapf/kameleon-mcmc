@@ -1,4 +1,4 @@
-from numpy.dual import svd, cholesky
+from numpy.linalg import svd, cholesky
 from numpy.lib.twodim_base import diag, eye
 from numpy.ma.core import zeros, cos, sin, sqrt, shape
 from numpy.matlib import randn

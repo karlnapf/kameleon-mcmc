@@ -1,4 +1,3 @@
-from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
 from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GaussianKernel

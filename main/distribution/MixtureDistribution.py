@@ -3,8 +3,8 @@ from main.distribution.Distribution import Distribution
 from main.distribution.Gaussian import Gaussian
 from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
-from numpy.dual import cholesky
 from numpy.lib.twodim_base import eye
+from numpy.linalg.linalg import cholesky
 from numpy.ma.core import array, zeros, log, exp
 from scipy.constants.constants import pi
 
@@ -57,9 +57,8 @@ if __name__ == '__main__':
     g1 = Gaussian(mu, L, is_cholesky=True)
     g2 = Gaussian()
     m = MixtureDistribution(Discrete([0.7, 0.3]), [g1, g2])
-    Z1=g1.sample(1000)
+    Z1 = g1.sample(1000)
     Z = m.sample(100)
     Visualise.visualise_distribution(g1,Z1)
     Visualise.visualise_distribution(m, Z)
-    
     

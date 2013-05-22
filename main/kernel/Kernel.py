@@ -12,6 +12,12 @@ class Kernel(object):
     
     @abstractmethod
     def gradient(self, x, Y):
+        
+        # ensure this in every implementation
+        assert(len(shape(x))==1)
+        assert(len(shape(Y))==2)
+        assert(len(x)==shape(Y)[1])
+        
         raise NotImplementedError()
     
     @staticmethod
