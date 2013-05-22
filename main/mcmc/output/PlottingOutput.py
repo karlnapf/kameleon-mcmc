@@ -19,7 +19,7 @@ class PlottingOutput(Output):
             y = samples[len(samples) - 1]
             plot(samples[:, 0], samples[:, 1], 'm')
             plot(y[0], y[1], 'r*', markersize=15.0)
-            plot(proposal[0, 0], proposal[0, 1], 'y*', markersize=15.0)
+            plot(proposal[0], proposal[1], 'y*', markersize=15.0)
             Visualise.contour_plot_density(Q, self.Xs, self.Ys, log_domain=False)
             xlabel("$x_1$")
             ylabel("$x_2$")

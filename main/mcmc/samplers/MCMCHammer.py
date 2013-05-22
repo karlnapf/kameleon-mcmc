@@ -59,7 +59,7 @@ class MCMCHammer(MCMCSampler):
         mu, L_R = self.compute_constants(y)
         return Gaussian(mu, L_R, is_cholesky=True)
     
-    def adapt(self, mcmc_chain):
+    def adapt(self, mcmc_chain, step_output):
         """
         Nothing for this one since it uses oracle samples
         """
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     chain.append_mcmc_output(ProgressOutput())
     Xs = linspace(-5, 5, 50)
     Ys = linspace(-5, 5, 50)
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1000))
+    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)

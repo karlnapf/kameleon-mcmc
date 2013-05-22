@@ -41,16 +41,13 @@ class AdaptiveMetropolis(MCMCSampler):
         else:
             self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(acc) - self.accstar))
     
-    def adapt(self, mcmc_chain):
-        samples=mcmc_chain.samples[0:mcmc_chain.iteration]
-        ratios=mcmc_chain.ratios[0:mcmc_chain.iteration]
-        
-        iter_no = len(samples)
+    def adapt(self, mcmc_chain, step_output):
+        iter_no = mcmc_chain.iteration
         if iter_no > self.sample_discard and iter_no % self.sample_lag == 0:
             learn_scale = self.learn_rate(float(iter_no - self.sample_discard) / self.sample_lag)
             self.mean_and_cov_update(learn_scale)
             if self.adapt_scale:
-                acc = ratios[len(ratios) - 1]
+                acc = step_output.log_ratio
                 self.scale_update(learn_scale,acc)
             self.L_R = cholesky(self.globalscale * self.cov_est)
             

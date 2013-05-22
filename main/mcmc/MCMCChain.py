@@ -50,21 +50,21 @@ class MCMCChain(object):
             Q_old = self.mcmc_sampler.Q
             
             # mcmc step
-            sample, proposal, accepted, log_lik, ratio = self.mcmc_sampler.step()
+            step_output = self.mcmc_sampler.step()
             
             # output updated state
             for out in self.mcmc_outputs:
-                out.adapt(self.mcmc_params, proposal, self.samples[0:i], \
+                out.update(self.mcmc_params, step_output.proposal, self.samples[0:i], \
                            self.log_liks[0:i], Q_old)
 
             # collect results
-            self.samples[i, :] = sample
-            self.ratios[i] = ratio
-            self.accepteds[i] = accepted
-            self.log_liks[i] = log_lik
+            self.samples[i, :] = step_output.sample
+            self.ratios[i] = step_output.log_ratio
+            self.accepteds[i] = step_output.accepted
+            self.log_liks[i] = step_output.log_lik
             
             # adapt sampler
-            self.mcmc_sampler.adapt(self)
+            self.mcmc_sampler.adapt(self, step_output)
             
             # adapt chain state
             self.iteration += 1

@@ -8,14 +8,14 @@ class MCMCSampler(object):
         self.Q = None
     
     def init(self, start):
-        assert(len(shape(start))==1)
+        assert(len(shape(start)) == 1)
         
         self.current = start
-        start_2d=reshape(start, (1, len(start)))
+        start_2d = reshape(start, (1, len(start)))
         self.log_lik_current = self.distribution.log_pdf(start_2d)
     
     @abstractmethod
-    def adapt(self, mcmc_chain):
+    def adapt(self, mcmc_chain, step_output):
         raise NotImplementedError()
     
     @abstractmethod
@@ -26,7 +26,7 @@ class MCMCSampler(object):
         """
         
         # ensure this in every implementation
-        assert(len(shape(y))==1)
+        assert(len(shape(y)) == 1)
         raise NotImplementedError()
     
     def step(self):
@@ -44,14 +44,14 @@ class MCMCSampler(object):
             self.Q = self.construct_proposal(self.current)
         
         # propose sample and construct new Q centred at proposal_2d
-        dim=self.distribution.dimension
+        dim = self.distribution.dimension
         proposal_2d = self.Q.sample(1)
-        proposal_1d=reshape(proposal_2d, (dim,))
+        proposal_1d = reshape(proposal_2d, (dim,))
         Q_new = self.construct_proposal(proposal_1d)
         
 
         # 2d view for current point
-        current_2d=reshape(self.current, (1, dim))
+        current_2d = reshape(self.current, (1, dim))
         
         # evaluate both Q
         log_Q_proposal_given_current = self.Q.log_pdf(proposal_2d)
@@ -74,4 +74,14 @@ class MCMCSampler(object):
         # adapt state: position and proposal_2d
         self.current = sample.copy()
             
-        return sample, proposal_2d, accepted, self.log_lik_current, log_ratio
+        return StepOutput(sample, proposal_1d, accepted, self.log_lik_current, log_ratio)
+
+
+class StepOutput(object):
+    def __init__(self, sample, proposal, accepted, log_lik, log_ratio):
+        self.sample = sample
+        self.proposal = proposal
+        self.accepted = accepted
+        self.log_lik = log_lik
+        self.log_ratio = log_ratio
+        

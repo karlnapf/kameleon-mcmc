@@ -24,7 +24,7 @@ class MCMCHammerWindow(MCMCHammer):
         MCMCHammer.init(self, start)
         self.Z = reshape(start, (1, len(start)))
     
-    def adapt(self, mcmc_chain):
+    def adapt(self, mcmc_chain, step_output):
         """
         Updates the sliding window of samples to use
         """
