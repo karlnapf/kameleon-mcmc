@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from main.distribution.Distribution import Sample
 from numpy.ma.core import log, shape, reshape
 from numpy.random import rand
 
@@ -10,7 +11,7 @@ class MCMCSampler(object):
     def init(self, start):
         assert(len(shape(start)) == 1)
         
-        self.current = start
+        self.current_sample_object = Sample(start)
         start_2d = reshape(start, (1, len(start)))
         self.log_lik_current = self.distribution.log_pdf(start_2d)
     
@@ -22,7 +23,7 @@ class MCMCSampler(object):
     def construct_proposal(self, y):
         """
         parameters:
-        y - 1D array with a current point
+        y - 1D array with a current_sample_object point
         """
         
         # ensure this in every implementation
@@ -33,25 +34,26 @@ class MCMCSampler(object):
         """
         Performs on Metropolis-Hastings step, updates internal state and returns
         
-        sample, proposal_2d, accepted, log_lik, log_ratio where
-        sample - new or old sample (row-vector)
+        sample_object, proposal_2d, accepted, log_lik, log_ratio where
+        sample_object - new or old sample_object (row-vector)
         accepted - boolean whether accepted
-        log_lik - log-likelihood of returned sample
+        log_lik - log-likelihood of returned sample_object
         log_ratio - log probability of acceptance
         """
-        # create proposal_2d around current point in first step only
+        # create proposal_2d around current_sample_object point in first step only
         if self.Q is None:
-            self.Q = self.construct_proposal(self.current)
+            self.Q = self.construct_proposal(self.current_sample_object.samples)
         
-        # propose sample and construct new Q centred at proposal_2d
+        # propose sample_object and construct new Q centred at proposal_2d
         dim = self.distribution.dimension
-        proposal_2d = self.Q.sample(1).samples
+        proposal_object=self.Q.sample(1)
+        proposal_2d = proposal_object.samples
         proposal_1d = reshape(proposal_2d, (dim,))
         Q_new = self.construct_proposal(proposal_1d)
         
 
-        # 2d view for current point
-        current_2d = reshape(self.current, (1, dim))
+        # 2d view for current_sample_object point
+        current_2d = reshape(self.current_sample_object.samples, (1, dim))
         
         # evaluate both Q
         log_Q_proposal_given_current = self.Q.log_pdf(proposal_2d)
@@ -65,22 +67,22 @@ class MCMCSampler(object):
         accepted = log_ratio > log(rand(1))
         
         if accepted:
-            sample = proposal_2d
+            sample_object = proposal_object
             self.log_lik_current = log_lik_proposal
             self.Q = Q_new
         else:
-            sample = self.current.copy()
+            sample_object = self.current_sample_object
             
         # adapt state: position and proposal_2d
-        self.current = sample.copy()
+        self.current_sample_object = sample_object
             
-        return StepOutput(sample, proposal_1d, accepted, self.log_lik_current, log_ratio)
+        return StepOutput(sample_object, proposal_object, accepted, self.log_lik_current, log_ratio)
 
 
 class StepOutput(object):
-    def __init__(self, sample, proposal, accepted, log_lik, log_ratio):
-        self.sample = sample
-        self.proposal = proposal
+    def __init__(self, sample_object, proposal_object, accepted, log_lik, log_ratio):
+        self.sample = sample_object
+        self.proposal_object = proposal_object
         self.accepted = accepted
         self.log_lik = log_lik
         self.log_ratio = log_ratio

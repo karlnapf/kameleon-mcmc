@@ -1,4 +1,4 @@
-from numpy.ma.core import zeros
+from numpy.ma.core import zeros, reshape
 
 class MCMCChain(object):
     def __init__(self, mcmc_sampler, mcmc_params):
@@ -40,7 +40,7 @@ class MCMCChain(object):
         # run chain
         while self.iteration < self.mcmc_params.num_iterations:
             i = self.iteration
-            # store old proposal for outputs
+            # store old proposal_object for outputs
             """
             there is a problem here: as Q is first
             initialised in the step() method,
@@ -53,12 +53,15 @@ class MCMCChain(object):
             step_output = self.mcmc_sampler.step()
             
             # output updated state
+            dim=self.mcmc_sampler.distribution.dimension
             for out in self.mcmc_outputs:
-                out.update(self.mcmc_params, step_output.proposal, self.samples[0:i], \
+                proposal_1d=reshape(step_output.proposal_object.samples, (dim,))
+                
+                out.update(self.mcmc_params, proposal_1d, self.samples[0:i], \
                            self.log_liks[0:i], Q_old)
 
             # collect results
-            self.samples[i, :] = step_output.sample
+            self.samples[i, :] = step_output.sample.samples
             self.ratios[i] = step_output.log_ratio
             self.accepteds[i] = step_output.accepted
             self.log_liks[i] = step_output.log_lik

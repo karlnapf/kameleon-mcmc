@@ -8,7 +8,7 @@ from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from numpy import eye
 from numpy.linalg import cholesky
-from numpy.ma.core import array, sqrt, exp, log, shape
+from numpy.ma.core import array, sqrt, exp, log, shape, reshape, outer
 
 class AdaptiveMetropolis(MCMCSampler):
     '''
@@ -32,8 +32,10 @@ class AdaptiveMetropolis(MCMCSampler):
         self.accstar = accstar
     
     def mean_and_cov_adapt(self,learn_scale):
-        self.cov_est = self.cov_est + learn_scale * (((self.current - self.mean_est).T).dot(self.current - self.mean_est) - self.cov_est)
-        self.mean_est = self.mean_est + learn_scale * (self.current - self.mean_est)
+        current_1d=reshape(self.current_sample_object.samples, (self.distribution.dimension,))
+        difference=current_1d - self.mean_est
+        self.cov_est += learn_scale * (outer(difference, difference) - self.cov_est)
+        self.mean_est += learn_scale * (current_1d - self.mean_est)
     
     @abstractmethod
     def scale_adapt(self,learn_scale,step_output):
