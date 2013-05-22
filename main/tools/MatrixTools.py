@@ -1,7 +1,7 @@
-from numpy.linalg import svd, cholesky
 from numpy.lib.twodim_base import diag, eye
+from numpy.linalg import svd, cholesky
 from numpy.ma.core import zeros, cos, sin, sqrt, shape
-from numpy.matlib import randn
+from numpy.random import randn
 
 class MatrixTools(object):
     @staticmethod
