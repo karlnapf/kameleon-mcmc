@@ -10,6 +10,11 @@ class SingleChainAggregator(object):
     def __init__(self, folders):
         self.folders = folders
         
+        f = open(folders[0] + SingleChainExperiment.filenames["gitversion"])
+        ref_githash = f.readline().strip()
+        ref_gitbranch = f.readline().strip()
+        f.close()
+        
         for folder in folders:
             # assert that all experiments ran under the same git version
             assert(os.path.exists(folder))
@@ -19,6 +24,11 @@ class SingleChainAggregator(object):
             gitbranch = f.readline().strip()
             f.close()
             
+            # assert that all git hashs are equal
+            assert(githash==ref_githash)
+            assert(gitbranch==ref_gitbranch)
+            
+            # this might be false if script was altered after experiment, comment out then
             assert(githash == GitTools.get_hash())
             assert(gitbranch == GitTools.get_branch())
     
