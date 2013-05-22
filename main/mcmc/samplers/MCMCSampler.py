@@ -40,12 +40,13 @@ class MCMCSampler(object):
         log_lik - log-likelihood of returned sample_object
         log_ratio - log probability of acceptance
         """
-        # create proposal_2d around current_sample_object point in first step only
+        # create proposal around current_sample_object point in first step only
+        dim = self.distribution.dimension
         if self.Q is None:
-            self.Q = self.construct_proposal(self.current_sample_object.samples)
+            current_1d=reshape(self.current_sample_object.samples, (dim,))
+            self.Q = self.construct_proposal(current_1d)
         
         # propose sample_object and construct new Q centred at proposal_2d
-        dim = self.distribution.dimension
         proposal_object=self.Q.sample(1)
         proposal_2d = proposal_object.samples
         proposal_1d = reshape(proposal_2d, (dim,))
