@@ -55,8 +55,8 @@ class GaussianKernel(Kernel):
 
 if __name__ == '__main__':
     distribution = Banana()
-    Z = distribution.sample(100)
-    Z2 = distribution.sample(100)
+    Z = distribution.sample(100).samples
+    Z2 = distribution.sample(100).samples
     kernel = GaussianKernel(5)
     K = kernel.kernel(Z, Z2)
     grad=kernel.gradient(zeros((1,2)), Z)

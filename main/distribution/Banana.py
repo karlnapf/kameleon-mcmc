@@ -1,5 +1,6 @@
-from main.distribution.Distribution import Distribution
+from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
+from main.tools.Visualise import Visualise
 from numpy.core.shape_base import hstack
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import sqrt, arange, zeros, shape
@@ -23,7 +24,7 @@ class Banana(Distribution):
         if self.dimension > 2:
             X = hstack((X, randn(n, self.dimension - 2)))
             
-        return X
+        return Sample(X)
     
     def log_pdf(self, X):
         assert(len(shape(X))==2)
@@ -52,7 +53,7 @@ class Banana(Distribution):
             return Distribution.get_plotting_bounds(self)
 
 if __name__ == '__main__':
-    banana = Banana(dimension=10)
-    X = banana.sample(10000)
+    banana = Banana(dimension=2)
+    X = banana.sample(10000).samples
     print banana.emp_quantiles(X)
-#    Visualise.visualise_distribution(banana)
+    Visualise.visualise_distribution(banana)

@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
 from main.kernel.GaussianKernel import GaussianKernel
@@ -29,31 +30,26 @@ class AdaptiveMetropolis(MCMCSampler):
         self.sample_discard = sample_discard
         self.sample_lag = sample_lag
         self.accstar = accstar
-        self.L_R = cholesky(self.globalscale * self.cov_est)
     
-    def mean_and_cov_update(self,learn_scale):
+    def mean_and_cov_adapt(self,learn_scale):
         self.cov_est = self.cov_est + learn_scale * (((self.current - self.mean_est).T).dot(self.current - self.mean_est) - self.cov_est)
         self.mean_est = self.mean_est + learn_scale * (self.current - self.mean_est)
     
-    def scale_update(self,learn_scale,acc,adapt_dw=False,direction=0):
-        if adapt_dw:
-            self.dwscale[direction] = exp(log(self.self.dwscale[direction]) + learn_scale * (exp(acc) - self.accstar))
-        else:
-            self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(acc) - self.accstar))
+    @abstractmethod
+    def scale_adapt(self,learn_scale,step_output):
+        self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(step_output.log_ratio) - self.accstar))
     
     def adapt(self, mcmc_chain, step_output):
         iter_no = mcmc_chain.iteration
         if iter_no > self.sample_discard and iter_no % self.sample_lag == 0:
             learn_scale = self.learn_rate(float(iter_no - self.sample_discard) / self.sample_lag)
-            self.mean_and_cov_update(learn_scale)
+            self.mean_and_cov_adapt(learn_scale)
             if self.adapt_scale:
-                acc = step_output.log_ratio
-                self.scale_update(learn_scale,acc)
-            self.L_R = cholesky(self.globalscale * self.cov_est)
-            
+                self.scale_adapt(learn_scale,step_output)
+    
     def construct_proposal(self, y):
         assert(len(shape(y))==1)
-        return Gaussian(y, self.L_R, is_cholesky=True)
+        return Gaussian(mu=y, Sigma=self.globalscale * self.cov_est, is_cholesky=False)
     
 if __name__ == '__main__':
     distribution = Banana(5)

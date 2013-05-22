@@ -66,7 +66,7 @@ class MCMCHammer(MCMCSampler):
         
 if __name__ == '__main__':
     distribution = Ring()
-    Z = distribution.sample(1000)
+    Z = distribution.sample(1000).samples
     kernel = GaussianKernel(sigma=1)
     mcmc_sampler = MCMCHammer(distribution, kernel, Z)
     

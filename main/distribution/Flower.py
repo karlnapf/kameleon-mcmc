@@ -1,4 +1,4 @@
-from main.distribution.Distribution import Distribution
+from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
 from main.tools.Visualise import Visualise
 from numpy.core.numeric import array, zeros
@@ -34,7 +34,7 @@ class Flower(Distribution):
         if self.dimension > 2:
             X = hstack((X, randn(n, self.dimension - 2)))
     
-        return X
+        return Sample(X)
     
     def log_pdf(self, X):
         assert(len(shape(X))==2)
@@ -74,6 +74,6 @@ class Flower(Distribution):
     
 if __name__ == '__main__':
     flower_instance = Flower()
-    X = flower_instance.sample(1000)
+    X = flower_instance.sample(1000).samples
     print flower_instance.emp_quantiles(X)
     Visualise.visualise_distribution(flower_instance)

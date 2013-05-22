@@ -33,6 +33,9 @@ class Distribution(object):
         Samples 1000 points and returns a list of tuples with minimum and
         maximum for each dimension
         """
-        Z = self.sample(1000)
+        Z = self.sample(1000).samples
         return zip(ceil(Z.min(0)), ceil(Z.max(0)))
     
+class Sample(object):
+    def __init__(self,samples):
+        self.samples=samples

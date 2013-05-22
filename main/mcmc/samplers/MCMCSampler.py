@@ -45,7 +45,7 @@ class MCMCSampler(object):
         
         # propose sample and construct new Q centred at proposal_2d
         dim = self.distribution.dimension
-        proposal_2d = self.Q.sample(1)
+        proposal_2d = self.Q.sample(1).samples
         proposal_1d = reshape(proposal_2d, (dim,))
         Q_new = self.construct_proposal(proposal_1d)
         

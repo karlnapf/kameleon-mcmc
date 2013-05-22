@@ -1,5 +1,5 @@
 from main.distribution.Discrete import Discrete
-from main.distribution.Distribution import Distribution
+from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
 from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
@@ -49,10 +49,16 @@ class MixtureDistribution(Distribution):
     def sample(self, n=1):
         rez = zeros([n, self.dimension])
         for ii in range(n):
-            jj = self.mixing_proportion.sample()
-            rez[ii, :] = self.components[int(jj)].sample()
-        return rez
+            which_component = self.mixing_proportion.sample().samples
+            rez[ii, :] = self.components[which_component].sample().samples
+            
+        return SampleFromMixture(rez,which_component)
     
+class SampleFromMixture(Sample):
+    def __init__(self,samples,which_component):
+        Sample.__init__(self,samples)
+        self.which_component=which_component
+        
 if __name__ == '__main__':
     mu = array([5, 2])
     Sigma = eye(2)
@@ -63,8 +69,8 @@ if __name__ == '__main__':
     g1 = Gaussian(mu, L, is_cholesky=True)
     g2 = Gaussian()
     m = MixtureDistribution(dimension=2, num_components=2, components=[g1,g2])
-    Z1 = g1.sample(1000)
-    Z = m.sample(100)
+    Z1 = g1.sample(1000).samples
+    Z = m.sample(100).samples
     Visualise.visualise_distribution(g1,Z1)
     Visualise.visualise_distribution(m, Z)
     

@@ -1,6 +1,7 @@
-from main.distribution.Distribution import Distribution
+from main.distribution.Distribution import Distribution, Sample
 from numpy.ma.core import cumsum, zeros
 from scipy.stats.distributions import rand
+import numpy
 
 
 class Discrete(Distribution):
@@ -24,12 +25,12 @@ class Discrete(Distribution):
             while u[ii] > self.cdf[jj]:
                 jj += 1
             rez[ii] = self.support[jj]
-        return rez
-
+        return Sample(rez.astype(numpy.int32))
+    
     def log_pdf(self,X):
         return None
 
 if __name__ == '__main__':
     d = Discrete([0.65, 0.1, 0.25])
-    X = d.sample(50)
+    X = d.sample(50).samples
     print X

@@ -22,7 +22,7 @@ class Visualise(object):
         called
         """
         if Z is None:
-            Z = distribution.sample(1000)
+            Z = distribution.sample(1000).samples
             
         Xs, Ys = Visualise.get_plotting_arrays(distribution)
         

@@ -15,7 +15,7 @@ class Ring(Flower):
 
 if __name__ == '__main__':
     ring_instance=Ring()
-    X=ring_instance.sample(10000)
+    X=ring_instance.sample(10000).samples
     print ring_instance.emp_quantiles(X)
     Visualise.visualise_distribution(Ring())
 

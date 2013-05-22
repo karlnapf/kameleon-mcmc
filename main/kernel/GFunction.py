@@ -48,7 +48,7 @@ class GFunction(object):
 
 
     def plot(self, y=array([[-2, -2]]), n=200):
-        Z = self.distribution.sample(n)
+        Z = self.distribution.sample(n).samples
         
         # evaluate and center kernel and scale
         K = self.kernel.kernel(Z, None)
@@ -57,7 +57,7 @@ class GFunction(object):
         # sample beta and fix current point y
         gaussian = Gaussian(mu=zeros(n), Sigma=K, is_cholesky=False, \
                           ell=self.ell)
-        beta = gaussian.sample()
+        beta = gaussian.sample().samples
         
         # precompute constants
         mcmc_hammer = MCMCHammer(self.distribution, self.kernel, Z, self.eta, self.gamma)

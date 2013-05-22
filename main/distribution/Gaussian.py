@@ -1,8 +1,8 @@
-from main.distribution.Distribution import Distribution
+from main.distribution.Distribution import Distribution, Sample
 from main.tools.MatrixTools import MatrixTools
 from main.tools.Visualise import Visualise
-from numpy.linalg import cholesky, norm, eig
 from numpy.lib.twodim_base import eye, diag
+from numpy.linalg import cholesky, norm, eig
 from numpy.ma.core import array, shape, log, zeros, arange, mean, reshape
 from numpy.random import randn
 from scipy.constants.constants import pi
@@ -22,7 +22,7 @@ class Gaussian(Distribution):
             self.ell = ell
             
         if is_cholesky:
-            assert(shape(Sigma)[0] == shape(Sigma)[0])
+            assert(shape(Sigma)[0] == shape(Sigma)[1])
             self.L = Sigma
         else:
             if ell:
@@ -35,7 +35,7 @@ class Gaussian(Distribution):
         V = randn(shape(self.L)[1], n)
 
         # map to our desired Gaussian and transpose to have row-wise vectors
-        return self.L.dot(V).T + self.mu
+        return Sample(self.L.dot(V).T + self.mu)
     
     def log_pdf(self, X):
         assert(len(shape(X))==2)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     Sigma = R.dot(Sigma).dot(R.T)
     L = cholesky(Sigma)
     gaussian_instance = Gaussian(mu, L, is_cholesky=True)
-    X = gaussian_instance.sample(100)
+    X = gaussian_instance.sample(100).samples
     print "quantiles:", gaussian_instance.emp_quantiles(X)
     print "log pdf of mu:", gaussian_instance.log_pdf(reshape(mu,(1,2)))
     Visualise.visualise_distribution(gaussian_instance,X)
