@@ -41,6 +41,13 @@ class AdaptiveMetropolis(MCMCSampler):
     def scale_adapt(self,learn_scale,step_output):
         self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(step_output.log_ratio) - self.accstar))
     
+    @abstractmethod
+    def eigen_adapt(self):
+        """
+        Move along, nothing to be seen here, 
+        I'm just an abstract method, and that's all I am.
+        """
+    
     def adapt(self, mcmc_chain, step_output):
         iter_no = mcmc_chain.iteration
         if iter_no > self.sample_discard and iter_no % self.sample_lag == 0:
@@ -48,6 +55,7 @@ class AdaptiveMetropolis(MCMCSampler):
             self.mean_and_cov_adapt(learn_scale)
             if self.adapt_scale:
                 self.scale_adapt(learn_scale,step_output)
+            self.eigen_adapt()
     
     def construct_proposal(self, y):
         assert(len(shape(y))==1)
