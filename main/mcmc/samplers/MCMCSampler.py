@@ -4,10 +4,10 @@ from numpy.ma.core import log, shape, reshape
 from numpy.random import rand
 
 class MCMCSampler(object):
+    is_symmetric=False
     def __init__(self, distribution):
         self.distribution = distribution
         self.Q = None
-    
     def init(self, start):
         assert(len(shape(start)) == 1)
         
@@ -57,12 +57,18 @@ class MCMCSampler(object):
         current_2d = reshape(self.current_sample_object.samples, (1, dim))
         
         # evaluate both Q
-        log_Q_proposal_given_current = self.Q.log_pdf(proposal_2d)
-        log_Q_current_given_proposal = Q_new.log_pdf(current_2d)
-        
+        if not self.is_symmetric:
+            log_Q_proposal_given_current = self.Q.log_pdf(proposal_2d)
+            log_Q_current_given_proposal = Q_new.log_pdf(current_2d)
+        else:
+            log_Q_proposal_given_current = 0
+            log_Q_current_given_proposal = 0
+            
         log_lik_proposal = self.distribution.log_pdf(proposal_2d)
+        
         log_ratio = log_lik_proposal - self.log_lik_current \
                     + log_Q_current_given_proposal - log_Q_proposal_given_current
+        
         log_ratio = min(log(1), log_ratio)
         
         accepted = log_ratio > log(rand(1))

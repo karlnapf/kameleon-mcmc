@@ -17,7 +17,7 @@ class MixtureDistribution(Distribution):
         Distribution.__init__(self, dimension)
         self.num_components = num_components
         if (components == None):
-            self.components = [Gaussian(mu=zeros(self.dimension)) for _ in range(self.num_components)]
+            self.components = [Gaussian(mu=zeros(self.dimension),Sigma=eye(self.dimension)) for _ in range(self.num_components)]
         else:
             assert(len(components)==self.num_components)
             self.components=components

@@ -10,29 +10,33 @@ from scipy.linalg.basic import solve_triangular
 from scipy.stats.distributions import chi2
 
 class Gaussian(Distribution):
-    def __init__(self, mu=array([0, 0]), Sigma=eye(2), is_cholesky=False, ell=0):
+    def __init__(self, mu=array([0, 0]), Sigma=eye(2), is_cholesky=False, ell=None):
         Distribution.__init__(self, len(Sigma))
         
         assert(len(shape(mu))==1)
         assert(max(shape(Sigma))==len(mu))
         self.mu = mu
-        
-        assert(ell >= 0)
-        if ell:
-            self.ell = ell
-            
-        if is_cholesky:
-            assert(shape(Sigma)[0] == shape(Sigma)[1])
+        self.ell=ell
+        if is_cholesky: 
             self.L = Sigma
-        else:
-            if ell:
+            if ell==None:
+                assert(shape(Sigma)[0] == shape(Sigma)[1])
+            else:
+                assert(shape(Sigma)[1]==ell)
+        else: 
+            assert(shape(Sigma)[0] == shape(Sigma)[1])
+            if ell is not None:
                 self.L, _, _ = MatrixTools.low_rank_approx(Sigma, ell)
                 self.L = self.L.T
+                assert(shape(self.L)[1]==ell)
             else:
                 self.L = cholesky(Sigma)
     
     def sample(self, n=1):
-        V = randn(shape(self.L)[1], n)
+        if self.ell is None:
+            V = randn(self.dimension, n)
+        else:
+            V = randn(self.ell, n)
 
         # map to our desired Gaussian and transpose to have row-wise vectors
         return Sample(self.L.dot(V).T + self.mu)

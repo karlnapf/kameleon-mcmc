@@ -46,7 +46,7 @@ class MatrixTools(object):
         return (L, s, V)
     
 if __name__ == '__main__':
-    x = randn((30, 1))
+    x = randn(30, 1)
     K = x.T.dot(x) + eye(30)
     L = cholesky(K)
     A = MatrixTools.low_rank_approx(K, 10)

@@ -7,7 +7,7 @@ import numpy
 class Discrete(Distribution):
     def __init__(self, omega, support=None):
         Distribution.__init__(self, dimension=None)
-        assert(sum(omega) == 1)
+        assert(abs(sum(omega)-1)<1e-6)
         if support == None:
             support = range(len(omega))
         else:
