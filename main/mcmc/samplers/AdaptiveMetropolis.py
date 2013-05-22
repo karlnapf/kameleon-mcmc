@@ -41,7 +41,10 @@ class AdaptiveMetropolis(MCMCSampler):
         else:
             self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(acc) - self.accstar))
     
-    def update(self, samples, ratios):
+    def adapt(self, mcmc_chain):
+        samples=mcmc_chain.samples[0:mcmc_chain.iteration]
+        ratios=mcmc_chain.ratios[0:mcmc_chain.iteration]
+        
         iter_no = len(samples)
         if iter_no > self.sample_discard and iter_no % self.sample_lag == 0:
             learn_scale = self.learn_rate(float(iter_no - self.sample_discard) / self.sample_lag)

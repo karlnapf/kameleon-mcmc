@@ -15,7 +15,7 @@ class MCMCSampler(object):
         self.log_lik_current = self.distribution.log_pdf(start_2d)
     
     @abstractmethod
-    def update(self, samples, ratios):
+    def adapt(self, mcmc_chain):
         raise NotImplementedError()
     
     @abstractmethod
@@ -71,7 +71,7 @@ class MCMCSampler(object):
         else:
             sample = self.current.copy()
             
-        # update state: position and proposal_2d
+        # adapt state: position and proposal_2d
         self.current = sample.copy()
             
         return sample, proposal_2d, accepted, self.log_lik_current, log_ratio

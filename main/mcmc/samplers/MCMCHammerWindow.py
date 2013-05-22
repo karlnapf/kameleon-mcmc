@@ -24,10 +24,12 @@ class MCMCHammerWindow(MCMCHammer):
         MCMCHammer.init(self, start)
         self.Z = reshape(start, (1, len(start)))
     
-    def update(self, samples, ratios):
+    def adapt(self, mcmc_chain):
         """
         Updates the sliding window of samples to use
         """
+        samples=mcmc_chain.samples[0:mcmc_chain.iteration]
+        
         # use samples from history window, thinned out
         if len(samples) > 0:
             sample_idxs = range(max(0, len(samples) - self.window_size + 1), \

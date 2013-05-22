@@ -59,7 +59,7 @@ class MCMCHammer(MCMCSampler):
         mu, L_R = self.compute_constants(y)
         return Gaussian(mu, L_R, is_cholesky=True)
     
-    def update(self, samples, ratios):
+    def adapt(self, mcmc_chain):
         """
         Nothing for this one since it uses oracle samples
         """

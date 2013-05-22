@@ -40,10 +40,6 @@ class MCMCChain(object):
         # run chain
         while self.iteration < self.mcmc_params.num_iterations:
             i = self.iteration
-            
-            # update sampler
-            self.mcmc_sampler.update(self.samples[0:i], self.ratios[0:i])
-            
             # store old proposal for outputs
             """
             there is a problem here: as Q is first
@@ -58,7 +54,7 @@ class MCMCChain(object):
             
             # output updated state
             for out in self.mcmc_outputs:
-                out.update(self.mcmc_params, proposal, self.samples[0:i], \
+                out.adapt(self.mcmc_params, proposal, self.samples[0:i], \
                            self.log_liks[0:i], Q_old)
 
             # collect results
@@ -67,5 +63,8 @@ class MCMCChain(object):
             self.accepteds[i] = accepted
             self.log_liks[i] = log_lik
             
-            # update chain state
+            # adapt sampler
+            self.mcmc_sampler.adapt(self)
+            
+            # adapt chain state
             self.iteration += 1
