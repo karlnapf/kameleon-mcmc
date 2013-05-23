@@ -26,7 +26,6 @@ if __name__ == '__main__':
     
     mean_est = array([-2.0, -2.0])
     cov_est = 0.05 * eye(2)
-    mcmc_samplers.append(AdaptiveMetropolis(distribution, adapt_scale=False, mean_est=mean_est, cov_est=cov_est))
     mcmc_samplers.append(AdaptiveMetropolis(distribution, adapt_scale=True, mean_est=mean_est, cov_est=cov_est))
     
     num_eigen = 2
