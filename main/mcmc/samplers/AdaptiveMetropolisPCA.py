@@ -10,10 +10,12 @@ class AdaptiveMetropolisPCA(AdaptiveMetropolis):
     '''
     Adaptive Metropolis with adaptive eigen-directionwise scaling
     '''
+    adapt_scale=True
+    
     def __init__(self, distribution, num_eigen=2, \
                  mean_est=array([-2.0, -2.0]), cov_est=0.05 * eye(2), \
                  sample_discard=500, sample_lag=10, accstar=0.234):
-        AdaptiveMetropolis.__init__(self, distribution=distribution, adapt_scale=True, \
+        AdaptiveMetropolis.__init__(self, distribution=distribution, \
                                      mean_est=mean_est, cov_est=cov_est, \
                                      sample_discard=sample_discard, sample_lag=sample_lag, accstar=accstar)
         assert (num_eigen <= distribution.dimension)
