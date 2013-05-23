@@ -5,7 +5,7 @@ import time
 
 class ClusterTools(object):
     @staticmethod
-    def submit_experiments(experiment_list):
+    def submit_experiments(experiment_list, cluster_command="run_experiment.py"):
         filenames=[]
         for experiment in experiment_list:
             filename=experiment.foldername+"experiment_instance.bin"
@@ -15,7 +15,7 @@ class ClusterTools(object):
             f.close()
             
         for i in range(len(filenames)):
-            command="nice -n 10 python run_experiment.py " + filenames[i]
+            command="nice -n 10 python " + cluster_command + " " + filenames[i]
             
             job_name = filenames[i].split(os.sep)[-2].split(".")[0]
             walltime = "walltime=99:00:00"
