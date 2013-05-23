@@ -1,7 +1,9 @@
 from posixpath import expanduser
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.dirname(sys.argv[0])))
+to_add=os.path.abspath(os.path.dirname(sys.argv[0]))
+sys.path.append(to_add)
+print to_add
 
 from main.distribution.Ring import Ring
 from main.experiments.SingleChainExperiment import SingleChainExperiment
