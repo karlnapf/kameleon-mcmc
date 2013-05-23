@@ -6,13 +6,18 @@ from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
+from main.tools.ClusterTools import ClusterTools
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
 from posixpath import expanduser
 import os
-from main.tools.ClusterTools import ClusterTools
+import sys
 
 if __name__ == '__main__':
+    current_folder=os.sep.join(__file__.split(os.sep)[0:-4]) + os.sep
+    print current_folder
+    sys.path.append(current_folder)
+    
     distribution = Ring()
     
     mcmc_samplers = []
