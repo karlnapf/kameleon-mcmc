@@ -1,6 +1,7 @@
 if __name__ == '__main__':
     import os
     import sys
+    print __file__
     current_folder=os.sep.join(__file__.split(os.sep)[0:-4]) + os.sep
     sys.path.append(current_folder)
     print current_folder
