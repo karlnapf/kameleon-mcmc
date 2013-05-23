@@ -1,25 +1,18 @@
-if __name__ == '__main__':
-    import os
-    import sys
-    print __file__
-    current_folder=os.sep.join(__file__.split(os.sep)[0:-4]) + os.sep
-    sys.path.append(current_folder)
-    print current_folder
+from main.distribution.Ring import Ring
+from main.experiments.SingleChainExperiment import SingleChainExperiment
+from main.kernel.GaussianKernel import GaussianKernel
+from main.mcmc.MCMCChain import MCMCChain
+from main.mcmc.MCMCParams import MCMCParams
+from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
+from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
+from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
+from main.tools.ClusterTools import ClusterTools
+from numpy.lib.twodim_base import eye
+from numpy.ma.core import array
+from posixpath import expanduser
+import os
 
-    from main.distribution.Ring import Ring
-    from main.experiments.SingleChainExperiment import SingleChainExperiment
-    from main.kernel.GaussianKernel import GaussianKernel
-    from main.mcmc.MCMCChain import MCMCChain
-    from main.mcmc.MCMCParams import MCMCParams
-    from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
-    from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
-    from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
-    from main.tools.ClusterTools import ClusterTools
-    from numpy.lib.twodim_base import eye
-    from numpy.ma.core import array
-    from posixpath import expanduser
-    
-    
+if __name__ == '__main__':
     distribution = Ring()
     
     mcmc_samplers = []
