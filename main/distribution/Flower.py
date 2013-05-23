@@ -1,6 +1,5 @@
 from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
-from main.tools.Visualise import Visualise
 from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
 from numpy.linalg import norm
@@ -82,8 +81,8 @@ class Flower(Distribution):
                 overall[i, :] = gaussian.emp_quantiles(array([[norms[i]]]), quantiles)
             return sum(overall) / len(X)
     
-if __name__ == '__main__':
-    flower_instance = Flower()
-    X = flower_instance.sample(1000).samples
-    print flower_instance.emp_quantiles(X)
-    Visualise.visualise_distribution(flower_instance)
+#if __name__ == '__main__':
+#    flower_instance = Flower()
+#    X = flower_instance.sample(1000).samples
+#    print flower_instance.emp_quantiles(X)
+#    Visualise.visualise_distribution(flower_instance)

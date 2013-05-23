@@ -3,7 +3,6 @@ from numpy.ma.core import cumsum, zeros
 from scipy.stats.distributions import rand
 import numpy
 
-
 class Discrete(Distribution):
     def __init__(self, omega, support=None):
         Distribution.__init__(self, dimension=None)
@@ -40,7 +39,7 @@ class Discrete(Distribution):
     def log_pdf(self,X):
         return None
 
-if __name__ == '__main__':
-    d = Discrete([0.65, 0.1, 0.25])
-    X = d.sample(50).samples
-    print X
+#if __name__ == '__main__':
+#    d = Discrete([0.65, 0.1, 0.25])
+#    X = d.sample(50).samples
+#    print X

@@ -1,14 +1,6 @@
-from main.distribution.Ring import Ring
-from main.kernel.GaussianKernel import GaussianKernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.ProgressOutput import ProgressOutput
-from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.tools.GitTools import GitTools
-from numpy.ma.core import array
 from os import makedirs
 from pickle import dump
-from posixpath import expanduser
 import os
 
 class SingleChainExperiment(object):
@@ -58,22 +50,22 @@ class SingleChainExperiment(object):
         output_folder = self.foldername + self.filenames["output_folder"] + os.sep
         makedirs(output_folder)
         f = open(output_folder + self.filenames["mcmc_chain_instance"], "w")
-        dump(mcmc_chain, f)
+        dump(self.mcmc_chain, f)
         f.close()
         
-if __name__ == '__main__':
-    distribution = Ring()
-    kernel = GaussianKernel(sigma=1)
-    mcmc_hammer = MCMCHammerWindow(distribution, kernel)
-    
-    start = array([-2, -2])
-    mcmc_params = MCMCParams(start=start, num_iterations=20000, burnin=5000)
-    mcmc_chain = MCMCChain(mcmc_hammer, mcmc_params)
-    mcmc_chain.append_mcmc_output(ProgressOutput())
-    
-    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-    experiment = SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir)
-    experiment.run()
+#if __name__ == '__main__':
+#    distribution = Ring()
+#    kernel = GaussianKernel(sigma=1)
+#    mcmc_hammer = MCMCHammerWindow(distribution, kernel)
+#    
+#    start = array([-2, -2])
+#    mcmc_params = MCMCParams(start=start, num_iterations=20000, burnin=5000)
+#    mcmc_chain = MCMCChain(mcmc_hammer, mcmc_params)
+#    mcmc_chain.append_mcmc_output(ProgressOutput())
+#    
+#    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
+#    experiment = SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir)
+#    experiment.run()
     
 #    mcmc_chain.append_mcmc_output(ProgressOutput())
 #    mcmc_chain.run()

@@ -5,12 +5,10 @@ from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
-from main.tools.Visualise import Visualise
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import norm
 from numpy.ma.core import array, mean, zeros

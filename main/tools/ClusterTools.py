@@ -28,7 +28,6 @@ class ClusterTools(object):
             error=experiment_list[i].foldername + "cluster_error.txt"
             
             job_string = """
-            export PYTHONPATH=/nfs/home1/ucabjga/opt/epd/
             #PBS -S /bin/bash
             #PBS -N %s
             #PBS -l %s

@@ -1,10 +1,5 @@
 from abc import abstractmethod
-from main.distribution.Banana import Banana
 from main.distribution.Gaussian import Gaussian
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.PlottingOutput import PlottingOutput
-from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from numpy import eye
 from numpy.ma.core import array, sqrt, exp, log, shape, reshape, outer
@@ -73,24 +68,24 @@ class AdaptiveMetropolis(MCMCSampler):
         assert(len(shape(y))==1)
         return Gaussian(mu=y, Sigma=self.globalscale * self.cov_est, is_cholesky=False)
     
-if __name__ == '__main__':
-    distribution = Banana(2)
-    length = 260000
-    burnin = 60000
-    lag = 10
-    start = array([-2.0, -2.0])
-    mean_est = array([-2.0, -2.0])
-    cov_est = 0.05 * eye(2)
-    # mcmc_sampler = MCMCHammerWindow(distribution, kernel)
-    am_sampler = AdaptiveMetropolis(distribution, adapt_scale=False, mean_est=mean_est, cov_est=cov_est)
-    mcmc_params = MCMCParams(start=start, num_iterations=length, burnin=burnin)
-    chain = MCMCChain(am_sampler, mcmc_params)
-    chain.append_mcmc_output(ProgressOutput())
-    # Xs = linspace(-20, 20, 50)
-    # Ys = linspace(-8, 20, 50)
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=6000))
-    chain.run()
-    idx = range(burnin, length, lag)
-    print distribution.emp_quantiles(chain.samples[idx])
-    
+#if __name__ == '__main__':
+#    distribution = Banana(2)
+#    length = 260000
+#    burnin = 60000
+#    lag = 10
+#    start = array([-2.0, -2.0])
+#    mean_est = array([-2.0, -2.0])
+#    cov_est = 0.05 * eye(2)
+#    # mcmc_sampler = MCMCHammerWindow(distribution, kernel)
+#    am_sampler = AdaptiveMetropolis(distribution, adapt_scale=False, mean_est=mean_est, cov_est=cov_est)
+#    mcmc_params = MCMCParams(start=start, num_iterations=length, burnin=burnin)
+#    chain = MCMCChain(am_sampler, mcmc_params)
+#    chain.append_mcmc_output(ProgressOutput())
+#    # Xs = linspace(-20, 20, 50)
+#    # Ys = linspace(-8, 20, 50)
+#    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=6000))
+#    chain.run()
+#    idx = range(burnin, length, lag)
+#    print distribution.emp_quantiles(chain.samples[idx])
+#    
     # Visualise.visualise_distribution(distribution, chain.samples)

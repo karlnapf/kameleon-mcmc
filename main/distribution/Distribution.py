@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABCMeta
 from numpy.ma.core import ceil, arange, shape
+
 class Distribution(object):
     __metaclass__ = ABCMeta
      

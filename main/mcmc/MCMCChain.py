@@ -1,15 +1,15 @@
 from numpy.ma.core import zeros, reshape
 
 class MCMCChain(object):
-    def __init__(self, mcmc_sampler, mcmc_params):
-        self.mcmc_sampler = mcmc_sampler
+    def __init__(self, mcmc_hammer, mcmc_params):
+        self.mcmc_sampler = mcmc_hammer
         self.mcmc_params = mcmc_params
         self.mcmc_outputs = []
         self.is_initialised = False
     
     def __str__(self):
         s=self.__class__.__name__+ "=["
-        s += "mcmc_sampler="+ str(self.mcmc_sampler)
+        s += "mcmc_hammer="+ str(self.mcmc_sampler)
         s += ", mcmc_params="+ str(self.mcmc_params)
         s += ", mcmc_outputs="+ str(self.mcmc_outputs)
         s += "]"

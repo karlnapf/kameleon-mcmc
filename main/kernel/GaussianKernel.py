@@ -1,7 +1,4 @@
-from main.distribution.Banana import Banana
 from main.kernel.Kernel import Kernel
-from matplotlib.pyplot import imshow, show
-from numpy.core.numeric import zeros
 from numpy.ma.core import exp, shape, reshape
 from scipy.spatial.distance import squareform, pdist, cdist
 
@@ -60,12 +57,12 @@ class GaussianKernel(Kernel):
         G = (1.0 / self.width ** 2) * (k.T * differences)
         return G
 
-if __name__ == '__main__':
-    distribution = Banana()
-    Z = distribution.sample(100).samples
-    Z2 = distribution.sample(100).samples
-    kernel = GaussianKernel(5)
-    K = kernel.kernel(Z, Z2)
-    grad=kernel.gradient(zeros((1,2)), Z)
-    imshow(K, interpolation="nearest")
-    show()
+#if __name__ == '__main__':
+#    distribution = Banana()
+#    Z = distribution.sample(100).samples
+#    Z2 = distribution.sample(100).samples
+#    kernel = GaussianKernel(5)
+#    K = kernel.kernel(Z, Z2)
+#    grad=kernel.gradient(zeros((1,2)), Z)
+#    imshow(K, interpolation="nearest")
+#    show()

@@ -1,12 +1,8 @@
 from main.distribution.Discrete import Discrete
 from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
-from main.tools.MatrixTools import MatrixTools
-from main.tools.Visualise import Visualise
 from numpy.lib.twodim_base import eye
-from numpy.linalg.linalg import cholesky
-from numpy.ma.core import array, zeros, log, exp, ones
-from scipy.constants.constants import pi
+from numpy.ma.core import zeros, log, exp, ones
 
 class MixtureDistribution(Distribution):
     """
@@ -66,18 +62,18 @@ class SampleFromMixture(Sample):
         Sample.__init__(self,samples)
         self.which_component=which_component
         
-if __name__ == '__main__':
-    mu = array([5, 2])
-    Sigma = eye(2)
-    Sigma[0, 0] = 20
-    R = MatrixTools.rotation_matrix(pi / 4)
-    Sigma = R.dot(Sigma).dot(R.T)
-    L = cholesky(Sigma)
-    g1 = Gaussian(mu, L, is_cholesky=True)
-    g2 = Gaussian()
-    m = MixtureDistribution(dimension=2, num_components=2, components=[g1,g2])
-    Z1 = g1.sample(1000).samples
-    Z = m.sample(100).samples
-    Visualise.visualise_distribution(g1,Z1)
-    Visualise.visualise_distribution(m, Z)
-    
+#if __name__ == '__main__':
+#    mu = array([5, 2])
+#    Sigma = eye(2)
+#    Sigma[0, 0] = 20
+#    R = MatrixTools.rotation_matrix(pi / 4)
+#    Sigma = R.dot(Sigma).dot(R.T)
+#    L = cholesky(Sigma)
+#    g1 = Gaussian(mu, L, is_cholesky=True)
+#    g2 = Gaussian()
+#    m = MixtureDistribution(dimension=2, num_components=2, components=[g1,g2])
+#    Z1 = g1.sample(1000).samples
+#    Z = m.sample(100).samples
+#    Visualise.visualise_distribution(g1,Z1)
+#    Visualise.visualise_distribution(m, Z)
+#    

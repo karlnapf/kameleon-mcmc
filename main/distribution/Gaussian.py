@@ -1,9 +1,8 @@
 from main.distribution.Distribution import Distribution, Sample
 from main.tools.MatrixTools import MatrixTools
-from main.tools.Visualise import Visualise
 from numpy.lib.twodim_base import eye, diag
 from numpy.linalg import cholesky, norm, eig
-from numpy.ma.core import array, shape, log, zeros, arange, mean, reshape
+from numpy.ma.core import array, shape, log, zeros, arange, mean
 from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular
@@ -83,16 +82,16 @@ class Gaussian(Distribution):
         return results
     
     
-if __name__ == '__main__':
-    mu = array([5, 2])
-    Sigma = eye(2)
-    Sigma[0, 0] = 20
-    R = MatrixTools.rotation_matrix(pi / 4)
-    Sigma = R.dot(Sigma).dot(R.T)
-    L = cholesky(Sigma)
-    gaussian_instance = Gaussian(mu, L, is_cholesky=True)
-    X = gaussian_instance.sample(100).samples
-    print "quantiles:", gaussian_instance.emp_quantiles(X)
-    print "log pdf of mu:", gaussian_instance.log_pdf(reshape(mu,(1,2)))
-    Visualise.visualise_distribution(gaussian_instance,X)
-    
+#if __name__ == '__main__':
+#    mu = array([5, 2])
+#    Sigma = eye(2)
+#    Sigma[0, 0] = 20
+#    R = MatrixTools.rotation_matrix(pi / 4)
+#    Sigma = R.dot(Sigma).dot(R.T)
+#    L = cholesky(Sigma)
+#    gaussian_instance = Gaussian(mu, L, is_cholesky=True)
+#    X = gaussian_instance.sample(100).samples
+#    print "quantiles:", gaussian_instance.emp_quantiles(X)
+#    print "log pdf of mu:", gaussian_instance.log_pdf(reshape(mu,(1,2)))
+#    Visualise.visualise_distribution(gaussian_instance,X)
+#    

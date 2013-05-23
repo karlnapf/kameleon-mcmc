@@ -1,16 +1,7 @@
 from main.distribution.Gaussian import Gaussian
-from main.distribution.Ring import Ring
-from main.kernel.GaussianKernel import GaussianKernel
 from main.kernel.Kernel import Kernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.PlottingOutput import PlottingOutput
-from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
-from main.tools.Visualise import Visualise
 from numpy import eye
-from numpy.core.function_base import linspace
-from numpy.core.numeric import array
 from numpy.linalg import cholesky
 from numpy.ma.core import shape
 
@@ -73,20 +64,20 @@ class MCMCHammer(MCMCSampler):
         Nothing for this one since it uses oracle samples
         """
         
-if __name__ == '__main__':
-    distribution = Ring()
-    Z = distribution.sample(1000).samples
-    kernel = GaussianKernel(sigma=1)
-    mcmc_sampler = MCMCHammer(distribution, kernel, Z)
-    
-    start = array([-2, -2])
-    mcmc_params = MCMCParams(start=start, num_iterations=10000)
-    chain = MCMCChain(mcmc_sampler, mcmc_params)
-    
-    chain.append_mcmc_output(ProgressOutput())
-    Xs = linspace(-5, 5, 50)
-    Ys = linspace(-5, 5, 50)
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
-    chain.run()
-    
-    Visualise.visualise_distribution(distribution, chain.samples)
+#if __name__ == '__main__':
+#    distribution = Ring()
+#    Z = distribution.sample(1000).samples
+#    kernel = GaussianKernel(sigma=1)
+#    mcmc_sampler = MCMCHammer(distribution, kernel, Z)
+#    
+#    start = array([-2, -2])
+#    mcmc_params = MCMCParams(start=start, num_iterations=10000)
+#    chain = MCMCChain(mcmc_sampler, mcmc_params)
+#    
+#    chain.append_mcmc_output(ProgressOutput())
+#    Xs = linspace(-5, 5, 50)
+#    Ys = linspace(-5, 5, 50)
+#    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
+#    chain.run()
+#    
+#    Visualise.visualise_distribution(distribution, chain.samples)

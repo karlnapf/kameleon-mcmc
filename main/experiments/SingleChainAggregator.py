@@ -3,7 +3,6 @@ from main.tools.GitTools import GitTools
 from numpy.linalg.linalg import norm
 from numpy.ma.core import mean, std, arange, zeros
 from pickle import load
-from posixpath import expanduser
 import os
 
 class SingleChainAggregator(object):
@@ -84,10 +83,10 @@ class SingleChainAggregator(object):
         print mean_norm_of_means, "+-", std_norm_of_means
             
         
-if __name__ == '__main__':
-    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-    folders = [experiment_dir + "MCMCHammerWindow_Ring_" + str(i) + os.sep for i in range(10)]
-    ag = SingleChainAggregator(folders)
-    ag.load_raw_results()
-    ag.post_process()
-    
+#if __name__ == '__main__':
+#    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
+#    folders = [experiment_dir + "MCMCHammerWindow_Ring_" + str(i) + os.sep for i in range(10)]
+#    ag = SingleChainAggregator(folders)
+#    ag.load_raw_results()
+#    ag.post_process()
+#    

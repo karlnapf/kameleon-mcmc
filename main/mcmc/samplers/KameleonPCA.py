@@ -1,18 +1,11 @@
 from main.distribution.Discrete import Discrete
 from main.distribution.Gaussian import Gaussian
 from main.distribution.MixtureDistribution import MixtureDistribution
-from main.distribution.Ring import Ring
-from main.kernel.GaussianKernel import GaussianKernel
 from main.kernel.Kernel import Kernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.PlottingOutput import PlottingOutput
-from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.MCMCHammer import MCMCHammer
-from main.tools.Visualise import Visualise
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import svd
-from numpy.ma.core import shape, outer, array
+from numpy.ma.core import shape, outer
 
 class KameleonPCA(MCMCHammer):
     '''
@@ -55,18 +48,18 @@ class KameleonPCA(MCMCHammer):
             m.components[ii] = Gaussian(y, Sigma)
         return m
     
-if __name__ == '__main__':
-    distribution = Ring()
-    Z = distribution.sample(200).samples
-    kernel = GaussianKernel(sigma=1)
-    mcmc_sampler = KameleonPCA(distribution, kernel, Z, eta=.5, num_eigen=2)
-    
-    start = array([-2, -2])
-    mcmc_params = MCMCParams(start=start, num_iterations=5000)
-    chain = MCMCChain(mcmc_sampler, mcmc_params)
-    
-    chain.append_mcmc_output(ProgressOutput())
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
-    chain.run()
-    
-    Visualise.visualise_distribution(distribution, chain.samples)
+#if __name__ == '__main__':
+#    distribution = Ring()
+#    Z = distribution.sample(200).samples
+#    kernel = GaussianKernel(sigma=1)
+#    mcmc_sampler = KameleonPCA(distribution, kernel, Z, eta=.5, num_eigen=2)
+#    
+#    start = array([-2, -2])
+#    mcmc_params = MCMCParams(start=start, num_iterations=5000)
+#    chain = MCMCChain(mcmc_sampler, mcmc_params)
+#    
+#    chain.append_mcmc_output(ProgressOutput())
+#    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
+#    chain.run()
+#    
+#    Visualise.visualise_distribution(distribution, chain.samples)

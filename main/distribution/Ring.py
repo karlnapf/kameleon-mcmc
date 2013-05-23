@@ -1,6 +1,5 @@
 from main.distribution.Distribution import Distribution
 from main.distribution.Flower import Flower
-from main.tools.Visualise import Visualise
 from numpy.ma.core import sqrt
 
 class Ring(Flower):
@@ -22,9 +21,8 @@ class Ring(Flower):
         else:
             return Flower.get_plotting_bounds(self)
 
-if __name__ == '__main__':
-    ring_instance=Ring()
-    X=ring_instance.sample(10000).samples
-    print ring_instance.emp_quantiles(X)
-    Visualise.visualise_distribution(Ring())
-
+#if __name__ == '__main__':
+#    ring_instance=Ring()
+#    X=ring_instance.sample(10000).samples
+#    print ring_instance.emp_quantiles(X)
+#    Visualise.visualise_distribution(Ring())
