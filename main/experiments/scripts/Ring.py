@@ -3,6 +3,7 @@ if __name__ == '__main__':
     import sys
     current_folder=os.sep.join(__file__.split(os.sep)[0:-4]) + os.sep
     sys.path.append(current_folder)
+    print current_folder
 
     from main.distribution.Ring import Ring
     from main.experiments.SingleChainExperiment import SingleChainExperiment
