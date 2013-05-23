@@ -46,7 +46,6 @@ class SingleChainAggregator(object):
         for i in range(len(self.folders)):
             filename = self.folders[i] + SingleChainExperiment.filenames["output_folder"] + \
                      os.sep + SingleChainExperiment.filenames["output"]
-            print "loading", filename
             f = open(filename , "r")
             self.experiments[i] = load(f)
             f.close()
