@@ -5,10 +5,12 @@ from main.distribution.Ring import Ring
 from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
+from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
+from main.tools.Visualise import Visualise
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import norm
 from numpy.ma.core import array, mean, zeros
@@ -98,3 +100,27 @@ if __name__ == '__main__':
     print "    norm of the mean: ", norm(mean(chain3.samples[idx], 0))
     print "    mean accepted rate: ", mean(chain3.accepteds[idx])
     # Visualise.visualise_distribution(banana, chain.samples)
+#if __name__ == '__main__':
+#    distribution = Banana(2)
+#    am_sampler = StandardMetropolis(distribution)
+#    
+#    start = array([-2.0, -2.0])
+#    length = 26000
+#    burnin = 6000
+#    thin = 10
+#    idx = range(burnin, length, thin)
+#    mcmc_params = MCMCParams(start=start, num_iterations=length, burnin=burnin)
+#    
+#    chain = MCMCChain(am_sampler, mcmc_params)
+#    chain.append_mcmc_output(ProgressOutput())
+#    #chain.append_mcmc_output(PlottingOutput(distribution, plot_from=6000))
+#    
+#    chain.run()
+#    print "\n\nStandard Metropolis:\n"
+#    print "    overall length: ", len(chain.samples)
+#    print "    burned-in length: ", len(idx)
+#    print "    empirical quantiles: ", distribution.emp_quantiles(chain.samples[idx])
+#    print "    mean: ", mean(chain.samples[idx], 0)
+#    print "    norm of the mean: ", norm(mean(chain.samples[idx], 0))
+#    print "    mean accepted rate: ", mean(chain.accepteds[idx])
+#    Visualise.visualise_distribution(distribution, chain.samples)
