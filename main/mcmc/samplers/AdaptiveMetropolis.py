@@ -18,13 +18,11 @@ class AdaptiveMetropolis(MCMCSampler):
     is_symmetric=True
     def __init__(self, distribution, adapt_scale=False, \
                  mean_est=array([-2.0, -2.0]), cov_est=0.05 * eye(2), \
-                 learn_rate=lambda j: 1.0 / sqrt(j + 1.0), \
                  sample_discard=500, sample_lag=20, accstar=0.234):
         assert (len(mean_est) == distribution.dimension)
         MCMCSampler.__init__(self, distribution)
         self.globalscale = (2.38 ** 2) / distribution.dimension
         self.adapt_scale = adapt_scale
-        self.learn_rate = learn_rate
         self.mean_est = mean_est
         self.cov_est = cov_est
         self.sample_discard = sample_discard
@@ -35,7 +33,6 @@ class AdaptiveMetropolis(MCMCSampler):
         s=self.__class__.__name__+ "=["
         s += "globalscale="+ str(self.globalscale)
         s += ", adapt_scale="+ str(self.adapt_scale)
-        s += ", learn_rate="+ str(self.learn_rate)
         s += ", sample_discard="+ str(self.sample_discard)
         s += ", sample_lag="+ str(self.sample_lag)
         s += ", accstar="+ str(self.accstar)
@@ -64,7 +61,7 @@ class AdaptiveMetropolis(MCMCSampler):
     def adapt(self, mcmc_chain, step_output):
         iter_no = mcmc_chain.iteration
         if iter_no > self.sample_discard:
-            learn_scale = self.learn_rate(float(iter_no - self.sample_discard))
+            learn_scale=1.0 / sqrt(iter_no - self.sample_discard + 1.0)
             #print "current learning rate: ", learn_scale
             if self.adapt_scale:
                 self.scale_adapt(learn_scale,step_output)
