@@ -59,14 +59,14 @@ if __name__ == '__main__':
     distribution = Ring()
     Z = distribution.sample(200).samples
     kernel = GaussianKernel(sigma=1)
-    mcmc_sampler = KameleonPCA(distribution, kernel, Z)
+    mcmc_sampler = KameleonPCA(distribution, kernel, Z, eta=.5, num_eigen=2)
     
     start = array([-2, -2])
     mcmc_params = MCMCParams(start=start, num_iterations=5000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(ProgressOutput())
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=200))
+    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
     chain.run()
     
     Visualise.visualise_distribution(distribution, chain.samples)
