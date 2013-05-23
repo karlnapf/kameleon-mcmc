@@ -23,7 +23,6 @@ class ClusterTools(object):
             processors = "nodes=1:ppn=1"
             memory = "pmem=100mb"
             workdir = experiment.folder_prefix
-            mail="heiko.strathmann@gmail.com"
             output=experiment_list[i].foldername + "cluster_output.txt"
             error=experiment_list[i].foldername + "cluster_error.txt"
             
@@ -33,12 +32,10 @@ class ClusterTools(object):
             #PBS -l %s
             #PBS -l %s
             #PBS -l %s
-            #PBS -M %s
             #PBS -o %s
             #PBS -e %s
-            #PBS -m abe  # (a = abort, b = begin, e = end)
             cd %s
-            %s""" % (job_name, walltime, processors, memory, mail, output, error, workdir, command)
+            %s""" % (job_name, walltime, processors, memory, output, error, workdir, command)
         
             # send job_string to qsub
             outpipe, inpipe = popen2('qsub')
