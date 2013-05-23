@@ -24,12 +24,12 @@ class SingleChainAggregator(object):
             f.close()
             
             # assert that all git hashs are equal
-            assert(githash==ref_githash)
-            assert(gitbranch==ref_gitbranch)
+            assert(githash == ref_githash)
+            assert(gitbranch == ref_gitbranch)
             
             # this might be false if script was altered after experiment, comment out then
-            assert(githash == GitTools.get_hash())
-            assert(gitbranch == GitTools.get_branch())
+            if githash != GitTools.get_hash() or gitbranch != GitTools.get_branch():
+                print "WARNING: git version of experiment not equal to this"
     
     def load_parameter(self, parameter):
         # load number of iterations
@@ -58,6 +58,7 @@ class SingleChainAggregator(object):
         
         quantiles = zeros((len(self.experiments), len(ref_quantiles)))
         norm_of_means = zeros(len(self.experiments))
+        acceptance_rates = zeros(len(self.experiments))
         
         for i in range(n):
             # burned in view
@@ -68,15 +69,18 @@ class SingleChainAggregator(object):
             
             # norm of means
             norm_of_means[i] = norm(mean(burned_in, 0))
+            
+            acceptance_rates[i] = mean(self.experiments[i].mcmc_chain.accepteds[burnin:])
 
         mean_quantiles = mean(quantiles, 0)
-        mean_norm_of_means = mean(norm_of_means)
         std_quantiles = std(quantiles, 0)
-        std_norm_of_means = std(norm_of_means)
         
         print "quantiles:"
         for i in range(len(ref_quantiles)):
             print mean_quantiles[i], "+-", std_quantiles[i]
         
         print "norm of means:"
-        print mean_norm_of_means, "+-", std_norm_of_means
+        print mean(norm_of_means), "+-", std(norm_of_means)
+        
+        print "acceptance rate:"
+        print mean(acceptance_rates)
