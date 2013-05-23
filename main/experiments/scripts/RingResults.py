@@ -8,7 +8,8 @@ from main.experiments.SingleChainAggregator import SingleChainAggregator
 if __name__ == '__main__':
     if len(sys.argv)!=4:
         print "usage:", str(sys.argv[0]), "<idx_from> <idx_to> <folder_base>"
-        print "example: python RingResults.py 0 9 ~/mcmc_hammer_experiments MCMCHammerWindow_Ring_"
+        print "example:"
+        print "python RingResults.py 0 99 ~/mcmc_hammer_experiments/MCMCHammerWindow_Ring_"
         exit()
         
     a=int(str(sys.argv[1]))
