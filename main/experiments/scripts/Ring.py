@@ -1,3 +1,8 @@
+from posixpath import expanduser
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(sys.argv[0])))
+
 from main.distribution.Ring import Ring
 from main.experiments.SingleChainExperiment import SingleChainExperiment
 from main.kernel.GaussianKernel import GaussianKernel
@@ -9,8 +14,6 @@ from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.tools.ClusterTools import ClusterTools
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
-from posixpath import expanduser
-import os
 
 if __name__ == '__main__':
     distribution = Ring()
