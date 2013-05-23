@@ -5,7 +5,7 @@ import os
 
 class SingleChainExperiment(object):
     # filename dictionaries
-    filenames = { "mcmc_chain_instance": "mcmc_chain_instance.bin", \
+    filenames = { "output": "experiment_output.bin", \
                   "output_folder": "output", \
                   "gitversion": "gitversion.txt", \
                   "parameters": "parameters.txt"
@@ -51,7 +51,7 @@ class SingleChainExperiment(object):
         # save distribution instance
         output_folder = self.foldername + self.filenames["output_folder"] + os.sep
         makedirs(output_folder)
-        f = open(output_folder + self.filenames["experiment_instance.bin"], "w")
+        f = open(output_folder + self.filenames["output"], "w")
         dump(self, f)
         f.close()
         
