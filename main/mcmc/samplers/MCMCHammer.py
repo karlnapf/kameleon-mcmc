@@ -26,6 +26,15 @@ class MCMCHammer(MCMCSampler):
         self.gamma = gamma
         self.Z = Z
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "kernel="+ str(self.kernel)
+        s += ", eta="+ str(self.eta)
+        s += ", gamma="+ str(self.gamma)
+        s += ", " + MCMCSampler.__str__(self)
+        s += "]"
+        return s
+    
     def compute_constants(self, y):
         """
         Precomputes constants of the log density of the proposal distribution,

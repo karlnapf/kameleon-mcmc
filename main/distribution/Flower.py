@@ -18,7 +18,17 @@ class Flower(Distribution):
         self.radius = radius
         
         assert(dimension >= 2)
-        
+    
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "amplitude="+ str(self.amplitude)
+        s += ", frequency="+ str(self.frequency)
+        s += ", variance="+ str(self.variance)
+        s += ", radius="+ str(self.radius)
+        s += ", " + Distribution.__str__(self)
+        s += "]"
+        return s
+    
     def sample(self, n=1):
         # sample angles
         theta = rand(n, 1) * 2 * pi

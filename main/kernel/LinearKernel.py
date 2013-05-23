@@ -1,11 +1,15 @@
 from main.kernel.Kernel import Kernel
 
 class LinearKernel(Kernel):
-    def __init__(self, sigma):
+    def __init__(self):
         Kernel.__init__()
         
-        self.width = sigma
-        
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "" + Kernel.__str__(self)
+        s += "]"
+        return s
+    
     def kernel(self, X, Y):
         """
         Computes the linear kernel k(x,y)=x^T y for the given data

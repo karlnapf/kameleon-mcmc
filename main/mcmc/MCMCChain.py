@@ -7,6 +7,14 @@ class MCMCChain(object):
         self.mcmc_outputs = []
         self.is_initialised = False
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "mcmc_sampler="+ str(self.mcmc_sampler)
+        s += ", mcmc_params="+ str(self.mcmc_params)
+        s += ", mcmc_outputs="+ str(self.mcmc_outputs)
+        s += "]"
+        return s
+    
     def init(self):
         # fields for the chain
         num_iterations = self.mcmc_params.num_iterations

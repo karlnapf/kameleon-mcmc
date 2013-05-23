@@ -31,6 +31,18 @@ class AdaptiveMetropolis(MCMCSampler):
         self.sample_lag = sample_lag
         self.accstar = accstar
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "globalscale="+ str(self.globalscale)
+        s += ", adapt_scale="+ str(self.adapt_scale)
+        s += ", learn_rate="+ str(self.learn_rate)
+        s += ", sample_discard="+ str(self.sample_discard)
+        s += ", sample_lag="+ str(self.sample_lag)
+        s += ", accstar="+ str(self.accstar)
+        s += ", " + MCMCSampler.__str__(self)
+        s += "]"
+        return s
+    
     def mean_and_cov_adapt(self,learn_scale):
         current_1d=reshape(self.current_sample_object.samples, (self.distribution.dimension,))
         difference=current_1d - self.mean_est

@@ -27,7 +27,14 @@ class MixtureDistribution(Distribution):
             assert(num_components==mixing_proportion.num_objects)
             self.mixing_proportion = mixing_proportion
 
-        
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "components="+ str(self.components)
+        s += ", mixing_proportion="+ str(self.mixing_proportion)
+        s += ", " + Distribution.__str__(self)
+        s += "]"
+        return s
+     
     def log_pdf(self, X, component_index_given=None):
         """
         If component_index_given is given, then just condition on it,

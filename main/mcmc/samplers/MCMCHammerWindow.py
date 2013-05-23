@@ -24,6 +24,14 @@ class MCMCHammerWindow(MCMCHammer):
         MCMCHammer.init(self, start)
         self.Z = reshape(start, (1, len(start)))
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "window_size="+ str(self.window_size)
+        s += ", thinning_factor="+ str(self.thinning_factor)
+        s += ", " + MCMCHammer.__str__(self)
+        s += "]"
+        return s
+    
     def adapt(self, mcmc_chain, step_output):
         """
         Updates the sliding window of samples to use

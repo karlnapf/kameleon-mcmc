@@ -32,6 +32,14 @@ class Gaussian(Distribution):
             else:
                 self.L = cholesky(Sigma)
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "mu="+ str(self.mu)
+        s += ", L="+ str(self.L)
+        s += ", " + Distribution.__str__(self)
+        s += "]"
+        return s
+    
     def sample(self, n=1):
         if self.ell is None:
             V = randn(self.dimension, n)

@@ -6,6 +6,10 @@ class Kernel(object):
     def __init__(self):
         pass
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=[]"
+        return s
+    
     @abstractmethod
     def kernel(self, X, Y=None):
         raise NotImplementedError()

@@ -6,6 +6,12 @@ class Distribution(object):
     def __init__(self, dimension):
         self.dimension = dimension
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "dimension="+ str(self.dimension)
+        s += "]"
+        return s
+    
     def sample(self, n=1):
         raise NotImplementedError()
     

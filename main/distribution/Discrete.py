@@ -16,7 +16,17 @@ class Discrete(Distribution):
         self.omega = omega
         self.cdf = cumsum(omega)
         self.support = support
-        
+    
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "num_objects="+ str(self.num_objects)
+        s += ", omega="+ str(self.omega)
+        s += ", cdf="+ str(self.cdf)
+        s += ", support="+ str(self.support)
+        s += ", " + Distribution.__str__(self)
+        s += "]"
+        return s
+    
     def sample(self, n=1):
         u = rand(n)
         rez = zeros([n])

@@ -10,7 +10,14 @@ class GaussianKernel(Kernel):
         Kernel.__init__(self)
         
         self.width = sigma
-        
+    
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "width="+ str(self.width)
+        s += ", " + Kernel.__str__(self)
+        s += "]"
+        return s
+    
     def kernel(self, X, Y=None):
         """
         Computes the standard Gaussian kernel k(x,y)=exp(-0.5* ||x-y||**2 / sigma**2)
@@ -20,13 +27,13 @@ class GaussianKernel(Kernel):
         """
         
         assert(len(shape(X))==2)
-        assert(len(shape(Y))==2)
-        assert(shape(X)[1]==shape(Y)[1])
         
         # if X=Y, use more efficient pdist call which exploits symmetry
         if Y is None:
             sq_dists = squareform(pdist(X, 'sqeuclidean'))
         else:
+            assert(len(shape(Y))==2)
+            assert(shape(X)[1]==shape(Y)[1])
             sq_dists = cdist(X, Y, 'sqeuclidean')
     
         K = exp(-0.5 * (sq_dists) / self.width ** 2)

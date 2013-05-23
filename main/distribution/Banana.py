@@ -16,7 +16,15 @@ class Banana(Distribution):
         
         self.bananicity = bananicity
         self.V = V
-        
+    
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "bananicity="+ str(self.bananicity)
+        s += ", V="+ str(self.V)
+        s += ", " + Distribution.__str__(self)
+        s += "]"
+        return s
+    
     def sample(self, n=1):
         X = randn(n, 2)
         X[:, 0] = sqrt(self.V) * X[:, 0]

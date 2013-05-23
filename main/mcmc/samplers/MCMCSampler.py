@@ -15,6 +15,12 @@ class MCMCSampler(object):
         start_2d = reshape(start, (1, len(start)))
         self.log_lik_current = self.distribution.log_pdf(start_2d)
     
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "distribution="+ str(self.distribution)
+        s += "]"
+        return s
+    
     @abstractmethod
     def adapt(self, mcmc_chain, step_output):
         raise NotImplementedError()
