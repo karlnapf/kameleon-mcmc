@@ -1,6 +1,7 @@
 from posixpath import expanduser
 import os
 import sys
+from main.mcmc.output.ProgressOutput import ProgressOutput
 to_add=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[0:-3])
 sys.path.append(to_add)
 
@@ -35,6 +36,9 @@ if __name__ == '__main__':
     mcmc_params = MCMCParams(start=start, num_iterations=200, burnin=50)
     
     mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
+    for mcmc_chain in mcmc_chains:
+        mcmc_chain.append_mcmc_output(ProgressOutput())
+    
     experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
     experiments = [SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir) for mcmc_chain in mcmc_chains]
     
