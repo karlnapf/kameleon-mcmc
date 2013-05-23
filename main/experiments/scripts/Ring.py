@@ -14,6 +14,7 @@ from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
+from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from main.tools.ClusterTools import ClusterTools
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
@@ -39,8 +40,10 @@ if __name__ == '__main__':
         num_eigen = 2
         mcmc_samplers.append(AdaptiveMetropolisPCA(distribution, num_eigen=num_eigen, mean_est=mean_est, cov_est=cov_est))
         
+        mcmc_samplers.append(StandardMetropolis(distribution))
+        
         start = array([-2.0, -2.0])
-        mcmc_params = MCMCParams(start=start, num_iterations=200, burnin=50)
+        mcmc_params = MCMCParams(start=start, num_iterations=50000, burnin=20000)
         
         mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
         for mcmc_chain in mcmc_chains:
