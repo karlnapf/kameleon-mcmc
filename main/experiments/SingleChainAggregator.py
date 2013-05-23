@@ -45,7 +45,7 @@ class SingleChainAggregator(object):
         self.mcmc_chains = [None for _ in range(len(self.folders))]
         for i in range(len(self.folders)):
             filename = self.folders[i] + SingleChainExperiment.filenames["output_folder"] + \
-                     os.sep + SingleChainExperiment.filenames["mcmc_chain_instance"]
+                     os.sep + SingleChainExperiment.filenames["output"]
             print "loading", filename
             f = open(filename , "r")
             self.mcmc_chains[i] = load(f)
