@@ -42,30 +42,30 @@ class SingleChainAggregator(object):
         return parameters[idx_a:idx_b]
     
     def load_raw_results(self):
-        self.mcmc_chains = [None for _ in range(len(self.folders))]
+        self.experiments = [None for _ in range(len(self.folders))]
         for i in range(len(self.folders)):
             filename = self.folders[i] + SingleChainExperiment.filenames["output_folder"] + \
                      os.sep + SingleChainExperiment.filenames["output"]
             print "loading", filename
             f = open(filename , "r")
-            self.mcmc_chains[i] = load(f)
+            self.experiments[i] = load(f)
             f.close()
         
     def post_process(self, ref_quantiles=arange(0.1, 1, 0.1)):
         n = len(self.folders)
         
         # burnin is the same for all chains
-        burnin = self.mcmc_chains[0].mcmc_params.burnin
+        burnin = self.experiments[0].mcmc_chain.mcmc_params.burnin
         
-        quantiles = zeros((len(self.mcmc_chains), len(ref_quantiles)))
-        norm_of_means = zeros(len(self.mcmc_chains))
+        quantiles = zeros((len(self.experiments), len(ref_quantiles)))
+        norm_of_means = zeros(len(self.experiments))
         
         for i in range(n):
             # burned in view
-            burned_in = self.mcmc_chains[i].samples[burnin:, :]
+            burned_in = self.experiments[i].mcmc_chain.samples[burnin:, :]
         
             # quantiles
-            quantiles[i, :] = self.mcmc_chains[i].mcmc_sampler.distribution.emp_quantiles(burned_in, ref_quantiles)
+            quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(burned_in, ref_quantiles)
             
             # norm of means
             norm_of_means[i] = norm(mean(burned_in, 0))
