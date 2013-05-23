@@ -3,7 +3,6 @@ import os
 import sys
 to_add=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[0:-3])
 sys.path.append(to_add)
-print to_add
 
 from main.distribution.Ring import Ring
 from main.experiments.SingleChainExperiment import SingleChainExperiment

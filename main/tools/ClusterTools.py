@@ -6,6 +6,7 @@ import time
 class ClusterTools(object):
     @staticmethod
     def submit_experiments(experiment_list, cluster_command="run_experiment.py"):
+        
         filenames=[]
         for experiment in experiment_list:
             filename=experiment.foldername+"experiment_instance.bin"
@@ -26,8 +27,8 @@ class ClusterTools(object):
             output=experiment_list[i].foldername + "cluster_output.txt"
             error=experiment_list[i].foldername + "cluster_error.txt"
             
-            
             job_string = """
+            export PYTHONPATH=/nfs/home1/ucabjga/opt/epd/
             #PBS -S /bin/bash
             #PBS -N %s
             #PBS -l %s
