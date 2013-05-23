@@ -14,27 +14,26 @@ class AdaptiveMetropolisPCA(AdaptiveMetropolis):
     '''
     Adaptive Metropolis with adaptive eigen-directionwise scaling
     '''
-    def __init__(self, distribution, NumEigen=2, \
+    def __init__(self, distribution, num_eigen=2, \
                  mean_est=array([-2.0, -2.0]), cov_est=0.05 * eye(2), \
-                 learn_rate=lambda j: 1.0 / sqrt(j + 1.0), \
                  sample_discard=500, sample_lag=10, accstar=0.234):
         AdaptiveMetropolis.__init__(self, distribution=distribution, adapt_scale=True, \
-                                     mean_est=mean_est, cov_est=cov_est, learn_rate=learn_rate, \
+                                     mean_est=mean_est, cov_est=cov_est, \
                                      sample_discard=sample_discard, sample_lag=sample_lag, accstar=accstar)
-        assert (NumEigen <= distribution.dimension)
-        self.NumEigen = NumEigen
-        self.dwscale = self.globalscale * ones([self.NumEigen])
+        assert (num_eigen <= distribution.dimension)
+        self.num_eigen = num_eigen
+        self.dwscale = self.globalscale * ones([self.num_eigen])
         u, s, _ = svd(self.cov_est)
-        self.eigvalues = s[0:self.NumEigen]
-        self.eigvectors = u[:, 0:self.NumEigen]
+        self.eigvalues = s[0:self.num_eigen]
+        self.eigvectors = u[:, 0:self.num_eigen]
         
         
     def construct_proposal(self, y):
         assert(len(shape(y)) == 1)
-        m = MixtureDistribution(self.distribution.dimension, self.NumEigen)
-        m.mixing_proportion = Discrete((self.eigvalues + 1) / (sum(self.eigvalues) + self.NumEigen))
+        m = MixtureDistribution(self.distribution.dimension, self.num_eigen)
+        m.mixing_proportion = Discrete((self.eigvalues + 1) / (sum(self.eigvalues) + self.num_eigen))
         # print "current mixing proportion: ", m.mixing_proportion.omega
-        for ii in range(self.NumEigen):
+        for ii in range(self.num_eigen):
             L = sqrt(self.dwscale[ii] * self.eigvalues[ii]) * reshape(self.eigvectors[:, ii], (self.distribution.dimension, 1))
             m.components[ii] = Gaussian(y, L, is_cholesky=True, ell=1)
         # Z=m.sample(1000).samples
@@ -43,9 +42,9 @@ class AdaptiveMetropolisPCA(AdaptiveMetropolis):
     
     def eigen_adapt(self):
         u, s, _ = svd(self.cov_est)
-        self.eigvalues = s[0:self.NumEigen]
+        self.eigvalues = s[0:self.num_eigen]
         # print "estimated eigenvalues: ", self.eigvalues
-        self.eigvectors = u[:, 0:self.NumEigen]
+        self.eigvectors = u[:, 0:self.num_eigen]
         
     def scale_adapt(self, learn_scale, step_output):
         which_component = step_output.sample.which_component
