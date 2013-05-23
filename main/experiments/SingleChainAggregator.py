@@ -85,8 +85,8 @@ class SingleChainAggregator(object):
             
         
 if __name__ == '__main__':
-    home_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-    folders = [home_dir + "MCMCHammerWindow_Ring_" + str(i) + os.sep for i in range(10)]
+    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
+    folders = [experiment_dir + "MCMCHammerWindow_Ring_" + str(i) + os.sep for i in range(10)]
     ag = SingleChainAggregator(folders)
     ag.load_raw_results()
     ag.post_process()

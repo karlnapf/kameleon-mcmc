@@ -21,6 +21,7 @@ class SingleChainExperiment(object):
     
     def __init__(self, mcmc_chain, folder_prefix=""):
         self.mcmc_chain = mcmc_chain
+        self.folder_prefix=folder_prefix
         
         # build foldername
         distname = mcmc_chain.mcmc_sampler.distribution.__class__.__name__
@@ -63,15 +64,15 @@ class SingleChainExperiment(object):
 if __name__ == '__main__':
     distribution = Ring()
     kernel = GaussianKernel(sigma=1)
-    mcmc_sampler = MCMCHammerWindow(distribution, kernel)
+    mcmc_hammer = MCMCHammerWindow(distribution, kernel)
     
     start = array([-2, -2])
     mcmc_params = MCMCParams(start=start, num_iterations=20000, burnin=5000)
-    mcmc_chain = MCMCChain(mcmc_sampler, mcmc_params)
+    mcmc_chain = MCMCChain(mcmc_hammer, mcmc_params)
     mcmc_chain.append_mcmc_output(ProgressOutput())
     
-    home_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-    experiment = SingleChainExperiment(mcmc_chain, folder_prefix=home_dir)
+    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
+    experiment = SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir)
     experiment.run()
     
 #    mcmc_chain.append_mcmc_output(ProgressOutput())
@@ -81,7 +82,7 @@ if __name__ == '__main__':
 #    
 #    
 #    num_iterations = self.mcmc_params.num_iterations
-#    self.samples = zeros((num_iterations, self.mcmc_sampler.distribution.dimension))
+#    self.samples = zeros((num_iterations, self.mcmc_hammer.distribution.dimension))
 #    self.ratios = zeros(num_iterations)
 #    self.log_liks = zeros(num_iterations)
 #    self.accepteds = zeros(num_iterations)
