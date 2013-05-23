@@ -81,12 +81,3 @@ class SingleChainAggregator(object):
         
         print "norm of means:"
         print mean_norm_of_means, "+-", std_norm_of_means
-            
-        
-#if __name__ == '__main__':
-#    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-#    folders = [experiment_dir + "MCMCHammerWindow_Ring_" + str(i) + os.sep for i in range(10)]
-#    ag = SingleChainAggregator(folders)
-#    ag.load_raw_results()
-#    ag.post_process()
-#    
