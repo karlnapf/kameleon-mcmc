@@ -44,13 +44,15 @@ class SingleChainExperiment(object):
         f.close()
         
     def run(self):
+        print "starting experiment"
         self.mcmc_chain.run()
+        print "experiment done"
         
         # save distribution instance
         output_folder = self.foldername + self.filenames["output_folder"] + os.sep
         makedirs(output_folder)
-        f = open(output_folder + self.filenames["mcmc_chain_instance"], "w")
-        dump(self.mcmc_chain, f)
+        f = open(output_folder + self.filenames["experiment_instance.bin"], "w")
+        dump(self, f)
         f.close()
         
 #if __name__ == '__main__':
