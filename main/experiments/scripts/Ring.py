@@ -1,23 +1,22 @@
-from main.distribution.Ring import Ring
-from main.experiments.SingleChainExperiment import SingleChainExperiment
-from main.kernel.GaussianKernel import GaussianKernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.ProgressOutput import ProgressOutput
-from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
-from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
-    AdaptiveMetropolisLearnScale
-from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
-from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
-from main.tools.ClusterTools import ClusterTools
-from numpy.lib.twodim_base import eye
-from numpy.ma.core import array
 from posixpath import expanduser
 import os
 import sys
 to_add=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[0:-3])
 sys.path.append(to_add)
 
+from main.distribution.Ring import Ring
+from main.experiments.SingleChainExperiment import SingleChainExperiment
+from main.kernel.GaussianKernel import GaussianKernel
+from main.mcmc.output.ProgressOutput import ProgressOutput
+from main.mcmc.MCMCChain import MCMCChain
+from main.mcmc.MCMCParams import MCMCParams
+from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
+from main.mcmc.samplers.AdaptiveMetropolisLearnScale import AdaptiveMetropolisLearnScale
+from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
+from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
+from main.tools.ClusterTools import ClusterTools
+from numpy.lib.twodim_base import eye
+from numpy.ma.core import array
 
 if __name__ == '__main__':
     distribution = Ring()
