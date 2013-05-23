@@ -1,4 +1,9 @@
 if __name__ == '__main__':
+    import os
+    import sys
+    current_folder=os.sep.join(__file__.split(os.sep)[0:-4]) + os.sep
+    sys.path.append(current_folder)
+
     from main.distribution.Ring import Ring
     from main.experiments.SingleChainExperiment import SingleChainExperiment
     from main.kernel.GaussianKernel import GaussianKernel
@@ -11,11 +16,7 @@ if __name__ == '__main__':
     from numpy.lib.twodim_base import eye
     from numpy.ma.core import array
     from posixpath import expanduser
-    import os
-    import sys
     
-    current_folder=os.sep.join(__file__.split(os.sep)[0:-4]) + os.sep
-    sys.path.append(current_folder)
     
     distribution = Ring()
     
