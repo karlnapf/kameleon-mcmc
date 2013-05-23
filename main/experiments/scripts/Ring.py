@@ -19,30 +19,35 @@ from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
 
 if __name__ == '__main__':
-    distribution = Ring()
+    assert(len(sys.argv)==2)
+    n=int(str(sys.argv[1]))
+    print "running experiments", n, "times"
     
-    mcmc_samplers = []
-    
-    kernel = GaussianKernel(sigma=1)
-    mcmc_samplers.append(MCMCHammerWindow(distribution, kernel))
-    
-    mean_est = array([-2.0, -2.0])
-    cov_est = 0.05 * eye(2)
-    mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
-    mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
-    
-    num_eigen = 2
-    mcmc_samplers.append(AdaptiveMetropolisPCA(distribution, num_eigen=num_eigen, mean_est=mean_est, cov_est=cov_est))
-    
-    start = array([-2.0, -2.0])
-    mcmc_params = MCMCParams(start=start, num_iterations=200, burnin=50)
-    
-    mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
-    for mcmc_chain in mcmc_chains:
-        mcmc_chain.append_mcmc_output(ProgressOutput())
-    
-    experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-    experiments = [SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir) for mcmc_chain in mcmc_chains]
-    
-    dispatcher_filename=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)) + os.sep + "run_single_chain_experiment.py"
-    ClusterTools.submit_experiments(experiments, dispatcher_filename)
+    for i in range(n):
+        distribution = Ring()
+        
+        mcmc_samplers = []
+        
+        kernel = GaussianKernel(sigma=1)
+        mcmc_samplers.append(MCMCHammerWindow(distribution, kernel))
+        
+        mean_est = array([-2.0, -2.0])
+        cov_est = 0.05 * eye(2)
+        mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
+        mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
+        
+        num_eigen = 2
+        mcmc_samplers.append(AdaptiveMetropolisPCA(distribution, num_eigen=num_eigen, mean_est=mean_est, cov_est=cov_est))
+        
+        start = array([-2.0, -2.0])
+        mcmc_params = MCMCParams(start=start, num_iterations=200, burnin=50)
+        
+        mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
+        for mcmc_chain in mcmc_chains:
+            mcmc_chain.append_mcmc_output(ProgressOutput())
+        
+        experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
+        experiments = [SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir) for mcmc_chain in mcmc_chains]
+        
+        dispatcher_filename=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)) + os.sep + "run_single_chain_experiment.py"
+        ClusterTools.submit_experiments(experiments, dispatcher_filename)
