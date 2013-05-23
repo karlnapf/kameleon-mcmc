@@ -1,7 +1,7 @@
 from posixpath import expanduser
 import os
 import sys
-to_add=os.path.abspath(os.path.dirname(sys.argv[0]))
+to_add=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[0:-3])
 sys.path.append(to_add)
 print to_add
 
