@@ -11,7 +11,7 @@ from numpy.core.numeric import array
 from numpy.ma.core import reshape
 
 class MCMCHammerWindow(MCMCHammer):
-    def __init__(self, distribution, kernel, eta=0.1, gamma=0.1, window_size=5000, thinning_factor=10):
+    def __init__(self, distribution, kernel, eta=2.38, gamma=0.1, window_size=5000, thinning_factor=10):
         MCMCHammer.__init__(self, distribution, kernel, Z=None, eta=0.1, gamma=0.1)
         len
         self.kernel = kernel

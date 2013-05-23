@@ -18,7 +18,7 @@ class MCMCHammer(MCMCSampler):
     """
     MCMC Hammer with oracle samples Z
     """
-    def __init__(self, distribution, kernel, Z, eta=0.1, gamma=0.1):
+    def __init__(self, distribution, kernel, Z, eta=2.38, gamma=0.1):
         MCMCSampler.__init__(self, distribution)
         
         self.kernel = kernel
