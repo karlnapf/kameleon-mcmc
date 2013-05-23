@@ -38,4 +38,5 @@ if __name__ == '__main__':
     experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
     experiments = [SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir) for mcmc_chain in mcmc_chains]
     
-    ClusterTools.submit_experiments(experiments)
+    dispatcher_filename=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)) + os.sep + "run_single_chain_experiment.py"
+    ClusterTools.submit_experiments(experiments, dispatcher_filename)
