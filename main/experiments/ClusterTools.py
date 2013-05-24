@@ -37,8 +37,6 @@ class ClusterTools(object):
             #PBS -l %s
             #PBS -o %s
             #PBS -e %s
-            export PATH=/nfs/home1/ucabjga/opt/epd/bin:$PATH
-            export PYTHONPATH=/nfs/home1/ucabhst/mcmc-hammer
             cd %s
             %s""" % (job_name, walltime, processors, memory, output, error, workdir, command)
         
