@@ -22,7 +22,7 @@ class ClusterTools(object):
             command="nice -n 10 python " + cluster_command + " " + filenames[i]
             
             job_name = filenames[i].split(os.sep)[-2].split(".")[0]
-            walltime = "walltime=99:00:00"
+            walltime = "walltime=2:00:00"
             processors = "nodes=1:ppn=1"
             memory = "pmem=1gb"
             workdir = experiment.foldername
