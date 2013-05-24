@@ -1,10 +1,13 @@
 from abc import abstractmethod
 from main.tools.GitTools import GitTools
 from os import makedirs
-from pickle import dump
+from pickle import dump, load
 import os
+import sys
 
 class Experiment(object):
+    dispatcher_filename=os.path.abspath(__file__)
+    
     erperiment_output_filename="experiment_output.bin"
     experiment_output_folder="output"
     gitversion_filename="gitversion.txt"
@@ -51,3 +54,21 @@ class Experiment(object):
         f = open(output_folder + Experiment.erperiment_output_filename, "w")
         dump(self, f)
         f.close()
+        
+if __name__ == '__main__':
+    if len(sys.argv)!=2:
+        print "usage:", str(sys.argv[0]), "<Experiment instance pickle filename>"
+        print "example:"
+        print "python Experiment.py /nfs/home1/ucabhst/mcmc_hammer_experiments/MCMCHammerWindow_Ring_0/experiment_instance.bin"
+        exit()
+        
+    filename=str(sys.argv[1])
+    print "running experiment file", filename
+    
+    try:
+        f=open(filename, 'r')
+        experiment=load(f)
+        f.close()
+        experiment.run()
+    except IOError:
+        print "Could not open file due to IOError"

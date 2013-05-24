@@ -13,7 +13,6 @@ from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
-import os
 import sys
 
 if __name__ == '__main__':
@@ -55,5 +54,5 @@ if __name__ == '__main__':
         
         experiments = [SingleChainExperiment(mcmc_chain, experiment_dir) for mcmc_chain in mcmc_chains]
         
-        dispatcher_filename=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[:-1]) + os.sep + "run_single_chain_experiment.py"
-        ClusterTools.submit_experiments(experiments, dispatcher_filename)
+        for experiment in experiments:
+            ClusterTools.submit_experiment(experiment)
