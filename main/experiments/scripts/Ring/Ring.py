@@ -20,7 +20,7 @@ if __name__ == '__main__':
     if len(sys.argv)!=3:
         print "usage:", str(sys.argv[0]), "<experiment_dir> <number_of_experiments>"
         print "example:"
-        print "python Ring.py /home/heiko/mcmc_hammer_experiments/ 3"
+        print "python Ring.py /nfs/home1/ucabhst/mcmc_hammer_experiments/ 3"
         exit()
     
     experiment_dir=str(sys.argv[1])
