@@ -44,7 +44,7 @@ class ClusterTools(object):
         inpipe.write(job_string)
         inpipe.close()
         
-        job_id=outpipe.read()
+        job_id=outpipe.read().strip()
         outpipe.close()
         print job_id
         
