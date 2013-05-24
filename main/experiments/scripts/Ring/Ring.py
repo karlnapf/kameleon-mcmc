@@ -13,19 +13,23 @@ from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
+import os
 import sys
 
 if __name__ == '__main__':
     if len(sys.argv)!=3:
-        print "usage:", str(sys.argv[0]), "<experiment_dir> <number_of_experiments>"
+        print "usage:", str(sys.argv[0]), "<experiment_dir_base> <number_of_experiments>"
         print "example:"
-        print "python Ring.py /nfs/home1/ucabhst/mcmc_hammer_experiments/ 3"
+        print "python Ring.py /nfs/home1/ucabhst/mcmc_hammer_experiments 3"
         exit()
     
-    experiment_dir=str(sys.argv[1])
+    experiment_dir_base=str(sys.argv[1])
     n=int(str(sys.argv[2]))
     
-    print "running experiments", n, "times at", experiment_dir
+    # loop over parameters here
+    
+    experiment_dir=experiment_dir_base + os.sep
+    print "running experiments", n, "times at base", experiment_dir
     
     for i in range(n):
         distribution = Ring()
