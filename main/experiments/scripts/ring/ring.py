@@ -30,7 +30,7 @@ if __name__ == '__main__':
     
     # loop over parameters here
     
-    experiment_dir=experiment_dir_base + os.sep
+    experiment_dir=experiment_dir_base +os.sep + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
     print "running experiments", n, "times at base", experiment_dir
     
     for i in range(n):

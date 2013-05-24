@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if len(sys.argv)!=5:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments> <number_of_iterations> <burnin>"
         print "example:"
-        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/banana_8_small 3 5000 2000"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments 3 5000 2000"
         exit()
     
     experiment_dir_base=str(sys.argv[1])
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     
     # loop over parameters here
     
-    experiment_dir=experiment_dir_base + os.sep
+    experiment_dir=experiment_dir_base +os.sep + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
     print "running experiments", n, "times at base", experiment_dir
     
     for i in range(n):
