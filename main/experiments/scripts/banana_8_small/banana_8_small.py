@@ -33,9 +33,13 @@ if __name__ == '__main__':
     experiment_dir=experiment_dir_base + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
     print "running experiments", n, "times at base", experiment_dir
     
+    
+    distribution = Banana(dimension=8, bananicity=0.03, V=100)
+    sigma = GaussianKernel.get_sigma_median_heuristic(distribution.sample(1000).samples)
+    print "using sigma", sigma
+    kernel = GaussianKernel(sigma=sigma)
+
     for i in range(n):
-        distribution = Banana(dimension=8, bananicity=0.03, V=100)
-        
         mcmc_samplers = []
         
         # median heurist: pairwise distances

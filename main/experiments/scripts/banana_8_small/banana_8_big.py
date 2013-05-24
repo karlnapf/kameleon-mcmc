@@ -12,44 +12,41 @@ from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
     MCMCHammerWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
-from numpy.ma.core import sqrt, zeros
-from numpy.ma.extras import median
-from scipy.spatial.distance import squareform, pdist
+from numpy.ma.core import zeros
 import os
 import sys
 
 if __name__ == '__main__':
-    if len(sys.argv)!=3:
+    if len(sys.argv) != 3:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments>"
         print "example:"
         print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments/ 3"
         exit()
     
-    experiment_dir_base=str(sys.argv[1])
-    n=int(str(sys.argv[2]))
+    experiment_dir_base = str(sys.argv[1])
+    n = int(str(sys.argv[2]))
     
     # loop over parameters here
     
-    experiment_dir=experiment_dir_base + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
+    experiment_dir = experiment_dir_base + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
     print "running experiments", n, "times at base", experiment_dir
     
+    distribution = Banana(dimension=8, bananicity=0.1, V=100)
+    sigma = GaussianKernel.get_sigma_median_heuristic(distribution.sample(1000).samples)
+    print "using sigma", sigma
+    kernel = GaussianKernel(sigma=sigma)
+    
     for i in range(n):
-        distribution = Banana(dimension=8, bananicity=0.1, V=100)
         
         mcmc_samplers = []
         
         # median heurist: pairwise distances
-        X=distribution.sample(1000)
-        dists=squareform(pdist(X.samples, 'euclidean'))
-        median_dist=median(dists[dists>0])
-        sigma=sqrt(0.5*median_dist);
-        kernel = GaussianKernel(sigma=sigma)
         
         mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
         
         mean_est = zeros(distribution.dimension, dtype="float64")
         cov_est = 1.0 * eye(distribution.dimension)
-        cov_est[0,0]=distribution.V
+        cov_est[0, 0] = distribution.V
         mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
         
         num_eigen = distribution.dimension

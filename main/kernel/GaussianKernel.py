@@ -1,5 +1,6 @@
 from main.kernel.Kernel import Kernel
-from numpy.ma.core import exp, shape, reshape
+from numpy.ma.core import exp, shape, reshape, sqrt
+from numpy.ma.extras import median
 from scipy.spatial.distance import squareform, pdist, cdist
 
 class GaussianKernel(Kernel):
@@ -57,6 +58,13 @@ class GaussianKernel(Kernel):
         G = (1.0 / self.width ** 2) * (k.T * differences)
         return G
 
+    @staticmethod
+    def get_sigma_median_heuristic(X):
+        dists=squareform(pdist(X, 'euclidean'))
+        median_dist=median(dists[dists>0])
+        sigma=sqrt(0.5*median_dist)
+        return sigma
+    
 #if __name__ == '__main__':
 #    distribution = Banana()
 #    Z = distribution.sample(100).samples

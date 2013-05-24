@@ -12,29 +12,29 @@ class Gaussian(Distribution):
     def __init__(self, mu=array([0, 0]), Sigma=eye(2), is_cholesky=False, ell=None):
         Distribution.__init__(self, len(Sigma))
         
-        assert(len(shape(mu))==1)
-        assert(max(shape(Sigma))==len(mu))
+        assert(len(shape(mu)) == 1)
+        assert(max(shape(Sigma)) == len(mu))
         self.mu = mu
-        self.ell=ell
+        self.ell = ell
         if is_cholesky: 
             self.L = Sigma
-            if ell==None:
+            if ell == None:
                 assert(shape(Sigma)[0] == shape(Sigma)[1])
             else:
-                assert(shape(Sigma)[1]==ell)
+                assert(shape(Sigma)[1] == ell)
         else: 
             assert(shape(Sigma)[0] == shape(Sigma)[1])
             if ell is not None:
                 self.L, _, _ = MatrixTools.low_rank_approx(Sigma, ell)
                 self.L = self.L.T
-                assert(shape(self.L)[1]==ell)
+                assert(shape(self.L)[1] == ell)
             else:
                 self.L = cholesky(Sigma)
     
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "mu="+ str(self.mu)
-        s += ", L="+ str(self.L)
+        s = self.__class__.__name__ + "=["
+        s += "mu=" + str(self.mu)
+        s += ", L=" + str(self.L)
         s += ", " + Distribution.__str__(self)
         s += "]"
         return s
@@ -47,10 +47,10 @@ class Gaussian(Distribution):
 
         # map to our desired Gaussian and transpose to have row-wise vectors
         return Sample(self.L.dot(V).T + self.mu)
-    
+        
     def log_pdf(self, X):
-        assert(len(shape(X))==2)
-        assert(shape(X)[1]==self.dimension)
+        assert(len(shape(X)) == 2)
+        assert(shape(X)[1] == self.dimension)
         
         log_determinant_part = -sum(log(diag(self.L)))
         
@@ -82,7 +82,7 @@ class Gaussian(Distribution):
         return results
     
     
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #    mu = array([5, 2])
 #    Sigma = eye(2)
 #    Sigma[0, 0] = 20
