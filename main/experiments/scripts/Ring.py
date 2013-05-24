@@ -1,28 +1,32 @@
-from posixpath import expanduser
-import os
-import sys
-to_add=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[0:-3])
-sys.path.append(to_add)
-
 from main.distribution.Ring import Ring
 from main.experiments.SingleChainExperiment import SingleChainExperiment
 from main.kernel.GaussianKernel import GaussianKernel
-from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
+from main.mcmc.output.ProgressOutput import ProgressOutput
 from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
-from main.mcmc.samplers.AdaptiveMetropolisLearnScale import AdaptiveMetropolisLearnScale
+from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
+    AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from main.tools.ClusterTools import ClusterTools
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
+import os
+import sys
 
 if __name__ == '__main__':
-    assert(len(sys.argv)==2)
-    n=int(str(sys.argv[1]))
-    print "running experiments", n, "times"
+    if len(sys.argv)!=3:
+        print "usage:", str(sys.argv[0]), "<experiment_dir> <number_of_experiments>"
+        print "example:"
+        print "python Ring.py ~/mcmc_hammer_experiments/ 3"
+        exit()
+    
+    experiment_dir=str(sys.argv[1])
+    n=int(str(sys.argv[2]))
+    
+    print "running experiments", n, "times at", experiment_dir
     
     for i in range(n):
         distribution = Ring()
@@ -49,8 +53,7 @@ if __name__ == '__main__':
         for mcmc_chain in mcmc_chains:
             mcmc_chain.append_mcmc_output(ProgressOutput())
         
-        experiment_dir = expanduser("~") + os.sep + "mcmc_hammer_experiments" + os.sep
-        experiments = [SingleChainExperiment(mcmc_chain, folder_prefix=experiment_dir) for mcmc_chain in mcmc_chains]
+        experiments = [SingleChainExperiment(mcmc_chain, experiment_dir) for mcmc_chain in mcmc_chains]
         
         dispatcher_filename=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)) + os.sep + "run_single_chain_experiment.py"
         ClusterTools.submit_experiments(experiments, dispatcher_filename)

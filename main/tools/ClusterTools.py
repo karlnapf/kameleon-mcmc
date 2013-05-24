@@ -4,6 +4,9 @@ import os
 import time
 
 class ClusterTools(object):
+    cluster_output_filename="cluster_output.txt"
+    cluster_error_filename="cluster_error.txt"
+    
     @staticmethod
     def submit_experiments(experiment_list, cluster_command="run_experiment.py"):
         
@@ -22,9 +25,9 @@ class ClusterTools(object):
             walltime = "walltime=99:00:00"
             processors = "nodes=1:ppn=1"
             memory = "pmem=1gb"
-            workdir = experiment.folder_prefix
-            output=experiment_list[i].foldername + "cluster_output.txt"
-            error=experiment_list[i].foldername + "cluster_error.txt"
+            workdir = experiment.foldername
+            output=experiment_list[i].foldername + ClusterTools.cluster_output_filename
+            error=experiment_list[i].foldername + ClusterTools.cluster_error_filename
             
             job_string = """
             #PBS -S /bin/bash

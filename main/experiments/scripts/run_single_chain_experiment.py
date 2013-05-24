@@ -1,14 +1,12 @@
-#!/usr/bin/python
-
-# add path
-import os
-import sys
-to_add=os.sep.join(os.path.abspath(os.path.dirname(sys.argv[0])).split(os.sep)[0:-3])
-sys.path.append(to_add)
-
 from pickle import load
+import sys
 
-assert(len(sys.argv)==2)
+if len(sys.argv)!=2:
+    print "usage:", str(sys.argv[0]), "<Experiment instance pickle filename>"
+    print "example:"
+    print "python run_single_chain_experiment.py ~/mcmc_hammer_experiments/MCMCHammerWindow_Ring_0/experiment_instance.bin"
+    exit()
+    
 filename=str(sys.argv[1])
 print "running experiment file", filename
 
