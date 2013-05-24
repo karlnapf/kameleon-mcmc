@@ -1,6 +1,4 @@
 from main.experiments.Experiment import Experiment
-from pickle import load
-import sys
 
 class SingleChainExperiment(Experiment):
     def __init__(self, mcmc_chain, experiment_dir="", name=None):
@@ -16,17 +14,3 @@ class SingleChainExperiment(Experiment):
     def __run_experiment__(self):
         self.mcmc_chain.run()
 
-if __name__ == '__main__':
-    if len(sys.argv)!=2:
-        print "usage:", str(sys.argv[0]), "<Experiment instance pickle filename>"
-        print "example:"
-        print "python run_single_chain_experiment.py ~/mcmc_hammer_experiments/MCMCHammerWindow_Ring_0/experiment_instance.bin"
-        exit()
-        
-    filename=str(sys.argv[1])
-    print "running experiment file", filename
-    
-    f=open(filename, 'r')
-    experiment=load(f)
-    f.close()
-    experiment.run()
