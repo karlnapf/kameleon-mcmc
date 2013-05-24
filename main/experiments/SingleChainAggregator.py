@@ -42,16 +42,22 @@ class SingleChainAggregator(object):
         return parameters[idx_a:idx_b]
     
     def load_raw_results(self):
-        self.experiments = [None for _ in range(len(self.folders))]
+        self.experiments = []
         for i in range(len(self.folders)):
             filename = self.folders[i] + SingleChainExperiment.filenames["output_folder"] + \
                      os.sep + SingleChainExperiment.filenames["output"]
-            f = open(filename , "r")
-            self.experiments[i] = load(f)
-            f.close()
-        
+            
+            try:
+                f = open(filename , "r")
+                self.experiments.append(load(f))
+                f.close()
+            except IOError:
+                print "skipping", filename, "due to IOError"
+                pass
+            
     def post_process(self, ref_quantiles=arange(0.1, 1, 0.1)):
-        n = len(self.folders)
+        n = len(self.experiments)
+        print "post processing", n, "experiments"
         
         # burnin is the same for all chains
         burnin = self.experiments[0].mcmc_chain.mcmc_params.burnin
