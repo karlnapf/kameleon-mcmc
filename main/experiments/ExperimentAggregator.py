@@ -9,7 +9,8 @@ import os
 class ExperimentAggregator(object):
     def __init__(self, folders):
         assert(len(folders) > 0)
-        self.folders = folders
+        
+        self.experiments = []
         
         # load first git version
         assert(os.path.exists(folders[0]))
@@ -84,3 +85,10 @@ class ExperimentAggregator(object):
     @abstractmethod
     def __process_results__(self):
         raise NotImplementedError()
+    
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "folders="+ str(self.folders)
+        s += ", experiments="+ str(self.experiments)
+        s += "]"
+        return s

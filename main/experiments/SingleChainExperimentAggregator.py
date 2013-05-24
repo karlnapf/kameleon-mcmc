@@ -38,3 +38,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         print "acceptance rate:"
         print mean(acceptance_rates)
+
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "ref_quantiles="+ str(self.ref_quantiles)
+        s += ", " + ExperimentAggregator.__str__(self)
+        s += "]"
+        return s

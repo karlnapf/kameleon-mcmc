@@ -14,3 +14,9 @@ class SingleChainExperiment(Experiment):
     def __run_experiment__(self):
         self.mcmc_chain.run()
 
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "mcmc_chain="+ str(self.mcmc_chain)
+        s += ", " + Experiment.__str__(self)
+        s += "]"
+        return s

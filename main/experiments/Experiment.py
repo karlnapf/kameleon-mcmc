@@ -55,6 +55,14 @@ class Experiment(object):
         dump(self, f)
         f.close()
         
+    def __str__(self):
+        s=self.__class__.__name__+ "=["
+        s += "experiment_dir="+ str(self.experiment_dir)
+        s += ", name="+ str(self.name)
+        s += ", foldername="+ str(self.foldername)
+        s += "]"
+        return s
+    
 if __name__ == '__main__':
     if len(sys.argv)!=2:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<Experiment instance pickle filename>"
