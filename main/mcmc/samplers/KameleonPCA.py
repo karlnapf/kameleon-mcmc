@@ -13,8 +13,8 @@ class KameleonPCA(MCMCHammer):
     performs eigendecomposition of the centred kernel matrix HKH
     to inform proposals
     '''
-    def __init__(self, distribution, kernel, Z, eta=0.1, gamma=0.1, num_eigen=10):
-        MCMCHammer.__init__(self, distribution, kernel, Z, eta, gamma)
+    def __init__(self, distribution, kernel, Z, nu2=0.1, gamma=0.1, num_eigen=10):
+        MCMCHammer.__init__(self, distribution, kernel, Z, nu2, gamma)
         self.num_eigen = num_eigen
         if Z is None:
             self.Kc=None
@@ -32,7 +32,7 @@ class KameleonPCA(MCMCHammer):
     def construct_proposal(self, y):
         """
         proposal is a mixture of normals,
-        centred at y and with covariance gamma^2 I + eta^2 MHaa'HM',
+        centred at y and with covariance gamma^2 I + nu^2 MHaa'HM',
         where a are the eigenvectors of centred kernel matrix Kc=HKH
         """
         assert(len(shape(y)) == 1)
@@ -44,7 +44,7 @@ class KameleonPCA(MCMCHammer):
         
         for ii in range(self.num_eigen):
             Sigma = self.gamma ** 2 * eye(len(y)) + \
-            self.eta ** 2 * (M.T).dot(H.dot(outer(self.eigvectors[:, ii], self.eigvectors[:, ii]).dot(H.dot(M))))
+            self.nu2 * (M.T).dot(H.dot(outer(self.eigvectors[:, ii], self.eigvectors[:, ii]).dot(H.dot(M))))
             m.components[ii] = Gaussian(y, Sigma)
         return m
     
@@ -52,7 +52,7 @@ class KameleonPCA(MCMCHammer):
 #    distribution = Ring()
 #    Z = distribution.sample(200).samples
 #    kernel = GaussianKernel(sigma=1)
-#    mcmc_sampler = KameleonPCA(distribution, kernel, Z, eta=.5, num_eigen=2)
+#    mcmc_sampler = KameleonPCA(distribution, kernel, Z, nu2=.5, num_eigen=2)
 #    
 #    start = array([-2, -2])
 #    mcmc_params = MCMCParams(start=start, num_iterations=5000)

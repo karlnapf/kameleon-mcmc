@@ -11,10 +11,10 @@ from numpy.lib.function_base import meshgrid
 from numpy.ma.core import array, shape, exp
 
 class GFunction(object):
-    def __init__(self, distribution, gaussian_width=1, eta=0.1, gamma=0.1, ell=15):
+    def __init__(self, distribution, gaussian_width=1, nu2=0.1, gamma=0.1, ell=15):
         self.kernel = GaussianKernel(gaussian_width)
         self.distribution = distribution
-        self.eta = eta
+        self.nu2 = nu2
         self.gamma = gamma
         self.ell = ell
         
@@ -60,7 +60,7 @@ class GFunction(object):
         beta = gaussian.sample().samples
         
         # precompute constants
-        mcmc_hammer = MCMCHammer(self.distribution, self.kernel, Z, self.eta, self.gamma)
+        mcmc_hammer = MCMCHammer(self.distribution, self.kernel, Z, self.nu2, self.gamma)
         mu, L_R = mcmc_hammer.compute_constants(y)
     
         # where to evaluate G?

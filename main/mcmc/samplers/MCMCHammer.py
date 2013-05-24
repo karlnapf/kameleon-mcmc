@@ -9,18 +9,18 @@ class MCMCHammer(MCMCSampler):
     """
     MCMC Hammer with oracle samples Z
     """
-    def __init__(self, distribution, kernel, Z, eta=2.38, gamma=0.1):
+    def __init__(self, distribution, kernel, Z, nu2=0.1, gamma=0.1):
         MCMCSampler.__init__(self, distribution)
         
         self.kernel = kernel
-        self.eta = eta
+        self.nu2 = nu2
         self.gamma = gamma
         self.Z = Z
     
     def __str__(self):
         s=self.__class__.__name__+ "=["
         s += "kernel="+ str(self.kernel)
-        s += ", eta="+ str(self.eta)
+        s += ", nu2="+ str(self.nu2)
         s += ", gamma="+ str(self.gamma)
         s += ", " + MCMCSampler.__str__(self)
         s += "]"
@@ -34,7 +34,7 @@ class MCMCHammer(MCMCSampler):
         mu = y -a
         a = 0
         R  = gamma^2 I + M M^T
-        M  = 2\eta [\nabla_x k(x,z_i]|_x=y
+        M  = 2 [\nabla_x k(x,z_i]|_x=y
         
         Returns (mu,L_R), where L_R is lower Cholesky factor of R
         """
@@ -43,9 +43,9 @@ class MCMCHammer(MCMCSampler):
         # M = 2 [\nabla_x k(x,z_i]|_x=y
         M = 2 * self.kernel.gradient(y, self.Z)
         
-        # R = gamma^2 I + \eta^2 * M H M^T
+        # R = gamma^2 I + \nu^2 * M H M^T
         H = Kernel.centring_matrix(len(self.Z))
-        R = self.gamma ** 2 * eye(len(y)) + self.eta ** 2 * M.T.dot(H.dot(M))
+        R = self.gamma ** 2 * eye(len(y)) + self.nu2 * M.T.dot(H.dot(M))
         L_R = cholesky(R)
         
         return y.copy(), L_R

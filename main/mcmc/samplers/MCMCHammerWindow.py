@@ -1,13 +1,12 @@
 from main.mcmc.samplers.MCMCHammer import MCMCHammer
-from numpy.ma.core import reshape
+from numpy.ma.core import reshape, sqrt, exp, log
 
 class MCMCHammerWindow(MCMCHammer):
-    def __init__(self, distribution, kernel, eta=2.38, gamma=0.1, window_size=5000, thinning_factor=10):
-        MCMCHammer.__init__(self, distribution, kernel, Z=None, eta=0.1, gamma=0.1)
-        len
-        self.kernel = kernel
-        self.eta = eta
-        self.gamma = gamma
+    adapt_scale=False
+    accstar=0.574
+    sample_discard=500
+    def __init__(self, distribution, kernel, nu2=0.1, gamma=0.1, window_size=5000, thinning_factor=10):
+        MCMCHammer.__init__(self, distribution, kernel, Z=None, nu2=nu2, gamma=gamma)
         self.window_size = window_size
         self.thinning_factor = thinning_factor
     
@@ -27,11 +26,16 @@ class MCMCHammerWindow(MCMCHammer):
         """
         Updates the sliding window of samples to use
         """
-        samples=mcmc_chain.samples[0:mcmc_chain.iteration]
+        iter_no = mcmc_chain.iteration
+        samples=mcmc_chain.samples[0:iter_no]
         
         # use samples from history window, thinned out
         if len(samples) > 0:
             sample_idxs = range(max(0, len(samples) - self.window_size + 1), \
                               len(samples), self.thinning_factor)
             self.Z = samples[sample_idxs]
+        #adapt scale in the LearnScale case
+        if iter_no>self.sample_discard and self.adapt_scale:
+            learn_scale=1.0 / sqrt(iter_no - self.sample_discard + 1.0)
+            self.nu2 = exp(log(self.nu2) + learn_scale * (exp(step_output.log_ratio) - self.accstar))
         
