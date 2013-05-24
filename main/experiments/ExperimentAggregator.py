@@ -74,6 +74,8 @@ class ExperimentAggregator(object):
                     print lines + "\n\n"
                 except IOError:
                     print "could not find cluster error file", errorfilename, "due to IOError"
+        
+        print "loaded", len(self.experiments), "experiments"
                 
     def aggregate(self):
         self.load_raw_results()
