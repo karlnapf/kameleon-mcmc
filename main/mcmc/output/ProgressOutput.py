@@ -4,10 +4,10 @@ class ProgressOutput(Output):
     def __init__(self):
         Output.__init__(self)
     
-    def update(self, mcmc_params, proposal_object, samples, log_liks, Q):
-        it = len(samples)
-        if (it % round(mcmc_params.num_iterations / 10)) == 0:
-            print int(round(float(it) / mcmc_params.num_iterations * 100)), \
+    def update(self, mcmc_chain, step_output):
+        it = mcmc_chain.iteration
+        if (it % round(mcmc_chain.mcmc_params.num_iterations / 10)) == 0:
+            print int(round(float(it) / mcmc_chain.mcmc_params.num_iterations * 100)), \
             "\tpercent done"
     
     def prepare(self):

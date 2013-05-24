@@ -4,7 +4,7 @@ class Output(object):
         pass
 
     @abstractmethod
-    def update(self, mcmc_params, proposal_object, samples, log_liks, Q):
+    def update(self, mcmc_chain, step_output):
         raise NotImplementedError()
     
     @abstractmethod

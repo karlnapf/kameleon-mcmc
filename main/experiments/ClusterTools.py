@@ -20,7 +20,7 @@ class ClusterTools(object):
         command="nice -n 10 python " + experiment.dispatcher_filename + " " + filename
         
         job_name = filename.split(os.sep)[-2].split(".")[0]
-        walltime = "walltime=2:00:00"
+        walltime = "walltime=5:00:00"
         processors = "nodes=1:ppn=1"
         memory = "pmem=1gb"
         workdir = experiment.foldername
@@ -59,6 +59,9 @@ class ClusterTools(object):
         time.sleep(0.1)
         
 if __name__ == '__main__':
+    """
+    Delete all jobs from the provided file
+    """
     if len(sys.argv)!=2:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<qsub_output_filename>"
         print "example:"

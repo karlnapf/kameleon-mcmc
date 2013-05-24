@@ -1,4 +1,4 @@
-from numpy.ma.core import zeros, reshape
+from numpy.ma.core import zeros
 
 class MCMCChain(object):
     def __init__(self, mcmc_hammer, mcmc_params):
@@ -55,18 +55,12 @@ class MCMCChain(object):
             on the first call Q_old is always None
             -dino
             """
-            Q_old = self.mcmc_sampler.Q
-            
             # mcmc step
             step_output = self.mcmc_sampler.step()
             
             # output updated state
-            dim=self.mcmc_sampler.distribution.dimension
             for out in self.mcmc_outputs:
-                proposal_1d=reshape(step_output.proposal_object.samples, (dim,))
-                
-                out.update(self.mcmc_params, proposal_1d, self.samples[0:i], \
-                           self.log_liks[0:i], Q_old)
+                out.update(self, step_output)
 
             # collect results
             self.samples[i, :] = step_output.sample.samples

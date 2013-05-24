@@ -11,16 +11,20 @@ class PlottingOutput(Output):
         self.plot_from = plot_from
         self.Xs, self.Ys=Visualise.get_plotting_arrays(distribution)
     
-    def update(self, mcmc_params, proposal, samples, log_liks, Q):
-        if len(samples) > self.plot_from:
+    def update(self, mcmc_chain, step_output):
+        if mcmc_chain.iteration > self.plot_from:
             subplot(2, 3, 1)
             Visualise.plot_array(self.Xs, self.Ys, self.P)
+            
+            samples=mcmc_chain.samples[0:mcmc_chain.iteration]
+            proposal_1d=step_output.proposal_object.samples[0,:]
             
             y = samples[len(samples) - 1]
             plot(samples[:, 0], samples[:, 1], 'm')
             plot(y[0], y[1], 'r*', markersize=15.0)
-            plot(proposal[0], proposal[1], 'y*', markersize=15.0)
-            Visualise.contour_plot_density(Q, self.Xs, self.Ys, log_domain=False)
+            plot(proposal_1d[0], proposal_1d[1], 'y*', markersize=15.0)
+            Visualise.contour_plot_density(mcmc_chain.mcmc_sampler.Q, self.Xs, \
+                                           self.Ys, log_domain=False)
             xlabel("$x_1$")
             ylabel("$x_2$")
             title("Samples")
@@ -34,7 +38,7 @@ class PlottingOutput(Output):
             title("Trace $x_2$")
             
             subplot(2, 3, 4)
-            plot(log_liks, 'b')
+            plot(mcmc_chain.log_liks, 'b')
             title("Log-likelihood")
             
             if len(samples) > 2:
