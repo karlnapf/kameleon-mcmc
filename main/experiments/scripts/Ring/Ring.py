@@ -10,6 +10,8 @@ from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
+from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
+    MCMCHammerWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
@@ -40,6 +42,7 @@ if __name__ == '__main__':
         
         kernel = GaussianKernel(sigma=1)
         mcmc_samplers.append(MCMCHammerWindow(distribution, kernel))
+        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
         
         mean_est = array([-2.0, -2.0])
         cov_est = 0.05 * eye(2)
