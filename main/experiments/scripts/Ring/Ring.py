@@ -41,12 +41,12 @@ if __name__ == '__main__':
         mcmc_samplers = []
         
         kernel = GaussianKernel(sigma=1)
-        mcmc_samplers.append(MCMCHammerWindow(distribution, kernel))
+#        mcmc_samplers.append(MCMCHammerWindow(distribution, kernel))
         mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
         
         mean_est = array([-2.0, -2.0])
         cov_est = 0.05 * eye(2)
-        mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
+#        mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
         mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
         
         num_eigen = 2
