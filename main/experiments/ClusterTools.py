@@ -19,7 +19,10 @@ class ClusterTools(object):
             f.close()
             
         for i in range(len(filenames)):
-            command="nice -n 10 python " + cluster_command + " " + filenames[i]
+            commands=[]
+            commands.append("export PATH=$PATH:/nfs/home1/ucabjga/opt/epd/bin")
+            commands.append("export PYTHONPATH=/nfs/home1/ucabhst/mcmc-hammer")
+            commands.append("nice -n 10 python " + cluster_command + " " + filenames[i])
             
             job_name = filenames[i].split(os.sep)[-2].split(".")[0]
             walltime = "walltime=2:00:00"
@@ -37,10 +40,8 @@ class ClusterTools(object):
             #PBS -l %s
             #PBS -o %s
             #PBS -e %s
-            export PATH=$PATH:/nfs/home1/ucabjga/opt/epd/bin
-            export PYTHONPATH=/nfs/home1/ucabhst/mcmc-hammer
             cd %s
-            %s""" % (job_name, walltime, processors, memory, output, error, workdir, command)
+            %s""" % (job_name, walltime, processors, memory, output, error, workdir, ";".join(commands))
         
             # send job_string to qsub
             outpipe, inpipe = popen2('qsub')
