@@ -18,9 +18,9 @@ import sys
 
 if __name__ == '__main__':
     if len(sys.argv)!=3:
-        print "usage:", str(sys.argv[0]), "<experiment_dir_base> <number_of_experiments>"
+        print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments>"
         print "example:"
-        print "python Ring.py /nfs/home1/ucabhst/mcmc_hammer_experiments 3"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments 3"
         exit()
     
     experiment_dir_base=str(sys.argv[1])

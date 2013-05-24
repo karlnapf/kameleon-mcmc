@@ -1,6 +1,7 @@
 from pickle import dump
 from popen2 import popen2
 import os
+import sys
 import time
 
 class ClusterTools(object):
@@ -56,3 +57,29 @@ class ClusterTools(object):
             print "could not save job id to file", qsub_filename
         
         time.sleep(0.1)
+        
+if __name__ == '__main__':
+    if len(sys.argv)!=2:
+        print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<qsub_output_filename>"
+        print "example:"
+        print "python "  +str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments/" + \
+              ClusterTools.qsub_filename
+        exit()
+        
+    filename=str(sys.argv[1])
+    
+    try:
+        f=open(filename, 'r')
+        lines=[line.strip() for line in f.readlines()]
+        f.close()
+    except IOError:
+        print "Could not open file due to IOError"
+        
+    _, inpipe = popen2('qdel')
+    for line in lines:
+        if line!="":
+            job_id=".".join(line.strip().split(".")[0:2])
+            print "deleting job", job_id
+            inpipe.write(job_id)
+    
+    inpipe.close()

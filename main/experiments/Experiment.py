@@ -57,9 +57,9 @@ class Experiment(object):
         
 if __name__ == '__main__':
     if len(sys.argv)!=2:
-        print "usage:", str(sys.argv[0]), "<Experiment instance pickle filename>"
+        print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<Experiment instance pickle filename>"
         print "example:"
-        print "python Experiment.py /nfs/home1/ucabhst/mcmc_hammer_experiments/MCMCHammerWindow_Ring_0/experiment_instance.bin"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments/MCMCHammerWindow_Ring_0/experiment_instance.bin"
         exit()
         
     filename=str(sys.argv[1])
