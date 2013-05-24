@@ -30,8 +30,6 @@ class ClusterTools(object):
             error=experiment_list[i].foldername + ClusterTools.cluster_error_filename
             
             job_string = """
-            export PATH=$PATH:/nfs/home1/ucabjga/opt/epd/bin
-            export PYTHONPATH=/nfs/home1/ucabhst/mcmc-hammer
             #PBS -S /bin/bash
             #PBS -N %s
             #PBS -l %s
@@ -39,6 +37,8 @@ class ClusterTools(object):
             #PBS -l %s
             #PBS -o %s
             #PBS -e %s
+            export PATH=$PATH:/nfs/home1/ucabjga/opt/epd/bin
+            export PYTHONPATH=/nfs/home1/ucabhst/mcmc-hammer
             cd %s
             %s""" % (job_name, walltime, processors, memory, output, error, workdir, command)
         
