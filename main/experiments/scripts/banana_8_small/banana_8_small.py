@@ -12,9 +12,7 @@ from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
     MCMCHammerWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
-from numpy.ma.core import sqrt, zeros
-from numpy.ma.extras import median
-from scipy.spatial.distance import squareform, pdist
+from numpy.ma.core import zeros
 import os
 import sys
 
