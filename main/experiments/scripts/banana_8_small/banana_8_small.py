@@ -42,13 +42,6 @@ if __name__ == '__main__':
     for i in range(n):
         mcmc_samplers = []
         
-        # median heurist: pairwise distances
-        X=distribution.sample(1000)
-        dists=squareform(pdist(X.samples, 'euclidean'))
-        median_dist=median(dists[dists>0])
-        sigma=sqrt(0.5*median_dist);
-        kernel = GaussianKernel(sigma=sigma)
-        
         mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
         
         mean_est = zeros(distribution.dimension, dtype="float64")

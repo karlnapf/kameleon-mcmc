@@ -40,8 +40,6 @@ if __name__ == '__main__':
         
         mcmc_samplers = []
         
-        # median heurist: pairwise distances
-        
         mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
         
         mean_est = zeros(distribution.dimension, dtype="float64")
