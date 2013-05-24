@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print "running experiments", n, "times at base", experiment_dir
     
     for i in range(n):
-        distribution = Banana(dimension=8, bananicity=0.03, V=100)
+        distribution = Banana(dimension=8, bananicity=0.1, V=100)
         
         mcmc_samplers = []
         
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         mcmc_samplers.append(StandardMetropolis(distribution))
         
         start = zeros(distribution.dimension, dtype="float64")
-        mcmc_params = MCMCParams(start=start, num_iterations=40000, burnin=20000)
+        mcmc_params = MCMCParams(start=start, num_iterations=80000, burnin=40000)
         
         mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
         for mcmc_chain in mcmc_chains:
