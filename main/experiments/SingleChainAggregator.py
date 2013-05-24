@@ -53,6 +53,9 @@ class SingleChainAggregator(object):
                 f.close()
             except IOError:
                 print "skipping", filename, "due to IOError"
+                print "cluster_error output"
+                ef=open(self.folders[i] + "cluster_error.txt")
+                print ef.readlines()
                 pass
             
     def post_process(self, ref_quantiles=arange(0.1, 1, 0.1)):
