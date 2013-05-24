@@ -47,7 +47,7 @@ if __name__ == '__main__':
         mcmc_samplers.append(StandardMetropolis(distribution))
         
         start = array([-2.0, -2.0])
-        mcmc_params = MCMCParams(start=start, num_iterations=500, burnin=200)
+        mcmc_params = MCMCParams(start=start, num_iterations=50000, burnin=20000)
         
         mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
         for mcmc_chain in mcmc_chains:
