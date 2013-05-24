@@ -1,4 +1,5 @@
 from main.distribution.Ring import Ring
+from main.experiments.ClusterTools import ClusterTools
 from main.experiments.SingleChainExperiment import SingleChainExperiment
 from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
@@ -10,7 +11,6 @@ from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
 from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
-from main.tools.ClusterTools import ClusterTools
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
 import os
