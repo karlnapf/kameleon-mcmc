@@ -17,14 +17,16 @@ import os
 import sys
 
 if __name__ == '__main__':
-    if len(sys.argv)!=3:
-        print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments>"
+    if len(sys.argv)!=5:
+        print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments> <number_of_iterations> <burnin>"
         print "example:"
-        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments 3"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments 3 5000 2000"
         exit()
     
     experiment_dir_base=str(sys.argv[1])
     n=int(str(sys.argv[2]))
+    num_iterations=int(str(sys.argv[3]))
+    burnin=int(str(sys.argv[4]))
     
     # loop over parameters here
     
@@ -50,7 +52,7 @@ if __name__ == '__main__':
         mcmc_samplers.append(StandardMetropolis(distribution))
         
         start = array([-2.0, -2.0])
-        mcmc_params = MCMCParams(start=start, num_iterations=50000, burnin=20000)
+        mcmc_params = MCMCParams(start=start, num_iterations, burnin)
         
         mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
         for mcmc_chain in mcmc_chains:
