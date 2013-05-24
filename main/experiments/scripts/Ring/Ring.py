@@ -5,11 +5,9 @@ from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.ProgressOutput import ProgressOutput
-from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
-from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
 from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
     MCMCHammerWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
