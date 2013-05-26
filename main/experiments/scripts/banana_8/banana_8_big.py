@@ -33,6 +33,7 @@ if __name__ == '__main__':
     
     distribution = Banana(dimension=8, bananicity=0.1, V=100)
     sigma = GaussianKernel.get_sigma_median_heuristic(distribution.sample(1000).samples)
+    sigma = 5
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
