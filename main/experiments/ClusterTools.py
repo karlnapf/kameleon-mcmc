@@ -20,7 +20,7 @@ class ClusterTools(object):
         command="nice -n 10 python " + experiment.dispatcher_filename + " " + filename
         
         job_name = filename.split(os.sep)[-2].split(".")[0]
-        walltime = "walltime=5:00:00"
+        walltime = "walltime=15:00:00"
         processors = "nodes=1:ppn=1"
         memory = "pmem=1gb"
         workdir = experiment.foldername
