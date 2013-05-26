@@ -72,7 +72,7 @@ class ExperimentAggregator(object):
                     ef = open(errorfilename)
                     lines=ef.readlines()
                     print "cluster error output"
-                    print lines + "\n\n"
+                    print lines, "\n\n"
                 except IOError:
                     print "could not find cluster error file", errorfilename, "due to IOError"
         
