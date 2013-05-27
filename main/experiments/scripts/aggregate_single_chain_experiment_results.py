@@ -13,7 +13,10 @@ if __name__ == '__main__':
     a=int(str(sys.argv[1]))
     b=int(str(sys.argv[2]))
     folder_base=str(sys.argv[3])
-    output_filename=folder_base + os.sep + "results_" + str(a) + "_" + str(b) + ".txt"
+    
+    temp=folder_base.split(os.sep)
+    output_filename=temp[:-1] + os.sep + temp[-1] + "results_" + str(a) + "_" + str(b) + ".txt"
+    
     indices=range(a, b+1)
     lines=[]
     
