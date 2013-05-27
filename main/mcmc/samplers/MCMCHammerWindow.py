@@ -1,14 +1,14 @@
 from main.mcmc.samplers.MCMCHammer import MCMCHammer
-from numpy.ma.core import reshape, sqrt, exp, log
+from numpy.ma.core import reshape, sqrt, exp, log, arange
+from random import shuffle
 
 class MCMCHammerWindow(MCMCHammer):
     adapt_scale=False
-    accstar=0.574
-    sample_discard=500
-    def __init__(self, distribution, kernel, nu2=0.1, gamma=0.1, window_size=5000, thinning_factor=10):
+    accstar=0.234
+    def __init__(self, distribution, kernel, nu2=0.1, gamma=0.1, sample_discard=500, num_samples_Z=1000):
         MCMCHammer.__init__(self, distribution, kernel, Z=None, nu2=nu2, gamma=gamma)
-        self.window_size = window_size
-        self.thinning_factor = thinning_factor
+        self.sample_discard = sample_discard
+        self.num_samples_Z = num_samples_Z
     
     def init(self, start):
         MCMCHammer.init(self, start)
@@ -16,8 +16,8 @@ class MCMCHammerWindow(MCMCHammer):
     
     def __str__(self):
         s=self.__class__.__name__+ "=["
-        s += "window_size="+ str(self.window_size)
-        s += ", thinning_factor="+ str(self.thinning_factor)
+        s += "sample_discard="+ str(self.sample_discard)
+        s += ", num_samples_Z="+ str(self.num_samples_Z)
         s += ", " + MCMCHammer.__str__(self)
         s += "]"
         return s
@@ -27,13 +27,21 @@ class MCMCHammerWindow(MCMCHammer):
         Updates the sliding window of samples to use
         """
         iter_no = mcmc_chain.iteration
-        samples=mcmc_chain.samples[0:iter_no]
+        samples=mcmc_chain.samples[0:(iter_no+1)]
         
-        # use samples from history window, thinned out
-        if len(samples) > 0:
-            sample_idxs = range(max(0, len(samples) - self.window_size + 1), \
-                              len(samples), self.thinning_factor)
-            self.Z = samples[sample_idxs]
+        if iter_no<self.sample_discard:
+            # not necessary but for structure, its None already
+            self.Z=None
+        else:
+            if iter_no < self.sample_discard + self.num_samples_Z:
+                # use all samples after discard
+                self.Z=samples[self.sample_discard:(iter_no+1)]
+            else:
+                # once enough samples, use random subset without repetition
+                indices=arange(self.sample_discard, (iter_no+1))
+                shuffle(indices)
+                self.Z=samples[indices[0:self.num_samples_Z]]
+            
         #adapt scale in the LearnScale case
         if iter_no>self.sample_discard and self.adapt_scale:
             learn_scale=1.0 / sqrt(iter_no - self.sample_discard + 1.0)

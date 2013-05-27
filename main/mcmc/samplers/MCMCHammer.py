@@ -41,11 +41,14 @@ class MCMCHammer(MCMCSampler):
         assert(len(shape(y))==1)
         
         # M = 2 [\nabla_x k(x,z_i]|_x=y
-        M = 2 * self.kernel.gradient(y, self.Z)
-        
-        # R = gamma^2 I + \nu^2 * M H M^T
-        H = Kernel.centring_matrix(len(self.Z))
-        R = self.gamma ** 2 * eye(len(y)) + self.nu2 * M.T.dot(H.dot(M))
+        if self.Z is None:
+            R = self.gamma ** 2 * eye(len(y))
+        else:
+            M = 2 * self.kernel.gradient(y, self.Z)
+            # R = gamma^2 I + \nu^2 * M H M^T
+            H = Kernel.centring_matrix(len(self.Z))
+            R = self.gamma ** 2 * eye(len(y)) + self.nu2 * M.T.dot(H.dot(M))
+            
         L_R = cholesky(R)
         
         return y.copy(), L_R
