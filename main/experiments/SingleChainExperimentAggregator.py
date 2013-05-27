@@ -1,15 +1,15 @@
 from main.experiments.ExperimentAggregator import ExperimentAggregator
 from numpy.linalg.linalg import norm
-from numpy.ma.core import arange, zeros, mean, std
+from numpy.ma.core import arange, zeros, mean, std, allclose
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
-    def __init__(self, folders, ref_quantiles=arange(0.1,1,0.1)):
+    def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
         ExperimentAggregator.__init__(self, folders)
-        self.ref_quantiles=ref_quantiles
+        self.ref_quantiles = ref_quantiles
     
     def __process_results__(self):
-        lines=[]
-        if len(self.experiments)==0:
+        lines = []
+        if len(self.experiments) == 0:
             lines.append("no experiments to process")
             return
         
@@ -22,8 +22,14 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         for i in range(len(self.experiments)):
             burned_in = self.experiments[i].mcmc_chain.samples[burnin:, :]
-            quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles( \
-                              burned_in, self.ref_quantiles)
+            
+            # use precomputed quantiles if they match with the provided ones
+            if allclose(self.ref_quantiles, self.experiments[i].ref_quantiles):
+                quantiles[i, :] = self.experiments[i].quantiles
+            else:
+                quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
+                                  burned_in, self.ref_quantiles)
+                
             norm_of_means[i] = norm(mean(burned_in, 0))
             acceptance_rates[i] = mean(self.experiments[i].mcmc_chain.accepteds[burnin:])
 
@@ -32,7 +38,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         lines.append("quantiles:")
         for i in range(len(self.ref_quantiles)):
-            lines.append(str(mean_quantiles[i]) + " +- " +  str(std_quantiles[i]))
+            lines.append(str(mean_quantiles[i]) + " +- " + str(std_quantiles[i]))
         
         lines.append("norm of means:")
         lines.append(str(mean(norm_of_means)) + " +- " + str(std(norm_of_means)))
@@ -43,8 +49,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         return lines
 
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "ref_quantiles="+ str(self.ref_quantiles)
+        s = self.__class__.__name__ + "=["
+        s += "ref_quantiles=" + str(self.ref_quantiles)
         s += ", " + ExperimentAggregator.__str__(self)
         s += "]"
         return s
