@@ -13,10 +13,20 @@ if __name__ == '__main__':
     a=int(str(sys.argv[1]))
     b=int(str(sys.argv[2]))
     folder_base=str(sys.argv[3])
+    output_filename=folder_base + os.sep + "results_" + str(a) + "_" + str(b)
     indices=range(a, b+1)
-    print "aggregating experiments", indices, "of", folder_base
+    lines=[]
+    
+    lines.append("aggregating experiments " + str(indices) +  " of " + folder_base)
+    print lines[-1]
     
     folders = [folder_base + str(i) + os.sep for i in indices]
     ag = SingleChainExperimentAggregator(folders)
-    ag.aggregate()
+    results=ag.aggregate()
+    print os.linesep.join(results)
+    lines+=results
     
+    # save to result file
+    f=open(output_filename, 'w')
+    f.write(os.linesep.join(lines))
+    f.close()

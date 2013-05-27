@@ -79,12 +79,20 @@ class ExperimentAggregator(object):
         print "loaded", len(self.experiments), "experiments"
                 
     def aggregate(self):
+        """
+        Loads and processes results and returns a list of strings from private
+        method __process_results__
+        """
         self.load_raw_results()
-        self.__process_results__()
+        return self.__process_results__()
     
     @abstractmethod
     def __process_results__(self):
+        """
+        Returns a list of strings with results
+        """
         raise NotImplementedError()
+        return []
     
     def __str__(self):
         s=self.__class__.__name__+ "=["

@@ -8,8 +8,9 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         self.ref_quantiles=ref_quantiles
     
     def __process_results__(self):
+        lines=[]
         if len(self.experiments)==0:
-            print "no experiments to process"
+            lines.append("no experiments to process")
             return
         
         # burnin is the same for all chains
@@ -29,15 +30,17 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         mean_quantiles = mean(quantiles, 0)
         std_quantiles = std(quantiles, 0)
         
-        print "quantiles:"
+        lines.append("quantiles:")
         for i in range(len(self.ref_quantiles)):
-            print mean_quantiles[i], "+-", std_quantiles[i]
+            lines.append(str(mean_quantiles[i]) + " +- " +  str(std_quantiles[i]))
         
-        print "norm of means:"
-        print mean(norm_of_means), "+-", std(norm_of_means)
+        lines.append("norm of means:")
+        lines.append(str(mean(norm_of_means)) + " +- " + str(std(norm_of_means)))
         
-        print "acceptance rate:"
-        print mean(acceptance_rates)
+        lines.append("acceptance rate:")
+        lines.append(str(mean(acceptance_rates)))
+        
+        return lines
 
     def __str__(self):
         s=self.__class__.__name__+ "=["
