@@ -38,7 +38,7 @@ class PlottingOutput(Output):
             title("Trace $x_2$")
             
             subplot(2, 3, 4)
-            plot(mcmc_chain.log_liks, 'b')
+            plot(mcmc_chain.log_liks[0:mcmc_chain.iteration], 'b')
             title("Log-likelihood")
             
             if len(samples) > 2:
