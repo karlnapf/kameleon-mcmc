@@ -54,8 +54,10 @@ class Banana(Distribution):
         return phi.emp_quantiles(transformed, quantiles)
     
     def get_plotting_bounds(self):
-        if self.bananicity == 0.03 and self.V == 100.0 and self.dimension == 2:
+        if self.bananicity == 0.03 and self.V == 100.0:
             return [(-20, 20), (-5, 10)]
+        elif self.bananicity == 0.1 and self.V == 100.0:
+            return [(-20, 20), (-5, 30)]
         else:
             return Distribution.get_plotting_bounds(self)
 
