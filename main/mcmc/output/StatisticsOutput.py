@@ -32,9 +32,9 @@ class StatisticsOutput(Output):
             print "Since last update:", since_last, "seconds"
             print "remaining (estimated):", remaining, "seconds"
             print "total (estimated):", total, "seconds"
-            print ""
             
-            print "times between updates (not cumulative):", self.times
+            print "times needed for", self.lag, 'iterations:', self.times
+            print ""
          
     def prepare(self):
         pass
