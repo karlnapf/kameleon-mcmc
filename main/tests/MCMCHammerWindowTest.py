@@ -11,7 +11,6 @@ import cProfile
 def main():
     distribution = Ring()
     
-    sigma = GaussianKernel.get_sigma_median_heuristic(distribution.sample(1000).samples)
     sigma = 5
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
@@ -19,7 +18,7 @@ def main():
     mcmc_sampler = MCMCHammerWindow(distribution, kernel)
     
     start = array([-2, -2])
-    mcmc_params = MCMCParams(start=start, num_iterations=5000)
+    mcmc_params = MCMCParams(start=start, num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
 #    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=2000))

@@ -11,7 +11,7 @@ import pstats
 def main():
     distribution = Banana(dimension=8)
     
-    sigma = GaussianKernel.get_sigma_median_heuristic(distribution.sample(1000).samples)
+    sigma=5
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
