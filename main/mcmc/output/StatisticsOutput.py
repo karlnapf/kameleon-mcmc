@@ -1,5 +1,4 @@
 from main.mcmc.output.Output import Output
-from matplotlib.pyplot import plot, show, draw, xlabel, ylabel, title
 from numpy.ma.core import mean
 import time
 
@@ -37,13 +36,13 @@ class StatisticsOutput(Output):
             
             print ""
             
-            if self.plot_times:
-                plot(self.times, 'b-')
-                xlabel("Iteration")
-                ylabel("Seconds per " + str(self.lag) + " samples")
-                title("Seconds per " + str(self.lag) + " samples")
-                show(block=False)
-                draw()
+#            if self.plot_times:
+#                plot(self.times, 'b-')
+#                xlabel("Iteration")
+#                ylabel("Seconds per " + str(self.lag) + " samples")
+#                title("Seconds per " + str(self.lag) + " samples")
+#                show(block=False)
+#                draw()
          
     def prepare(self):
         pass
