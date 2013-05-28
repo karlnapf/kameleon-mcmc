@@ -22,6 +22,6 @@ class MCMCHammerWindowLearnScale(MCMCHammerWindow):
     def __str__(self):
         s = self.__class__.__name__ + "=["
         s += "accstar=" + str(self.accstar)
-        s += ", " + MCMCHammerWindowLearnScale.__str__(self)
+        s += ", " + MCMCHammerWindow.__str__(self)
         s += "]"
         return s
