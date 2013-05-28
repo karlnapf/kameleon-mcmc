@@ -4,7 +4,7 @@ from main.experiments.SingleChainExperiment import SingleChainExperiment
 from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.ProgressOutput import ProgressOutput
+from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         
         mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
         for mcmc_chain in mcmc_chains:
-            mcmc_chain.append_mcmc_output(ProgressOutput())
+            mcmc_chain.append_mcmc_output(StatisticsOutput())
         
         experiments = [SingleChainExperiment(mcmc_chain, experiment_dir) for mcmc_chain in mcmc_chains]
         

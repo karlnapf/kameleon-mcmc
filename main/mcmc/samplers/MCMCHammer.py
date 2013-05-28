@@ -67,20 +67,3 @@ class MCMCHammer(MCMCSampler):
         Nothing for this one since it uses oracle samples
         """
         
-#if __name__ == '__main__':
-#    distribution = Ring()
-#    Z = distribution.sample(1000).samples
-#    kernel = GaussianKernel(sigma=1)
-#    mcmc_sampler = MCMCHammer(distribution, kernel, Z)
-#    
-#    start = array([-2, -2])
-#    mcmc_params = MCMCParams(start=start, num_iterations=10000)
-#    chain = MCMCChain(mcmc_sampler, mcmc_params)
-#    
-#    chain.append_mcmc_output(ProgressOutput())
-#    Xs = linspace(-5, 5, 50)
-#    Ys = linspace(-5, 5, 50)
-#    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=1))
-#    chain.run()
-#    
-#    Visualise.visualise_distribution(distribution, chain.samples)

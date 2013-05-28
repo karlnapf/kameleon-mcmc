@@ -1,0 +1,146 @@
+from main.distribution.Gaussian import Gaussian
+from main.kernel.GaussianKernel import GaussianKernel
+from main.kernel.Kernel import Kernel
+from main.mcmc.samplers.MCMCHammer import MCMCHammer
+from main.tools.Visualise import Visualise
+from matplotlib.pyplot import hold, quiver, draw
+from numpy.core.function_base import linspace
+from numpy.core.numeric import zeros
+from numpy.lib.function_base import meshgrid
+from numpy.ma.core import reshape, array, shape
+
+class GFunction(object):
+    def __init__(self, distribution, n=200, gaussian_width=3, nu2=0.1, gamma=0.1, ell=15):
+        self.kernel = GaussianKernel(gaussian_width)
+        self.distribution = distribution
+        self.nu2 = nu2
+        self.gamma = gamma
+        self.ell = ell
+        
+        # fix some samples
+        self.Z = self.distribution.sample(n).samples
+        
+        # evaluate and center kernel and scale
+        self.K = self.kernel.kernel(self.Z, None)
+        self.K = Kernel.center_kernel_matrix(self.K)
+        
+        # sample beta
+        self.rkhs_gaussian = Gaussian(mu=zeros(len(self.Z)), Sigma=self.K, is_cholesky=False, \
+                            ell=self.ell)
+        self.beta = self.rkhs_gaussian.sample().samples
+        
+        # plotting resolution
+        [(xmin, xmax), (ymin, ymax)] = self.distribution.get_plotting_bounds()
+        self.Xs = linspace(xmin, xmax, 70)
+        self.Ys = linspace(ymin, ymax, 40)
+
+        
+    def compute(self, x, y, Z, beta):
+        """
+        Given two points x and y, a set of samples Z, and a vector beta,
+        and a kernel function, this computes the g function
+        g(x,beta,Z)=||k(x,.)-f|| for f=k(.,y)+sum_i beta_i*k(.,z_i)
+                   =k(x,x) -2k(x,y) -2sum_i beta_i*k(x,z_i) +C
+        Constant C is not computed
+        """
+        first = self.kernel.kernel(x, x)
+        second = -2 * self.kernel.kernel(x, y)
+        third = -2 * self.kernel.kernel(x, Z).dot(beta.T)
+        return first + second + third
+
+    def compute_gradient(self, x, y, Z, beta):
+        """
+        Given two points x and y, a set of samples Z, and a vector beta,
+        and a kernel gradient, this computes the g function's gradient
+        \nabla_x g(x,beta,Z)=\nabla_x k(x,x) -2k(x,y) -2sum_i beta_i*k(x,z_i)
+        """
+        x_2d = reshape(x, (1, len(x)))
+        first = self.kernel.gradient(x, x_2d)
+        second = -2 * self.kernel.gradient(x, y)
+        
+        # compute sum_i beta_i \nabla_x k(x,z_i) and beta is a row vector
+        gradients = self.kernel.gradient(x, Z)
+        third = -2 * beta.dot(gradients)
+        
+        return first + second + third
+
+
+    def plot(self, y=array([[-2, -2]]), plot_gradient=False, plot_data=False):
+        # where to evaluate G?
+        G = zeros((len(self.Ys), len(self.Xs)))
+    
+        # for plotting the gradient field, each U and V are one dimension of gradient
+        if plot_gradient:
+            GXs2 = linspace(self.Xs.min(), self.Xs.max(), 30)
+            GYs2 = linspace(self.Ys.min(), self.Ys.max(), 20)
+            X, Y = meshgrid(GXs2, GYs2)
+            U = zeros(shape(X))
+            V = zeros(shape(Y))
+    
+        # evaluate g at a set of points in Xs and Ys
+        for i in range(len(self.Xs)):
+            print i, "/", len(self.Xs)
+            for j in range(len(self.Ys)):
+                x_2d = array([[self.Xs[i], self.Ys[j]]])
+                y_2d = reshape(y, (1, len(y)))
+                G[j, i] = self.compute(x_2d, y_2d, self.Z, self.beta)
+    
+        # gradient at lower resolution
+        if plot_gradient:
+            for i in range(len(GXs2)):
+                print i, "/", len(GXs2)
+                for j in range(len(GYs2)):
+                    x_1d = array([GXs2[i], GYs2[j]])
+                    y_2d = reshape(y, (1, len(y)))
+                    G_grad = self.compute_gradient(x_1d, y_2d, self.Z, self.beta)
+                    U[j, i] = -G_grad[0, 0]
+                    V[j, i] = -G_grad[0, 1]
+    
+        # plot g and Z points and y
+        y_2d = reshape(y, (1, len(y)))
+        Visualise.plot_array(self.Xs, self.Ys, G)
+        
+        if plot_gradient:
+            hold(True)
+            quiver(X, Y, U, V, color='y', scale=G.max() * 15)
+            hold(False)
+
+        if plot_data:
+            hold(True)
+            Visualise.plot_data(self.Z, y_2d)
+            hold(False)
+
+    def plot_proposal(self, ys):
+        # evaluate density itself
+        Visualise.visualise_distribution(self.distribution, Z=None)
+#        D = zeros((len(self.Ys), len(self.Xs)))
+#        for i in range(len(self.Xs)):
+#            print i, "/", len(self.Xs)
+#            for j in range(len(self.Ys)):
+#                x_2d = array([[self.Xs[i], self.Ys[j]]])
+#                D[j, i] = self.distribution.log_pdf(x_2d)
+#                
+#        Visualise.plot_array(self.Xs, self.Ys, expD)        
+        
+        # precompute constants of proposal
+        mcmc_hammer = MCMCHammer(self.distribution, self.kernel, self.Z, self.nu2, self.gamma)
+        
+        # plot proposal around each y
+        for y in ys:
+            print "evaluating proposal", y
+            mu, L_R = mcmc_hammer.compute_constants(y)
+            gaussian = Gaussian(mu, L_R, is_cholesky=True)
+            
+            # evaluate proposal
+            P = zeros((len(self.Ys), len(self.Xs)))
+            for i in range(len(self.Xs)):
+                print i, "/", len(self.Xs)
+                for j in range(len(self.Ys)):
+                    x_2d = array([[self.Xs[i], self.Ys[j]]])
+                    P[j, i] = gaussian.log_pdf(x_2d)
+            
+            hold(True)
+            levels=array([0.05])
+            Visualise.contour_plot_density(gaussian, self.Xs, self.Ys, levels)
+            hold(False)
+            draw()

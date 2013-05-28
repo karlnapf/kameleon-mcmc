@@ -65,7 +65,20 @@ class Gaussian(Distribution):
             
         const_part = -0.5 * len(self.L) * log(2 * pi)
         
-        return const_part + log_determinant_part + quadratic_parts;
+        return const_part + log_determinant_part + quadratic_parts
+    
+    def log_pdf_at_quantile(self, alphas):
+        """
+        Computes the log-pdf at a given 1d-vector of quantiles
+        """
+        chi2_instance = chi2(self.dimension)
+        cuttoffs = chi2_instance.isf(1 - alphas)
+        
+        log_determinant_part = -sum(log(diag(self.L)))
+        quadratic_part = -0.5 * cuttoffs
+        const_part = -0.5 * len(self.L) * log(2 * pi)
+        
+        return const_part + log_determinant_part + quadratic_part
     
     def emp_quantiles(self, X, quantiles=arange(0.1, 1, 0.1)):
         # need inverse chi2 cdf with self.dimension degrees of freedom
@@ -80,18 +93,5 @@ class Gaussian(Distribution):
         for jj in range(0, len(quantiles)):
             results[jj] = mean(norms_squared < cutoffs[jj])
         return results
+
     
-    
-# if __name__ == '__main__':
-#    mu = array([5, 2])
-#    Sigma = eye(2)
-#    Sigma[0, 0] = 20
-#    R = MatrixTools.rotation_matrix(pi / 4)
-#    Sigma = R.dot(Sigma).dot(R.T)
-#    L = cholesky(Sigma)
-#    gaussian_instance = Gaussian(mu, L, is_cholesky=True)
-#    X = gaussian_instance.sample(100).samples
-#    print "quantiles:", gaussian_instance.emp_quantiles(X)
-#    print "log pdf of mu:", gaussian_instance.log_pdf(reshape(mu,(1,2)))
-#    Visualise.visualise_distribution(gaussian_instance,X)
-#    

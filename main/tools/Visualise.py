@@ -1,4 +1,4 @@
-from matplotlib.pyplot import imshow, ylim, xlim, contour, plot, hold, show
+from matplotlib.pyplot import imshow, ylim, xlim, contour, plot, hold
 from numpy.core.function_base import linspace
 from numpy.ma.core import zeros, array, exp
 
@@ -18,19 +18,16 @@ class Visualise(object):
     def visualise_distribution(distribution, Z=None, log_density=False):
         """
         Plots the density of a given Distribution instance and plots some
-        samples on top. If samples are None, the distribution sample method is
-        called
+        samples on top.
         """
-        if Z is None:
-            Z = distribution.sample(1000).samples
-            
         Xs, Ys = Visualise.get_plotting_arrays(distribution)
         
         Visualise.plot_density(distribution, Xs, Ys)
-        hold(True)
-        Visualise.plot_data(Z)
-        hold(False)
-        show()
+        
+        if Z is not None:
+            hold(True)
+            Visualise.plot_data(Z)
+            hold(False)
     
     @staticmethod
     def plot_density(distribution, Xs, Ys, log_domain=False):
@@ -63,7 +60,7 @@ class Visualise(object):
         xlim([Xs.min(), Xs.max()])
       
     @staticmethod  
-    def contour_plot_density(distribution, Xs, Ys, log_domain=False):
+    def contour_plot_density(distribution, Xs, Ys, levels=None, log_domain=False):
         """
         Contour-plots a 2D density
         
@@ -74,7 +71,7 @@ class Visualise(object):
         """
         assert(distribution.dimension == 2)
         
-        D = zeros((len(Xs), len(Ys)))
+        D = zeros((len(Ys), len(Xs)))
         
         # compute log-density
         for i in range(len(Xs)):
@@ -85,7 +82,10 @@ class Visualise(object):
         if log_domain == False:
             D = exp(D)
         
-        contour(Xs, Ys, D, origin='lower')
+        if levels is None:
+            contour(Xs, Ys, D, origin='lower')
+        else:
+            contour(Xs, Ys, D, levels=levels, origin='lower', linewidth=3)
         
     @staticmethod
     def plot_array(Xs, Ys, D):
