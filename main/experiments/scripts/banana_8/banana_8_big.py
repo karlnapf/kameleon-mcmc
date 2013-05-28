@@ -36,7 +36,10 @@ if __name__ == '__main__':
         
         mcmc_samplers = []
         
-        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
+        burnin=40000
+        num_iterations=80000
+        
+        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
 #        mean_est = zeros(distribution.dimension, dtype="float64")
 #        cov_est = 1.0 * eye(distribution.dimension)
@@ -49,7 +52,7 @@ if __name__ == '__main__':
 #        mcmc_samplers.append(StandardMetropolis(distribution))
         
         start = zeros(distribution.dimension, dtype="float64")
-        mcmc_params = MCMCParams(start=start, num_iterations=80000, burnin=40000)
+        mcmc_params = MCMCParams(start=start, num_iterations=num_iterations, burnin=burnin)
         
         mcmc_chains = [MCMCChain(mcmc_sampler, mcmc_params) for mcmc_sampler in mcmc_samplers]
         for mcmc_chain in mcmc_chains:
