@@ -15,13 +15,13 @@ def main():
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
-    mcmc_sampler = MCMCHammer(distribution, kernel, distribution.sample(1000).samples)
+    mcmc_sampler = MCMCHammer(distribution, kernel, distribution.sample(100).samples)
     
     start = zeros(distribution.dimension)
-    mcmc_params = MCMCParams(start=start, num_iterations=10000)
+    mcmc_params = MCMCParams(start=start, num_iterations=20000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
-    chain.append_mcmc_output(StatisticsOutput())
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True))
     chain.run()
     
 cProfile.run("main()", "profile.tmp")

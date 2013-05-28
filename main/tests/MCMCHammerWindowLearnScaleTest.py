@@ -24,7 +24,7 @@ def main():
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
 #    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=3000))
-    chain.append_mcmc_output(StatisticsOutput())
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True))
     chain.run()
     
     print distribution.emp_quantiles(chain.samples)
