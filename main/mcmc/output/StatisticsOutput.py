@@ -24,7 +24,7 @@ class StatisticsOutput(Output):
             
             elapsed=int(round(sum(self.times)))
             percent=int(self.get_percent_done(i, mcmc_chain.mcmc_params.num_iterations))
-            since_last=int(round(self.times[-1] - self.times[-2]))
+            since_last=int(round(self.times[-1]))
             remaining=self.get_estimated_time_remaining(i, mcmc_chain.mcmc_params.num_iterations)
             total=elapsed+remaining
             
@@ -33,6 +33,8 @@ class StatisticsOutput(Output):
             print "remaining (estimated):", remaining, "seconds"
             print "total (estimated):", total, "seconds"
             print ""
+            
+            print "times between updates (not cumulative):", self.times
          
     def prepare(self):
         pass
