@@ -23,7 +23,8 @@ class StatisticsOutput(Output):
             
             print int(self.get_percent_done(i, mcmc_chain.mcmc_params.num_iterations)), \
             "\tpercent done in ", int(round(sum(array(self.times) - self.times[0]))), \
-            "seconds. ETA:", self.get_estimated_time_remaining(i, mcmc_chain.mcmc_params.num_iterations)
+            "seconds. Since last update:", int(round(self.times[-1]-self.times[-2])), "seconds.", \
+            "ETA:", self.get_estimated_time_remaining(i, mcmc_chain.mcmc_params.num_iterations), "seconds"
          
     def prepare(self):
         pass
