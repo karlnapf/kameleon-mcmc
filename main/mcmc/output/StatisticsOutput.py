@@ -38,7 +38,7 @@ class StatisticsOutput(Output):
             
 #            if self.plot_times:
 #                plot(self.times, 'b-')
-#                xlabel("Iteration")
+#                xlabel("Iteration x" + str(self.lag))
 #                ylabel("Seconds per " + str(self.lag) + " samples")
 #                title("Seconds per " + str(self.lag) + " samples")
 #                show(block=False)
