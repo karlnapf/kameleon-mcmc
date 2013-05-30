@@ -52,7 +52,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         # mean as a function of iterations
         step = 1000
-        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations-burnin+step, step=step)
+        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations-burnin, step=step)
         
         running_means = zeros(len(iterations))
         running_errors = zeros(len(iterations))
@@ -61,7 +61,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             
             norm_of_means_yet = zeros(len(self.experiments))
             for j in range(len(self.experiments)):
-                samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin+iterations[i] + 1),:]
+                samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin+iterations[i] + 1 + step),:]
                 norm_of_means_yet[j] = norm(mean(samples_yet, 0))
             
             running_means[i] = mean(norm_of_means_yet)
