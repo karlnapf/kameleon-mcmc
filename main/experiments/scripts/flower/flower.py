@@ -32,7 +32,7 @@ if __name__ == '__main__':
     print "running experiments", n, "times at base", experiment_dir
     
     distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=8)
-    sigma = 20
+    sigma = 2
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
@@ -43,13 +43,13 @@ if __name__ == '__main__':
         burnin=60000
         num_iterations=120000
         
-#        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=burnin))
+        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
         mean_est = zeros(distribution.dimension, dtype="float64")
         cov_est = 1.0 * eye(distribution.dimension)
-        mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
-        mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
-        mcmc_samplers.append(StandardMetropolis(distribution, cov=cov_est))
+#        mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
+#        mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
+#        mcmc_samplers.append(StandardMetropolis(distribution, cov=cov_est))
         
         start = zeros(distribution.dimension, dtype="float64")
         mcmc_params = MCMCParams(start=start, num_iterations=num_iterations, burnin=burnin)
