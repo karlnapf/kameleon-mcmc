@@ -1,5 +1,5 @@
 from main.experiments.ExperimentAggregator import ExperimentAggregator
-from matplotlib.pyplot import plot, fill_between, savefig
+from matplotlib.pyplot import plot, fill_between, savefig, show
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt
 
@@ -48,6 +48,37 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append("acceptance rate:")
         lines.append(str(mean(acceptance_rates)))
         
+        
+        
+        # mean as a function of iterations
+        step = 1000
+        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin+step, step=step)
+        
+        running_means = zeros(len(iterations))
+        running_errors = zeros(len(iterations))
+        for i in arange(len(iterations)):
+            # norm of mean of chain up to current iterations
+            norm_of_means_yet = zeros(len(self.experiments))
+            for j in range(len(self.experiments)):
+                burned_in_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + iterations[i] + 1),:]
+                norm_of_means_yet[j] = norm(mean(burned_in_yet, 0))
+            
+            print norm_of_means_yet
+            running_means[i] = mean(norm_of_means_yet)
+            error_level = 1.96
+            running_errors[i] = error_level*std(norm_of_means_yet) / sqrt(i + 1)
+            
+        plot(iterations, running_means)
+        fill_between(iterations, running_means - running_errors, \
+                     running_means + running_errors, hold=True, color="gray")
+        savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
+        show()
+        
+        
+        
+        
+        
+        
         # add latex table line
         latex_lines = []
         latex_lines.append("& STM & ADM & ADML & KAM\\\\")
@@ -76,28 +107,6 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         latex_lines.append("\\\\")
         lines.append("".join(latex_lines))
-        
-        # mean as a function of iterations
-        step = 1000
-        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
-        
-        running_means = zeros(len(iterations))
-        running_errors = zeros(len(iterations))
-        for i in arange(len(iterations)):
-            # norm of mean of chain up to current iterations
-            norm_of_means_yet = zeros(len(self.experiments))
-            for j in range(len(self.experiments)):
-                burned_in_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + i + 2),:]
-                norm_of_means_yet[j] = norm(mean(burned_in_yet, 0))
-            
-            running_means[i] = mean(norm_of_means_yet)
-            running_errors[i] = std(norm_of_means_yet) / sqrt(i + 1)
-            
-        plot(iterations, running_means)
-        error_level = 1.96
-        fill_between(iterations, running_means - error_level * running_errors, \
-                     running_means + error_level * running_errors, hold=True, color="gray")
-        savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
         
         return lines
 
