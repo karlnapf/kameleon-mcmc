@@ -1,6 +1,8 @@
 from main.experiments.ExperimentAggregator import ExperimentAggregator
+from matplotlib.pyplot import plot, show, fill_between, savefig
 from numpy.linalg.linalg import norm
-from numpy.ma.core import arange, zeros, mean, std, allclose
+from numpy.ma.core import arange, zeros, mean, std, allclose, cumsum, array, \
+    sqrt
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
@@ -53,9 +55,9 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         # add latex table line
         latex_lines=[]
-        latex_lines.append("Sampler & Norm of mean & ")
+        latex_lines.append("Sampler & Acceptance & Norm(mean) & ")
         for i in range(len(self.ref_quantiles)):
-            latex_lines.append('$%.3f$' % self.ref_quantiles[i])
+            latex_lines.append('%.1f' % self.ref_quantiles[i] + "-quantile")
             if i<len(self.ref_quantiles)-1:
                 latex_lines.append(" & ")
         latex_lines.append("\\\\")
@@ -64,7 +66,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         latex_lines=[]
         latex_lines.append(self.experiments[0].mcmc_chain.mcmc_sampler.__class__.__name__)
         latex_lines.append(" & ")
-        latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(acceptance_rates))
+        latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % std(acceptance_rates))
         latex_lines.append(" & ")
         latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(norm_of_means))
         latex_lines.append(" & ")
@@ -76,7 +78,17 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         latex_lines.append("\\\\")
         lines.append("".join(latex_lines))
         
-        
+        # mean as a function of iterations
+        iterations=(arange(len(norm_of_means))+1)
+        running_means=cumsum(norm_of_means)/iterations
+        running_errors=1.96*array([std(norm_of_means[0:(i+1)]) / sqrt(i+1) for i in range(len(norm_of_means))])
+        print iterations
+        print running_means
+        print running_errors
+        plot(iterations, running_means)
+        fill_between(iterations, running_means-running_errors, \
+                     running_means+running_errors, hold=True, color="gray")
+        savefig(self.foldername + "running_mean.png")
         
         return lines
 
