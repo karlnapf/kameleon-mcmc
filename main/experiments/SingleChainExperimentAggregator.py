@@ -70,8 +70,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         plot(iterations, running_means)
         fill_between(iterations, running_means - running_errors, \
                      running_means + running_errors, hold=True, color="gray")
-        savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
         ylim(0,10)
+        savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
 #        show()
         
         
