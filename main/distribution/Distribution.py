@@ -43,6 +43,12 @@ class Distribution(object):
         Z = self.sample(1000).samples
         return zip(ceil(Z.min(0)), ceil(Z.max(0)))
     
+    def get_proposal_points(self, n):
+        """
+        Returns n points for proposal distributions which might be interesting
+        """
+        return self.sample(n).samples
+
 class Sample(object):
     def __init__(self,samples):
         self.samples=samples

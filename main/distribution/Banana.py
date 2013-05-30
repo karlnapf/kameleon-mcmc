@@ -1,8 +1,9 @@
 from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
+from numpy.core.function_base import linspace
 from numpy.core.shape_base import hstack
 from numpy.lib.twodim_base import eye
-from numpy.ma.core import sqrt, arange, zeros, shape
+from numpy.ma.core import sqrt, arange, zeros, shape, array
 from numpy.random import randn
 
 class Banana(Distribution):
@@ -17,9 +18,9 @@ class Banana(Distribution):
         self.V = V
     
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "bananicity="+ str(self.bananicity)
-        s += ", V="+ str(self.V)
+        s = self.__class__.__name__ + "=["
+        s += "bananicity=" + str(self.bananicity)
+        s += ", V=" + str(self.V)
         s += ", " + Distribution.__str__(self)
         s += "]"
         return s
@@ -34,8 +35,8 @@ class Banana(Distribution):
         return Sample(X)
     
     def log_pdf(self, X):
-        assert(len(shape(X))==2)
-        assert(shape(X)[1]==self.dimension)
+        assert(len(shape(X)) == 2)
+        assert(shape(X)[1] == self.dimension)
         
         transformed = X.copy()
         transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
@@ -44,8 +45,8 @@ class Banana(Distribution):
         return phi.log_pdf(transformed)
     
     def emp_quantiles(self, X, quantiles=arange(0.1, 1, 0.1)):
-        assert(len(shape(X))==2)
-        assert(shape(X)[1]==self.dimension)
+        assert(len(shape(X)) == 2)
+        assert(shape(X)[1] == self.dimension)
         
         transformed = X.copy()
         transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
@@ -55,14 +56,20 @@ class Banana(Distribution):
     
     def get_plotting_bounds(self):
         if self.bananicity == 0.03 and self.V == 100.0:
-            return [(-20, 20), (-5, 10)]
+            return [(-20, 20), (-7, 12)]
         elif self.bananicity == 0.1 and self.V == 100.0:
             return [(-20, 20), (-5, 30)]
         else:
             return Distribution.get_plotting_bounds(self)
 
-#if __name__ == '__main__':
-#    banana = Banana(dimension=2)
-#    X = banana.sample(10000).samples
-#    print banana.emp_quantiles(X)
-#    Visualise.visualise_distribution(banana)
+    def get_proposal_points(self, n):
+        """
+        Returns n points which lie on a uniform grid on the "center" of the banana
+        """
+        if self.dimension == 2:
+            (xmin, xmax), _ = self.get_plotting_bounds()
+            x1 = linspace(xmin, xmax, n)
+            x2 = self.bananicity * (x1 ** 2 - self.V)
+            return array([x1, x2]).T
+        else:
+            return Distribution.get_proposal_points(self, n)

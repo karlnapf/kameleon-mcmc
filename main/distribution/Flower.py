@@ -1,5 +1,6 @@
 from main.distribution.Distribution import Distribution, Sample
 from main.distribution.Gaussian import Gaussian
+from numpy.core.function_base import linspace
 from numpy.core.numeric import array, zeros
 from numpy.core.shape_base import hstack
 from numpy.linalg import norm
@@ -8,7 +9,7 @@ from numpy.random import rand, randn
 from scipy.constants.constants import pi
 
 class Flower(Distribution):
-    def __init__(self, amplitude=1, frequency=7, variance=0.05, radius=3.5, dimension=2):
+    def __init__(self, amplitude=6, frequency=6, variance=1, radius=10, dimension=2):
         Distribution.__init__(self, dimension)
         
         self.amplitude = amplitude
@@ -19,11 +20,11 @@ class Flower(Distribution):
         assert(dimension >= 2)
     
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "amplitude="+ str(self.amplitude)
-        s += ", frequency="+ str(self.frequency)
-        s += ", variance="+ str(self.variance)
-        s += ", radius="+ str(self.radius)
+        s = self.__class__.__name__ + "=["
+        s += "amplitude=" + str(self.amplitude)
+        s += ", frequency=" + str(self.frequency)
+        s += ", variance=" + str(self.variance)
+        s += ", radius=" + str(self.radius)
         s += ", " + Distribution.__str__(self)
         s += "]"
         return s
@@ -46,8 +47,8 @@ class Flower(Distribution):
         return Sample(X)
     
     def log_pdf(self, X):
-        assert(len(shape(X))==2)
-        assert(shape(X)[1]==self.dimension)
+        assert(len(shape(X)) == 2)
+        assert(shape(X)[1] == self.dimension)
         
         # compute all norms
         norms = array([norm(x) for x in X])
@@ -81,8 +82,27 @@ class Flower(Distribution):
                 overall[i, :] = gaussian.emp_quantiles(array([[norms[i]]]), quantiles)
             return sum(overall) / len(X)
     
-#if __name__ == '__main__':
-#    flower_instance = Flower()
-#    X = flower_instance.sample(1000).samples
-#    print flower_instance.emp_quantiles(X)
-#    Visualise.visualise_distribution(flower_instance)
+    def get_proposal_points(self, n):
+        """
+        Returns n points which lie on a uniform grid on the "center" of the flower
+        """
+        if self.dimension == 2:
+            theta = linspace(0, 2 * pi, n)
+            
+            # sample radius
+            radius_sample = zeros(n) + self.radius + \
+                self.amplitude * cos(self.frequency * theta)
+            
+            # sample points
+            X = array((cos(theta) * radius_sample, sin(theta) * radius_sample)).T
+            
+            return X
+        else:
+            return Distribution.get_proposal_points(self, n)
+
+    def get_plotting_bounds(self):
+        if self.dimension == 2:
+            value = self.radius + self.amplitude + 2 * sqrt(self.variance)
+            return [(-value, value) for _ in range(2)]
+        else:
+            return Flower.get_plotting_bounds(self)

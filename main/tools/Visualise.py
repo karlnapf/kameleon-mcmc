@@ -1,6 +1,10 @@
-from matplotlib.pyplot import imshow, ylim, xlim, contour, plot, hold
+from main.distribution.Gaussian import Gaussian
+from matplotlib.patches import Ellipse
+from matplotlib.pyplot import imshow, ylim, xlim, contour, plot, hold, gca
 from numpy.core.function_base import linspace
-from numpy.ma.core import zeros, array, exp
+from numpy.linalg.linalg import eigh
+from numpy.ma.core import zeros, array, exp, arctan2, sqrt
+import numpy
 
 class Visualise(object):
     def __init__(self):
@@ -15,12 +19,13 @@ class Visualise(object):
         return Xs, Ys
     
     @staticmethod
-    def visualise_distribution(distribution, Z=None, log_density=False):
+    def visualise_distribution(distribution, Z=None, log_density=False, Xs=None, Ys=None):
         """
         Plots the density of a given Distribution instance and plots some
         samples on top.
         """
-        Xs, Ys = Visualise.get_plotting_arrays(distribution)
+        if Xs is None or Ys is None:
+            Xs, Ys = Visualise.get_plotting_arrays(distribution)
         
         Visualise.plot_density(distribution, Xs, Ys)
         
@@ -60,16 +65,30 @@ class Visualise(object):
         xlim([Xs.min(), Xs.max()])
       
     @staticmethod  
-    def contour_plot_density(distribution, Xs, Ys, levels=None, log_domain=False):
+    def contour_plot_density(distribution, Xs=None, Ys=None, log_domain=False):
         """
-        Contour-plots a 2D density
+        Contour-plots a 2D density. If Gaussian, plots 1.96 interval contour only
         
         density - distribution instance to plot
         Xs - x values the density is evaluated at
         Ys - y values the density is evaluated at
         log_domain - if False, density will be put into exponential function
         """
+        if isinstance(distribution, Gaussian) and log_domain == False:
+            gca().add_artist(Visualise.get_gaussian_ellipse_artist(distribution))
+            gca().plot(distribution.mu[0], distribution.mu[1], 'r*', \
+                     markersize=3.0, markeredgewidth=.1)
+            return
+        
         assert(distribution.dimension == 2)
+
+        if Xs is None:
+            (xmin, xmax), _ = distribution.get_plotting_bounds()
+            Xs = linspace(xmin, xmax)
+           
+        if Ys is None:
+            _, (ymin, ymax) = distribution.get_plotting_bounds()
+            Ys = linspace(ymin, ymax) 
         
         D = zeros((len(Ys), len(Xs)))
         
@@ -82,10 +101,7 @@ class Visualise(object):
         if log_domain == False:
             D = exp(D)
         
-        if levels is None:
-            contour(Xs, Ys, D, origin='lower')
-        else:
-            contour(Xs, Ys, D, levels=levels, origin='lower', linewidth=3)
+        contour(Xs, Ys, D, origin='lower')
         
     @staticmethod
     def plot_array(Xs, Ys, D):
@@ -111,7 +127,30 @@ class Visualise(object):
         Z - set of row-vectors points to plot
         y - one point that is marked in red, might be None
         """
-        plot(Z[:, 0], Z[:, 1], '*', markersize=5.0)
+        plot(Z[:, 0], Z[:, 1], '*', markersize=3.0, markeredgewidth=.1)
         
         if y is not None:
-            plot(y[0, 0], y[0, 1], 'r*', markersize=15.0)
+            plot(y[0, 0], y[0, 1], 'r*', markersize=10.0, markeredgewidth=.1)
+
+    @staticmethod
+    def get_gaussian_ellipse_artist(gaussian, nstd=1.96):
+        """
+        Returns an allipse artist for nstd times the standard deviation of this
+        Gaussian
+        """
+        assert(isinstance(gaussian, Gaussian))
+        assert(gaussian.dimension == 2)
+        
+        # compute eigenvalues (ordered)
+        vals, vecs = eigh(gaussian.L.dot(gaussian.L.T))
+        order = vals.argsort()[::-1]
+        vals, vecs = vals[order], vecs[:, order]
+        
+        theta = numpy.degrees(arctan2(*vecs[:, 0][::-1]))
+
+        # width and height are "full" widths, not radius
+        width, height = 2 * nstd * sqrt(vals)
+        e = Ellipse(xy=gaussian.mu, width=width, height=height, angle=theta, \
+                   edgecolor="red", fill=False, linewidth=1)
+        
+        return e

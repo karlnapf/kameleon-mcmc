@@ -93,5 +93,3 @@ class Gaussian(Distribution):
         for jj in range(0, len(quantiles)):
             results[jj] = mean(norms_squared < cutoffs[jj])
         return results
-
-    

@@ -10,7 +10,8 @@ from numpy.lib.function_base import meshgrid
 from numpy.ma.core import reshape, array, shape
 
 class GFunction(object):
-    def __init__(self, distribution, n=200, gaussian_width=3, nu2=0.1, gamma=0.1, ell=15):
+    def __init__(self, distribution, n=200, gaussian_width=3, nu2=0.1, \
+                 gamma=0.1, ell=15, nXs=100, nYs=100):
         self.kernel = GaussianKernel(gaussian_width)
         self.distribution = distribution
         self.nu2 = nu2
@@ -31,10 +32,12 @@ class GFunction(object):
         
         # plotting resolution
         [(xmin, xmax), (ymin, ymax)] = self.distribution.get_plotting_bounds()
-        self.Xs = linspace(xmin, xmax, 70)
-        self.Ys = linspace(ymin, ymax, 40)
-
+        self.Xs = linspace(xmin, xmax, nXs)
+        self.Ys = linspace(ymin, ymax, nYs)
         
+    def resample_beta(self):
+        self.beta = self.rkhs_gaussian.sample().samples
+
     def compute(self, x, y, Z, beta):
         """
         Given two points x and y, a set of samples Z, and a vector beta,
@@ -65,12 +68,13 @@ class GFunction(object):
         return first + second + third
 
 
-    def plot(self, y=array([[-2, -2]]), plot_gradient=False, plot_data=False):
+    def plot(self, y=array([[-2, -2]]), gradient_scale=None, plot_data=False):
+        
         # where to evaluate G?
         G = zeros((len(self.Ys), len(self.Xs)))
     
         # for plotting the gradient field, each U and V are one dimension of gradient
-        if plot_gradient:
+        if gradient_scale is not None:
             GXs2 = linspace(self.Xs.min(), self.Xs.max(), 30)
             GYs2 = linspace(self.Ys.min(), self.Ys.max(), 20)
             X, Y = meshgrid(GXs2, GYs2)
@@ -79,16 +83,16 @@ class GFunction(object):
     
         # evaluate g at a set of points in Xs and Ys
         for i in range(len(self.Xs)):
-            print i, "/", len(self.Xs)
+#            print i, "/", len(self.Xs)
             for j in range(len(self.Ys)):
                 x_2d = array([[self.Xs[i], self.Ys[j]]])
                 y_2d = reshape(y, (1, len(y)))
                 G[j, i] = self.compute(x_2d, y_2d, self.Z, self.beta)
     
         # gradient at lower resolution
-        if plot_gradient:
+        if gradient_scale is not None:
             for i in range(len(GXs2)):
-                print i, "/", len(GXs2)
+#                print i, "/", len(GXs2)
                 for j in range(len(GYs2)):
                     x_1d = array([GXs2[i], GYs2[j]])
                     y_2d = reshape(y, (1, len(y)))
@@ -100,9 +104,9 @@ class GFunction(object):
         y_2d = reshape(y, (1, len(y)))
         Visualise.plot_array(self.Xs, self.Ys, G)
         
-        if plot_gradient:
+        if gradient_scale is not None:
             hold(True)
-            quiver(X, Y, U, V, color='y', scale=G.max() * 15)
+            quiver(X, Y, U, V, color='y', scale=gradient_scale)
             hold(False)
 
         if plot_data:
@@ -112,35 +116,18 @@ class GFunction(object):
 
     def plot_proposal(self, ys):
         # evaluate density itself
-        Visualise.visualise_distribution(self.distribution, Z=None)
-#        D = zeros((len(self.Ys), len(self.Xs)))
-#        for i in range(len(self.Xs)):
-#            print i, "/", len(self.Xs)
-#            for j in range(len(self.Ys)):
-#                x_2d = array([[self.Xs[i], self.Ys[j]]])
-#                D[j, i] = self.distribution.log_pdf(x_2d)
-#                
-#        Visualise.plot_array(self.Xs, self.Ys, expD)        
+        Visualise.visualise_distribution(self.distribution, Z=self.Z, Xs=self.Xs, Ys=self.Ys)
         
         # precompute constants of proposal
-        mcmc_hammer = MCMCHammer(self.distribution, self.kernel, self.Z, self.nu2, self.gamma)
+        mcmc_hammer = MCMCHammer(self.distribution, self.kernel, self.Z, \
+                                 self.nu2, self.gamma)
         
         # plot proposal around each y
         for y in ys:
-            print "evaluating proposal", y
             mu, L_R = mcmc_hammer.compute_constants(y)
             gaussian = Gaussian(mu, L_R, is_cholesky=True)
             
-            # evaluate proposal
-            P = zeros((len(self.Ys), len(self.Xs)))
-            for i in range(len(self.Xs)):
-                print i, "/", len(self.Xs)
-                for j in range(len(self.Ys)):
-                    x_2d = array([[self.Xs[i], self.Ys[j]]])
-                    P[j, i] = gaussian.log_pdf(x_2d)
-            
             hold(True)
-            levels=array([0.05])
-            Visualise.contour_plot_density(gaussian, self.Xs, self.Ys, levels)
+            Visualise.contour_plot_density(gaussian)
             hold(False)
             draw()

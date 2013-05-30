@@ -18,7 +18,7 @@ import pstats
 
 
 def main():
-    distribution = Banana(dimension=8, bananicity=0.1, V=100.0)
+    distribution = Banana(dimension=2, bananicity=0.1, V=100.0)
     distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=2)
     Z = distribution.sample(1000).samples
 #    Visualise.visualise_distribution(distribution, Z)
@@ -29,8 +29,6 @@ def main():
     kernel = GaussianKernel(sigma=sigma)
     
     mcmc_sampler = MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=inf)
-    cov = 1.0 * eye(distribution.dimension)
-    mcmc_sampler = StandardMetropolis(distribution)
     
     start = zeros(distribution.dimension)
     mcmc_params = MCMCParams(start=start, num_iterations=80000)
