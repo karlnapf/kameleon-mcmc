@@ -46,6 +46,31 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append("acceptance rate:")
         lines.append(str(mean(acceptance_rates)))
         
+        # add latex table line
+        latex_lines=[]
+        latex_lines.append("Distributions & Norm of mean & ")
+        for i in range(len(self.ref_quantiles)):
+            latex_lines.append('$%.2f$' % self.ref_quantiles[i])
+            if i<len(self.ref_quantiles)-1:
+                latex_lines.append(" & ")
+        latex_lines.append("\\\\")
+        lines.append("".join(latex_lines))
+        
+        latex_lines=[]
+        latex_lines.append(self.experiments[0].mcmc_chain.mcmc_sampler.distribution.__class__.__name__)
+        latex_lines.append(" & ")
+        latex_lines.append('$%.2f' % mean(norm_of_means) + " \pm " + '%.2f$' % std(acceptance_rates))
+        latex_lines.append(" & ")
+        latex_lines.append('$%.2f' % mean(norm_of_means) + " \pm " + '%.2f$' % std(norm_of_means))
+        latex_lines.append(" & ")
+        for i in range(len(self.ref_quantiles)):
+            latex_lines.append('$%.2f' % mean_quantiles[i] + " \pm " + '%.2f$' % std_quantiles[i])
+            if i<len(self.ref_quantiles)-1:
+                latex_lines.append(" & ")
+        
+        latex_lines.append("\\\\")
+        lines.append("".join(latex_lines))
+        
         return lines
 
     def __str__(self):
