@@ -39,13 +39,13 @@ class ExperimentAggregator(object):
             assert(gitbranch == ref_gitbranch)
             
             # this might be false if script was altered after experiment, comment out then
-            if githash != GitTools.get_hash():
-                print "git version in folder", folders[i], "is", githash, "while " \
-                      "git version in folder", folders[0], "is", ref_githash
-                 
-            if gitbranch != GitTools.get_branch():
-                print "git branch in folder", folders[i], "is", gitbranch, "while " \
-                      "git branch in folder", folders[0], "is", ref_gitbranch
+#            if githash != GitTools.get_hash():
+#                print "git version in folder", folders[i], "is", githash, "while " \
+#                      "git version in folder", folders[0], "is", ref_githash
+#                 
+#            if gitbranch != GitTools.get_branch():
+#                print "git branch in folder", folders[i], "is", gitbranch, "while " \
+#                      "git branch in folder", folders[0], "is", ref_gitbranch
                       
         # remove non-existing folders
         folders_cleaned=[]
