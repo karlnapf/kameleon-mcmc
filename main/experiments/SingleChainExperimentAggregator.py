@@ -78,12 +78,6 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         
         
-        
-        
-        # add latex table line
-        latex_lines = []
-        latex_lines.append("& STM & ADM & ADML & KAM\\\\")
-        
         # add latex table line
         latex_lines = []
         latex_lines.append("Sampler & Acceptance & Norm(mean) & ")
@@ -96,18 +90,13 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         latex_lines = []
         latex_lines.append(self.experiments[0].mcmc_chain.mcmc_sampler.__class__.__name__)
-        latex_lines.append(" & ")
         latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % std(acceptance_rates))
-        latex_lines.append(" & ")
         latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(norm_of_means))
-        latex_lines.append(" & ")
         for i in range(len(self.ref_quantiles)):
             latex_lines.append('$%.3f' % mean_quantiles[i] + " \pm " + '%.3f$' % std_quantiles[i])
-            if i < len(self.ref_quantiles) - 1:
-                latex_lines.append(" & ")
         
-        latex_lines.append("\\\\")
-        lines.append("".join(latex_lines))
+        
+        lines.append(" & ".join(latex_lines) + "\\\\")
         
         return lines
 
