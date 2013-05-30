@@ -43,7 +43,7 @@ if __name__ == '__main__':
         burnin=60000
         num_iterations=120000
         
-        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=burnin))
+#        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
         mean_est = zeros(distribution.dimension, dtype="float64")
         cov_est = 1.0 * eye(distribution.dimension)
