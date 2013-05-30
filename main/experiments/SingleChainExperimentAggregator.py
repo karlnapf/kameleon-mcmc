@@ -1,8 +1,7 @@
 from main.experiments.ExperimentAggregator import ExperimentAggregator
-from matplotlib.pyplot import plot, show, fill_between, savefig
+from matplotlib.pyplot import plot, fill_between, savefig
 from numpy.linalg.linalg import norm
-from numpy.ma.core import arange, zeros, mean, std, allclose, cumsum, array, \
-    sqrt
+from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
@@ -79,7 +78,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append("".join(latex_lines))
         
         # mean as a function of iterations
-        step=1000
+        step = 1000
         iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
         
         running_means = zeros(len(iterations))
@@ -93,13 +92,13 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 norm_of_means_yet[j] = norm(mean(burned_in_yet, 0))
             
             running_means[i] = mean(norm_of_means_yet)
-            running_errors[i] = 1.96 * std(norm_of_means_yet) / sqrt(i + 1)
+            running_errors[i] = std(norm_of_means_yet) / sqrt(i + 1)
             
         plot(iterations, running_means)
-        fill_between(iterations, running_means - running_errors, \
-                     running_means + running_errors, hold=True, color="gray")
+        error_level = 1.96
+        fill_between(iterations, running_means - error_level * running_errors, \
+                     running_means + error_level * running_errors, hold=True, color="gray")
         savefig(self.experiments[0].experiment_dir + "_running_mean.png")
-        show()
         
         return lines
 
