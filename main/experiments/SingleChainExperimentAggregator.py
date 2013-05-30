@@ -52,20 +52,21 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         # mean as a function of iterations
         step = 1000
-        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations+step, step=step)
+        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations-burnin+step, step=step)
         
         running_means = zeros(len(iterations))
         running_errors = zeros(len(iterations))
         for i in arange(len(iterations)):
-            # norm of mean of chain up to current iterations
+            # norm of mean of chain up 
+            
             norm_of_means_yet = zeros(len(self.experiments))
             for j in range(len(self.experiments)):
-                samples_yet = self.experiments[j].mcmc_chain.samples[:(iterations[i] + 1),:]
+                samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin+iterations[i] + 1),:]
                 norm_of_means_yet[j] = norm(mean(samples_yet, 0))
             
             running_means[i] = mean(norm_of_means_yet)
             error_level = 1.96
-            running_errors[i] = error_level*std(norm_of_means_yet) / sqrt(i + 1)
+            running_errors[i] = error_level*std(norm_of_means_yet) / sqrt(len(norm_of_means_yet))
             
         plot(iterations, running_means)
         fill_between(iterations, running_means - running_errors, \
