@@ -1,5 +1,5 @@
 from main.experiments.ExperimentAggregator import ExperimentAggregator
-from matplotlib.pyplot import plot, fill_between, savefig, show
+from matplotlib.pyplot import plot, fill_between, savefig, show, ylim
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt
 
@@ -71,6 +71,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         fill_between(iterations, running_means - running_errors, \
                      running_means + running_errors, hold=True, color="gray")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
+        ylim(0,10)
 #        show()
         
         
