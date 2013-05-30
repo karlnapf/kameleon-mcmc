@@ -82,13 +82,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         iterations=(arange(len(norm_of_means))+1)
         running_means=cumsum(norm_of_means)/iterations
         running_errors=1.96*array([std(norm_of_means[0:(i+1)]) / sqrt(i+1) for i in range(len(norm_of_means))])
-        print iterations
-        print running_means
-        print running_errors
         plot(iterations, running_means)
         fill_between(iterations, running_means-running_errors, \
                      running_means+running_errors, hold=True, color="gray")
-        savefig(self.foldername + "running_mean.png")
+        savefig(self.experiments[i].folder_base + "running_mean.png")
         
         return lines
 
