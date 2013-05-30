@@ -24,7 +24,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             burned_in = self.experiments[i].mcmc_chain.samples[burnin:, :]
             
             # use precomputed quantiles if they match with the provided ones
-            if allclose(self.ref_quantiles, self.experiments[i].ref_quantiles):
+            if hasattr(self.experiments[i], "ref_quantiles") and \
+               allclose(self.ref_quantiles, self.experiments[i].ref_quantiles):
                 quantiles[i, :] = self.experiments[i].quantiles
             else:
                 quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
