@@ -32,7 +32,7 @@ if __name__ == '__main__':
     print "running experiments", n, "times at base", experiment_dir
     
     distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=8)
-    sigma = 5
+    sigma = 15
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
