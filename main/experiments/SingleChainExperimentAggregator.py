@@ -84,11 +84,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         running_means = zeros(len(iterations))
         running_errors = zeros(len(iterations))
         for i in arange(len(iterations)):
-            print "mean up to", i + 1, "iterations"
             # norm of mean of chain up to current iterations
             norm_of_means_yet = zeros(len(self.experiments))
             for j in range(len(self.experiments)):
-                burned_in_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + i + 2)]
+                burned_in_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + i + 2),:]
                 norm_of_means_yet[j] = norm(mean(burned_in_yet, 0))
             
             running_means[i] = mean(norm_of_means_yet)
@@ -98,7 +97,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         error_level = 1.96
         fill_between(iterations, running_means - error_level * running_errors, \
                      running_means + error_level * running_errors, hold=True, color="gray")
-        savefig(self.experiments[0].experiment_dir + "_running_mean.png")
+        savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
         
         return lines
 
