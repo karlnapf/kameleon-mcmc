@@ -31,8 +31,8 @@ if __name__ == '__main__':
     experiment_dir = experiment_dir_base + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
     print "running experiments", n, "times at base", experiment_dir
     
-    distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=2)
-    sigma = 2
+    distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=8)
+    sigma = 5
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     

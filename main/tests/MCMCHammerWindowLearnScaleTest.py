@@ -19,29 +19,29 @@ import pstats
 
 def main():
     distribution = Banana(dimension=2, bananicity=0.1, V=100.0)
-    distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=2)
-    Z = distribution.sample(1000).samples
+    distribution = Flower(amplitude=6, frequency=6, variance=1, radius=10, dimension=8)
 #    Visualise.visualise_distribution(distribution, Z)
 #    show()
 #    
-    sigma = 2
+    sigma = 5
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
     mcmc_sampler = MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=inf)
     
     start = zeros(distribution.dimension)
-    mcmc_params = MCMCParams(start=start, num_iterations=80000)
+    mcmc_params = MCMCParams(start=start, num_iterations=30000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
-    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=10000))
+#    chain.append_mcmc_output(PlottingOutput(distribution, plot_from=10000))
     chain.append_mcmc_output(StatisticsOutput(plot_times=False))
     chain.run()
     
-    print distribution.emp_quantiles(chain.samples)
+    print distribution.emp_quantiles(chain.samples[10000:])
     
 #    Visualise.visualise_distribution(distribution, chain.samples)
 
-cProfile.run("main()", "profile.tmp")
-p = pstats.Stats("profile.tmp")
-p.sort_stats("cumulative").print_stats(10)
+#cProfile.run("main()", "profile.tmp")
+#p = pstats.Stats("profile.tmp")
+#p.sort_stats("cumulative").print_stats(10)
+main()
