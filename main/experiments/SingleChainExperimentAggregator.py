@@ -1,7 +1,8 @@
 from main.experiments.ExperimentAggregator import ExperimentAggregator
-from matplotlib.pyplot import plot, fill_between, savefig, show, ylim
+from matplotlib.pyplot import plot, fill_between, savefig, ylim
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt
+from main.tools.StatisticTools import StatisticTools
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
@@ -20,6 +21,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         quantiles = zeros((len(self.experiments), len(self.ref_quantiles)))
         norm_of_means = zeros(len(self.experiments))
         acceptance_rates = zeros(len(self.experiments))
+        ess2=zeros(len(self.experiments))
         
         for i in range(len(self.experiments)):
             burned_in = self.experiments[i].mcmc_chain.samples[burnin:, :]
@@ -34,6 +36,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 
             norm_of_means[i] = norm(mean(burned_in, 0))
             acceptance_rates[i] = mean(self.experiments[i].mcmc_chain.accepteds[burnin:])
+            ess2[i]=StatisticTools.effective_sample_size(burned_in[:,1])
 
         mean_quantiles = mean(quantiles, 0)
         std_quantiles = std(quantiles, 0)
@@ -48,7 +51,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append("acceptance rate:")
         lines.append(str(mean(acceptance_rates)))
         
-        
+        lines.append("ess dimension 2:")
+        lines.append(str(mean(ess2)) + " +- " + str(std(ess2)))
         
         # mean as a function of iterations
         step = 1000
@@ -80,7 +84,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         # add latex table line
         latex_lines = []
-        latex_lines.append("Sampler & Acceptance & Norm(mean) & ")
+        latex_lines.append("Sampler & Acceptance & ESS2 & Norm(mean) & ")
         for i in range(len(self.ref_quantiles)):
             latex_lines.append('%.1f' % self.ref_quantiles[i] + "-quantile")
             if i < len(self.ref_quantiles) - 1:
@@ -91,6 +95,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         latex_lines = []
         latex_lines.append(self.experiments[0].mcmc_chain.mcmc_sampler.__class__.__name__)
         latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % std(acceptance_rates))
+        latex_lines.append('$%.3f' % mean(ess2) + " \pm " + '%.3f$' % std(ess2))
         latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(norm_of_means))
         for i in range(len(self.ref_quantiles)):
             latex_lines.append('$%.3f' % mean_quantiles[i] + " \pm " + '%.3f$' % std_quantiles[i])
