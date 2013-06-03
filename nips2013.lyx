@@ -1,0 +1,5685 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+%\documentclass{article} % For LaTeX2e
+\usepackage{nips13submit_e,times}
+%\usepackage{hyperref}
+%\usepackage{url}
+
+
+%\title{MCMC Hammer: Kernel Adaptive Metropolis-Hastings }
+
+%\thanks{ Use footnote for providing further information
+%about author (webpage, alternative address)---\emph{not} for acknowledging
+%funding agencies.}
+
+\author{
+ Dino Sejdinovic, Maria Lomeli Garcia, Heiko Strathmann \\
+Gatsby Unit, CSML, UCL, UK \\
+\texttt{ \{dino.sejdinovic,maria.lomelig,heiko.strathmann\}@gmail.com } \\
+\AND
+Christophe Andrieu \\
+School of Mathematics, University of Bristol \\
+\texttt{c.andrieu@bristol.ac.uk}\\
+\AND
+Arthur Gretton \\
+Gatsby Unit, CSML, UCL, UK \\
+\texttt{arthur.gretton@gmail.com}
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newcommand{\mmd}{\mathrm{MMD}}
+\newcommand{\Eb}{\mathbf{E}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+\end_preamble
+\use_default_options false
+\begin_modules
+theorems-std
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 0
+\use_mathdots 0
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Mz}{M_{\mathbf{z},y}}
+{M_{\mathbf{z},y}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\muz}{\mu_{\mathbf{z}}}
+{\mu_{\mathbf{z}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\aj}{\alpha^{(j)}}
+{\alpha^{(j)}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ajt}{\left(\alpha^{(j)}\right)^{\top}}
+{\left(\alpha^{(j)}\right)^{\top}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+MCMC Kameleon: 
+\end_layout
+
+\end_inset
+
+Kernel Adaptive Metropolis-Hastings
+\end_layout
+
+\begin_layout Abstract
+A Kernel Adaptive Metropolis-Hastings algorithm is introduced, for the purpose
+ of sampling from a target distribution with strongly nonlinear support.
+ The algorithm embeds the trajectory of the Markov chain into a reproducing
+ kernel Hilbert space (RKHS), such that the feature space covariance of
+ the samples informs the choice of proposal.
+ The procedure is computationally efficient and straightforward to implement,
+ since the RKHS moves can be integrated out analytically: our proposal distribut
+ion in the original space is a normal distribution whose mean and covariance
+ depend on where the current sample lies in the support of the target distributi
+on, and adapts to the local covariance structure of the target.
+ Kernel Adaptive Metropolis-Hastings outperforms competing fixed and adaptive
+ samplers on multivariate, highly nonlinear target distributions.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Furthermore, it is computationally efficient since all quantities are readily
+ available and only evaluations of gradients of the kernel functions are
+ required.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Most of the exisiting adaptive MCMC strategies have been developed for the
+ Independence sampler and random walk metropolis.
+ Atchade (2005) extends these schemes for a more general class of Metropolis
+ Hastings algorithms.
+ (MALA or more generally, MH with a drift.
+ Is our drift term a_y? Does this make sense?) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-2mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The choice of the proposal distribution is known to be crucial for the design
+ of Metropolis-Hastings algorithms, and methods for adapting the proposal
+ distribution to increase the sampler's efficiency based on the history
+ of the Markov chain have been widely studied.
+ These methods often aim to learn the covariance structure of the target
+ distribution, and adapt the proposal accordingly.
+ Adaptive MCMC samplers were first studied by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Haario1999,Haario2001"
+
+\end_inset
+
+, where the authors propose to update the proposal distribution along the
+ sampling process.
+ Based on the chain history, they estimate the covariance of the target
+ distribution and construct a Gaussian proposal centered at the current
+ chain state, with a particular choice of the scaling factor from 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Gelman96"
+
+\end_inset
+
+.
+ More sophisticated schemes are presented in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Andrieu08"
+
+\end_inset
+
+, e.g., adaptive scaling, component-wise scaling, and principal component
+ updates.
+\end_layout
+
+\begin_layout Standard
+While these strategies are beneficial for distributions that show high anisotrop
+y (e.g., by ensuring the proposal uses the right scaling in all principal
+ directions), they may still suffer from low acceptance probability and
+ slow mixing when the target distributions are strongly non-linear, and
+ the directions of large variance depend on the current location of the
+ sampler in the support.
+ In the present work, we develop an adaptive Metropolis-Hastings algorithm
+ in which samples are mapped to a reproducing kernel Hilbert space, and
+ the proposal distribution is chosen according to the covariance in this
+ feature space 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SchSmoMul98,SmoMikSchWil01"
+
+\end_inset
+
+.
+ Unlike earlier adaptive approaches, the resulting proposal distributions
+ are locally adaptive in input space, and oriented towards nearby regions
+ of high density, rather than simply matching the global covariance structure
+ of the distribution.
+ Implementation of the procedure is straightforward, since it combines a
+ move in feature space with a stochastic step towards the nearest input
+ space point.
+ By integrating out the feature space move, the proposal is simply a Gaussian
+ in input space, but with mean and covariance informed by the feature space
+ geometry.
+ 
+\end_layout
+
+\begin_layout Standard
+We begin our presentation in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Background"
+
+\end_inset
+
+, with a brief overview of existing adaptive Metropolis approaches; we also
+ review covariance operators in the RKHS.
+ Based on these operators, we describe a sampling strategy for Gaussian
+ measures in the RKHS in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Sampling-in-RKHS"
+
+\end_inset
+
+, and introduce a cost function for constructing proposal distributions.
+ In Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Kernel-adaptive-proposal"
+
+\end_inset
+
+, we outline our main algorithm, termed Kernel Adaptive Metropolis-Hastings
+ (MCMC Kameleon), and briefly discuss the relation with Metropolis Adjusted
+ Langevin Algorithms (MALA) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Roberts2003,RSSB:RSSB765"
+
+\end_inset
+
+.
+ We provide experimental comparisons with other fixed and adaptive samplers
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Experiments"
+
+\end_inset
+
+, where we show superior performance when the target distributions have
+ highly nonlinear support.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-2mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Background"
+
+\end_inset
+
+Background
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: what do we introduce here?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Subsection
+Notation
+\end_layout
+
+\begin_layout Itemize
+Subspace induced by sample 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+: 
+\begin_inset Formula $\mathcal{H}_{\mathbf{z}}=span\left\{ k(\cdot,z_{i})\right\} _{i=1}^{n}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Empirical kernel embedding 
+\begin_inset Formula $\muz=\frac{1}{n}\sum_{i=1}^{n}k(\cdot,z_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Empirical covariance operator 
+\begin_inset Formula $C_{\mathbf{z}}=\frac{1}{n}\sum_{i=1}^{n}k(\cdot,z_{i})\otimes k(\cdot,z_{i})-\muz\otimes\muz$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Adaptive Metropolis Algorithms
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\mathcal{X}=\mathbb{R}^{d}$
+\end_inset
+
+ be the domain of interest, and denote the unnormalized target density on
+ 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ by 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+ Additionally, let 
+\begin_inset Formula $\Sigma_{t}=\Sigma_{t}(x_{0},x_{1},\ldots,x_{t-1})$
+\end_inset
+
+ denote an estimate of the covariance matrix of the target density based
+ on the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+.
+ The original adaptive Metropolis at the current state of the chain state
+ 
+\begin_inset Formula $x_{t}=y$
+\end_inset
+
+ uses the proposal
+\begin_inset Formula 
+\begin{equation}
+q_{t}(\cdot|y)=\mathcal{N}(y,\nu^{2}\Sigma_{t}),\label{eq: am_proposal}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\nu=2.38/\sqrt{d}$
+\end_inset
+
+ is a fixed scaling factor from 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Gelman96"
+
+\end_inset
+
+.
+ This choice of scaling factor was shown to be optimal (in terms of efficiency
+ measures) for the usual Metropolis algorithm.
+ While this is no longer the case for Adaptive Metropolis, it can nevertheless
+ be used as a heuristic.
+ Alternatively, the scale 
+\begin_inset Formula $\nu$
+\end_inset
+
+ can also be adapted at each step as in 
+\begin_inset CommandInset citation
+LatexCommand citep
+after "Algorithm 4"
+key "Andrieu08"
+
+\end_inset
+
+ to obtain the acceptance rate from 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Gelman96"
+
+\end_inset
+
+, 
+\begin_inset Formula $a^{*}=0.234$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(We might need to check what is the optimal scaling for Metropolis Hastings,
+ in the paper by Roberts and Rosenthal (2001)
+\begin_inset Quotes eld
+\end_inset
+
+Optimal scaling for various metropolis-hastings algorithms
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+RKHS Embeddings and Covariance Operators
+\end_layout
+
+\begin_layout Standard
+According to the Moore-Aronszajn theorem 
+\begin_inset CommandInset citation
+LatexCommand citep
+after "p. 19"
+key "BerTho04"
+
+\end_inset
+
+, for every symmetric, positive definite function (
+\emph on
+kernel
+\emph default
+) 
+\begin_inset Formula $k:\mathcal{X}\times\mathcal{X}\to\mathbb{R}$
+\end_inset
+
+, there is an associated reproducing kernel Hilbert space (RKHS) 
+\begin_inset Formula $\mathcal{H}_{k}$
+\end_inset
+
+ of real-valued functions on 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ with reproducing kernel 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The map 
+\begin_inset Formula $\varphi:\mathcal{X}\to\mathcal{H}_{k}$
+\end_inset
+
+, 
+\begin_inset Formula $\varphi:x\mapsto k(\cdot,x)$
+\end_inset
+
+ is called the canonical feature map of 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ This feature map or embedding of a single point can be extended to that
+ of a probability measure 
+\begin_inset Formula $P$
+\end_inset
+
+ on 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+: its kernel embedding is an element 
+\begin_inset Formula $\mu_{P}\in\mathcal{H}_{k}$
+\end_inset
+
+, given by 
+\begin_inset Formula $\mu_{P}=\int k(\cdot,x)\, dP(x)$
+\end_inset
+
+.
+ If a measurable kernel 
+\begin_inset Formula $k$
+\end_inset
+
+ is bounded, it is straightforward to show using the Riesz representation
+ theorem that the mean embedding 
+\begin_inset Formula $\mu_{k}(P)$
+\end_inset
+
+ exists for all probability measures on 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+.
+ For many interesting bounded kernels 
+\begin_inset Formula $k$
+\end_inset
+
+, including the Gaussian, Laplacian and inverse multi-quadratics, the kernel
+ embedding 
+\begin_inset Formula $P\mapsto\mu_{P}$
+\end_inset
+
+ is injective.
+ Such kernels are said to be 
+\emph on
+characteristic
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Sriperumbudur2011"
+
+\end_inset
+
+, i.e., the embedding operation captures all moments of interest.
+ This helps us to learn the nonlinear structure of the target.
+ The kernel embedding 
+\begin_inset Formula $\mu_{P}$
+\end_inset
+
+ is the representer of expectations of smooth functions w.r.t.
+ 
+\begin_inset Formula $P$
+\end_inset
+
+, i.e., 
+\begin_inset Formula $\forall f\in\mathcal{H}_{k}$
+\end_inset
+
+, 
+\begin_inset Formula $\left\langle f,\mu_{P}\right\rangle _{\mathcal{H}_{k}}=\int f(x)dP(x)$
+\end_inset
+
+.
+ Next, the covariance operator 
+\begin_inset Formula $C_{P}:\mathcal{H}_{k}\to\mathcal{H}_{k}$
+\end_inset
+
+ for a probability measure 
+\begin_inset Formula $P$
+\end_inset
+
+ is given by 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $C_{P}=\int k(\cdot,x)\otimes k(\cdot,x)\, dP(x)-\mu_{P}\otimes\mu_{P}$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Baker73,FukBacJor04"
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+, where for 
+\begin_inset Formula $a,b,c\in\mathcal{H}_{k}$
+\end_inset
+
+ the tensor product is defined 
+\begin_inset Formula $(a\otimes b)c=\left\langle b,c\right\rangle _{\mathcal{H}_{k}}a$
+\end_inset
+
+.
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ The covariance operator has the property that 
+\begin_inset Formula $\forall f,g\in\mathcal{H}_{k}$
+\end_inset
+
+, 
+\begin_inset Formula $\left\langle f,C_{P}g\right\rangle _{\mathcal{H}_{k}}=E_{P}(fg)-E_{P}fE_{P}g$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Given samples 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}\sim P$
+\end_inset
+
+, the embedding of the empirical measure is 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\muz=\frac{1}{n}\sum_{i=1}^{n}k(\cdot,z_{i})$
+\end_inset
+
+.
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+Our approach is rooted in the idea that a nonlinear structure of the target
+ density may be learned using Kernel Principal Components Analysis (Kernel
+ PCA) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SchSmoMul98,SmoMikSchWil01"
+
+\end_inset
+
+, this being linear PCA on the empirical covariance operator 
+\begin_inset Formula $C_{\mathbf{z}}=\frac{1}{n}\sum_{i=1}^{n}k(\cdot,z_{i})\otimes k(\cdot,z_{i})-\muz\otimes\muz$
+\end_inset
+
+.
+ By analogy with algorithms which use linear PCA directions to inform M-H
+ proposals 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Algorithm 8"
+key "Andrieu08"
+
+\end_inset
+
+, nonlinear PCA directions can be encoded in the proposal construction,
+ as described in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Principal-components-proposals"
+
+\end_inset
+
+.
+ Alternatively, one can focus on a Gaussian measure on the RKHS determined
+ by the empirical covariance operator 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $C_{\mathbf{z}}$
+\end_inset
+
+ rather than extracting its eigendirections, which is the approach that
+ we pursue in this contribution.
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ This generalizes the proposal 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq: am_proposal"
+
+\end_inset
+
+, which considers the Gaussian measure induced by the empirical covariance
+ matrix on the original space.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-2mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Sampling-in-RKHS"
+
+\end_inset
+
+Sampling in RKHS
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In construction of the proposal distribution at iteration 
+\begin_inset Formula $t$
+\end_inset
+
+ of the MCMC chain, we will assume that a subset of the chain history, denoted
+ 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+, 
+\begin_inset Formula $n\leq t$
+\end_inset
+
+, is available.
+ Our proposal is constructed by first considering the samples in the RKHS
+ associated to the empirical covariance operator, and then performing a
+ gradient descent step on a cost function associated to those samples.
+ 
+\end_layout
+
+\begin_layout Subsection
+Gaussian Measure of the Covariance Operator
+\end_layout
+
+\begin_layout Standard
+We will work with the Gaussian measure on the RKHS 
+\begin_inset Formula $\mathcal{H}_{k}$
+\end_inset
+
+ with mean 
+\begin_inset Formula $k(\cdot,y)$
+\end_inset
+
+ and covariance 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\nu^{2}C_{\mathbf{z}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is the subset of the chain history.
+ While there is no analogue of a Lebesgue measure in an infinite dimensional
+ RKHS, it is instructive to denote this measure in the 
+\begin_inset Quotes eld
+\end_inset
+
+density form
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\mathcal{N}(f\,;\, k(\cdot,y),\nu^{2}C_{\mathbf{z}})\propto\exp\left(-\frac{1}{2\nu^{2}}\left\langle f-k(\cdot,y),C_{\mathbf{z}}^{-1}(f-k(\cdot,y))\right\rangle _{\mathcal{H}_{k}}\right)$
+\end_inset
+
+.
+ Furthermore, as 
+\begin_inset Formula $C{}_{\mathbf{z}}$
+\end_inset
+
+ is a finite-rank operator, this measure is supported only on a finite-dimension
+al affine space 
+\begin_inset Formula $k(\cdot,y)+\mathcal{H}_{\mathbf{z}}$
+\end_inset
+
+, where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{H}_{\mathbf{z}}=\textrm{span}\left\{ k(\cdot,z_{i})\right\} _{i=1}^{n}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is the subspace spanned by the canonical features of 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ It can be shown that a sample from this measure has the form 
+\begin_inset Formula $f=k(\cdot,y)+\sum_{i=1}^{n}\beta_{i}\left[k(\cdot,z_{i})-\muz\right],$
+\end_inset
+
+ where 
+\begin_inset Formula $\beta\sim\mathcal{N}(0,\frac{\nu^{2}}{n}I)$
+\end_inset
+
+ is isotropic.
+ Indeed, to see that 
+\begin_inset Formula $f$
+\end_inset
+
+ has the correct covariance structure, note that:
+\begin_inset Formula 
+\begin{eqnarray*}
+\mathbb{E}\left[\left(f-k(\cdot,y)\right)\otimes\left(f-k(\cdot,y)\right)\right] & = & \mathbb{E}\left[\sum_{i=1}^{n}\sum_{j=1}^{n}\beta_{i}\beta_{j}\left(k(\cdot,z_{i})-\mu_{\mathbf{z}}\right)\otimes\left(k(\cdot,z_{j})-\mu_{\mathbf{z}}\right)\right]\\
+ & = & \sum_{i=1}^{n}\sum_{j=1}^{n}\mathbb{E}\left[\beta_{i}\beta_{j}\right]\left(k(\cdot,z_{i})-\mu_{\mathbf{z}}\right)\otimes\left(k(\cdot,z_{j})-\mu_{\mathbf{z}}\right)\\
+ & = & \frac{\nu^{2}}{n}\sum_{i=1}^{n}\left(k(\cdot,z_{i})-\mu_{\mathbf{z}}\right)\otimes\left(k(\cdot,z_{i})-\mu_{\mathbf{z}}\right)\\
+ & = & \nu^{2}C_{\mathbf{z}}.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Remark
+Due to equivalence in the RKHS between the notion of a Gaussian measure
+ and a Gaussian process 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Ch. 4"
+key "BerTho04"
+
+\end_inset
+
+, one can think of the RKHS samples 
+\begin_inset Formula $f$
+\end_inset
+
+ as the trajectories of the Gaussian process with mean and covariance functions
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+m(x) & = & k(x,y)\\
+\textrm{cov}\left[f(x),f(x')\right] & = & \frac{\nu^{2}}{n}\sum_{i=1}^{n}\left(k(x,z_{i})-\mu_{\mathbf{z}}(x)\right)\left(k(x',z_{i})-\mu_{\mathbf{z}}(x')\right).
+\end{eqnarray*}
+
+\end_inset
+
+The covariance function of this Gaussian process is therefore the kernel
+ 
+\begin_inset Formula $k$
+\end_inset
+
+ convolved with itself with respect to the empirical measure associated
+ to the samples 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+, and the draws from this Gaussian process therefore lie in a smaller RKHS;
+ see 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "p. 21"
+key "Saitoh1997"
+
+\end_inset
+
+ for details.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+We will not pursue this link further here.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Obtaining Target Samples through Gradient Descent
+\end_layout
+
+\begin_layout Standard
+We have seen how to obtain the RKHS sample 
+\begin_inset Formula $f=k(\cdot,y)+\sum_{i=1}^{n}\beta_{i}\left[k(\cdot,z_{i})-\muz\right]$
+\end_inset
+
+ from the Gaussian measure in the RKHS.
+ This sample in general does not have a corresponding point in the original
+ domain 
+\begin_inset Formula $\mathcal{X}=\mathbb{R}^{d}$
+\end_inset
+
+, however: i.e., there is no point 
+\begin_inset Formula $x_{*}\in\mathcal{X}$
+\end_inset
+
+ such that 
+\begin_inset Formula $f=k(\cdot,x_{*})$
+\end_inset
+
+.
+ If there were such a point, then we could use it as a proposal in the original
+ domain.
+ Therefore, we are ideally looking for the point 
+\begin_inset Formula $x^{*}\in\mathcal{X}$
+\end_inset
+
+ whose canonical feature map is nearest to 
+\begin_inset Formula $f$
+\end_inset
+
+ in the RKHS norm.
+ We consider the optimization problem
+\begin_inset Formula 
+\begin{eqnarray*}
+x^{*} & = & \arg\min_{x\in\mathcal{X}}\left\Vert k\left(\cdot,x\right)-f\right\Vert _{\mathcal{H}_{k}}^{2}\\
+ & = & \arg\min_{x\in\mathcal{X}}\left\Vert k\left(\cdot,x\right)-k(\cdot,y)-\sum_{i=1}^{n}\beta_{i}\left[k(\cdot,z_{i})-\muz\right]\right\Vert _{\mathcal{H}_{k}}^{2}\\
+ & = & \arg\min_{x\in\mathcal{X}}\left\{ k(x,x)-2k(x,y)-2\sum_{i=1}^{n}\beta_{i}\left[k(x,z_{i})-\muz(x)\right]\right\} .
+\end{eqnarray*}
+
+\end_inset
+
+In general, this is a non-convex minimization problem, and may be difficult
+ to solve.
+ Rather than solving it for every new vector of coefficients 
+\begin_inset Formula $\beta$
+\end_inset
+
+, which may lead to an intractable proposal distribution, we simply make
+ a single descent step along the gradient of the cost function
+\begin_inset Formula 
+\begin{equation}
+g(x)=k(x,x)-2k(x,y)-2\sum_{i=1}^{n}\beta_{i}\left[k(x,z_{i})-\muz(x)\right],\label{eq: g_function}
+\end{equation}
+
+\end_inset
+
+i.e., the proposed new point is
+\begin_inset Formula 
+\[
+x^{*}=y-\eta\nabla_{x}g(x)|_{x=y}+\xi,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is a gradient step size parameter and 
+\begin_inset Formula $\xi\sim\mathcal{N}(0,\gamma^{2}I)$
+\end_inset
+
+ is an additional isotropic 'exploration' term 
+\emph on
+after
+\emph default
+ the gradient step.
+ It will be useful to split the scaled gradient at 
+\begin_inset Formula $y$
+\end_inset
+
+ into two terms as 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta\nabla_{x}g(x)|_{x=y}=a_{y}-M_{\mathbf{z},y}H\beta$
+\end_inset
+
+, 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+where 
+\begin_inset Formula $a_{y}=\eta\left(\nabla_{x}k(x,x)|_{x=y}-2\nabla_{x}k(x,y)|_{x=y}\right)$
+\end_inset
+
+, and 
+\begin_inset Formula 
+\[
+\Mz=2\eta\left[\nabla_{x}k(x,z_{1})|_{x=y},\ldots,\nabla_{x}k(x,z_{n})|_{x=y}\right]
+\]
+
+\end_inset
+
+ is a 
+\begin_inset Formula $d\times n$
+\end_inset
+
+ matrix, and 
+\begin_inset Formula $H=I-\frac{1}{n}\mathbf{1}_{n\times n}$
+\end_inset
+
+ is the 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ centering matrix.
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig: gPlots"
+
+\end_inset
+
+ plots 
+\begin_inset Formula $g(x)$
+\end_inset
+
+ and its gradients for several samples of 
+\begin_inset Formula $\beta$
+\end_inset
+
+-coefficients, in the case where the underlying 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+-samples are from the two-dimensional nonlinear Banana target distribution
+ of 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Haario1999"
+
+\end_inset
+
+.
+ It can be seen that 
+\begin_inset Formula $g$
+\end_inset
+
+ may have multiple local minima, and that a step along the gradient would
+ cause the proposed points in the original space to fall in the high-density
+ regions of the Banana distribution.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plots/g_gunction_Banana0.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename plots/g_gunction_Banana1.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plots/g_gunction_Banana2.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename plots/g_gunction_Banana3.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig: gPlots"
+
+\end_inset
+
+Heatmaps (white denotes high values) of 
+\begin_inset Formula $g(x)$
+\end_inset
+
+ for four samples of 
+\begin_inset Formula $\beta$
+\end_inset
+
+ and fixed 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Subsection
+Things that we can add
+\end_layout
+
+\begin_layout Itemize
+!! maybe a figure that represents the embedding of Markov chain trajectory
+ into RKHS, where Markov chain trajectory is oddly shaped and in RKHS they
+ look Gaussian
+\end_layout
+
+\begin_layout Itemize
+!! maybe give an intuition on how our gradient steps are related to MALA-type
+ algorithms, i.e., at every 
+\begin_inset Formula $\beta$
+\end_inset
+
+-sample we obtain a new estimate of the target negative log-density.
+ Note that we integrate out all these gradient steps and obtain a simple
+ proposal centred at the current chain state.
+ Therefore, we do not need to explicitly make the gradient moves - they
+ are now pulled into covariance of the proposal, and only thing we need
+ to compute is the gradient of the kernel function, i.e., no parametric model
+ assumptions and assumption that the gradient of the log-density can be
+ computed need to be made.
+ (Integrated Metropolis Adjusted Langevin).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Kernel-adaptive-proposal"
+
+\end_inset
+
+MCMC Kameleon Algorithm
+\end_layout
+
+\begin_layout Subsection
+Proposal Distribution
+\end_layout
+
+\begin_layout Standard
+We now have a recipe to construct a proposal that is able to adapt to the
+ local covariance structure for the current chain state 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ This proposal depends on the subset of the chain history 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+, and is denoted by 
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)$
+\end_inset
+
+.
+ While we will later simplify this proposal by integrating out the moves
+ in the RKHS, it is instructive to think of the proposal generating process
+ as:
+\end_layout
+
+\begin_layout Enumerate
+Sample 
+\begin_inset Formula $\beta\sim\mathcal{N}(0,\nu^{2}I)$
+\end_inset
+
+ (
+\begin_inset Formula $n\times1$
+\end_inset
+
+ normal of RKHS coefficients).
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+This gives an RKHS sample 
+\begin_inset Formula $f=k(\cdot,y)+\sum_{i=1}^{n}\beta_{i}\left[k(\cdot,z_{i})-\muz\right]$
+\end_inset
+
+ which induces the cost function 
+\begin_inset Formula $g(x)$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Make a move along the gradient of 
+\begin_inset Formula $g$
+\end_inset
+
+: 
+\begin_inset Formula $x^{*}=y-\eta\nabla_{x}g(x)|_{x=y}+\xi.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+This gives a proposal 
+\begin_inset Formula $x^{*}|y,\beta\sim\mathcal{N}(y-a_{y}+M_{\mathbf{z},y}H\beta,\gamma^{2}I)$
+\end_inset
+
+ (
+\begin_inset Formula $d\times1$
+\end_inset
+
+ normal in the original space).
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Our first step in the derivation of the explicit proposal density is to
+ show that as long as 
+\begin_inset Formula $k$
+\end_inset
+
+ is a differentiable positive definite kernel, the term 
+\begin_inset Formula $a_{y}$
+\end_inset
+
+ vanishes.
+ 
+\end_layout
+
+\begin_layout Proposition
+Let 
+\begin_inset Formula $k$
+\end_inset
+
+ be a differentiable positive definite kernel.
+ Then 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\nabla_{x}k(x,x)|_{x=y}-2\nabla_{x}k(x,y)|_{x=y}=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Since both 
+\begin_inset Formula $p(\beta)$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{\mathbf{z}}(x^{*}|y,\beta)$
+\end_inset
+
+ are multivariate Gaussian densities, the proposal density 
+\begin_inset Formula $q_{\mathbf{z}}(x^{*}|y)=\int p(\beta)p_{\mathbf{z}}(x^{*}|y,\beta)d\beta$
+\end_inset
+
+ can be computed analytically.
+ We therefore get the following closed form expression for the proposal
+ distribution.
+\end_layout
+
+\begin_layout Proposition
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)=\mathcal{N}(y,\gamma^{2}I+\nu^{2}\Mz H\Mz^{\top})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Proofs of the above Propositions are given in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Proofs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+As 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+the gradient step size
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\eta$
+\end_inset
+
+ in the definition of the 
+\begin_inset Formula $\Mz$
+\end_inset
+
+ matrix always appears together with the parameter 
+\begin_inset Formula $\nu$
+\end_inset
+
+ (scale of 
+\begin_inset Formula $\beta$
+\end_inset
+
+-coefficients), we can merge them into a single scale parameter, i.e., set
+ 
+\begin_inset Formula $\eta=1$
+\end_inset
+
+.
+ Note that this is possible precisely because 
+\begin_inset Formula $a_{y}=0$
+\end_inset
+
+.
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+With the derived proposal distribution, we proceed with the standard Metropolis-
+Hastings accept/reject scheme where the proposed sample 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ is accepted with probability
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-0.5cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray*}
+A(x_{t},x^{*}) & = & \min\left\{ 1,\frac{\pi(x^{*})q_{\mathbf{z}}(x_{t}|x^{*})}{\pi(x_{t})q_{\mathbf{z}}(x^{*}|x_{t})}\right\} ,
+\end{eqnarray*}
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+giving rise to the MCMC Kameleon Algorithm.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+MCMC Kameleon
+\end_layout
+
+\begin_layout Plain Layout
+
+\emph on
+Input
+\emph default
+: unnormalized target 
+\begin_inset Formula $\pi$
+\end_inset
+
+, subsample size 
+\begin_inset Formula $n$
+\end_inset
+
+, scaling parameters 
+\begin_inset Formula $\nu,\gamma,$
+\end_inset
+
+ kernel 
+\begin_inset Formula $k$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+At iteration 
+\begin_inset Formula $t+1$
+\end_inset
+
+,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Obtain a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Enumerate
+Sample proposed point 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ from 
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|x_{t})=\mathcal{N}(x_{t},\gamma^{2}I+\nu^{2}M_{\mathbf{z},x_{t}}HM_{\mathbf{z},x_{t}}^{\top})$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Enumerate
+Accept/Reject with the Metropolis-Hastings acceptance probability, i.e., 
+\end_layout
+
+\begin_deeper
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+x_{t+1} & = & \begin{cases}
+x^{*}, & \textrm{w.p.}\; A(x_{t},x^{*}),\\
+x_{t}, & \textrm{w.p.}\;1-A(x_{t},x^{*}).
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+With this proposal, we proceed with the standard Metropolis-Hastings accept/reje
+ct scheme, i.e., given the current chain state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ and the proposal 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+, we set 
+\begin_inset Formula 
+\begin{eqnarray*}
+x_{t+1} & = & \begin{cases}
+x^{*}, & w.p.\; A(x_{t},x^{*})=\min\left\{ 1,\frac{\pi(x^{*})q_{\mathbf{z}}(x_{t}|x^{*})}{\pi(x_{t})q_{\mathbf{z}}(x^{*}|x_{t})}\right\} ,\\
+x_{t}, & w.p.\;1-A(x_{t},x^{*}).
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Note that the proposal is not symmetric and that 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\sqrt{\det\left(\gamma^{2}I+\nu^{2}\Mz H\Mz^{\top}\right)}$
+\end_inset
+
+ needs to be computed when evaluating the acceptance probability.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Constructed family of the proposals encodes local structure about the target
+ distribution which is learned based on the subsample 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig: proposal_contours"
+
+\end_inset
+
+ depicts the regions that contain 95% of mass of the proposal distribution
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ at various states 
+\begin_inset Formula $y$
+\end_inset
+
+ for a fixed subsample 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+, where the Flower, Ring and Banana targets are used (details in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Experiments"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Properties of the Algorithm
+\end_layout
+
+\begin_layout Paragraph
+Sub-sampling the chain past.
+\end_layout
+
+\begin_layout Standard
+MCMC Kameleon requires a subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{m}$
+\end_inset
+
+ at each iteration of the algorithm, and therefore the proposal distribution
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ would also be updated at each iteration.
+ While it is not guaranteed that the chain which keeps adapting the proposal
+ distribution in such a way converges to the correct target, our empirical
+ results indicate that this is the case.
+ However, a straightforward way to remedy this issue is to fix the set 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{m}$
+\end_inset
+
+ after a 
+\begin_inset Quotes eld
+\end_inset
+
+burn-in
+\begin_inset Quotes erd
+\end_inset
+
+ period, i.e., to stop adapting.
+ Preliminary investigations indicate that whether adaptation eventually
+ stops makes little difference to the performance of the algorithm.
+\end_layout
+
+\begin_layout Paragraph
+Symmetry of the proposal.
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Haario2001"
+
+\end_inset
+
+, the proposal distribution is, due to the vanishing adaptation property,
+ asymptotically symmetric.
+ Therefore, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+even though the resulting chain is not Markovian, 
+\end_layout
+
+\end_inset
+
+the authors decide to compute the standard Metropolis acceptance probability.
+ In our case, the proposal distribution is a Gaussian with mean at the current
+ state of the chain 
+\begin_inset Formula $x_{t}=y$
+\end_inset
+
+ and covariance 
+\begin_inset Formula $\gamma^{2}I+\nu^{2}\Mz H\Mz^{\top}$
+\end_inset
+
+, where 
+\begin_inset Formula $\Mz$
+\end_inset
+
+ depends both on the current state 
+\begin_inset Formula $y$
+\end_inset
+
+ and a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{m}$
+\end_inset
+
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+.
+ This proposal distribution is never symmetric (as covariance of the proposal
+ always depends on the current state of the chain), and therefore we use
+ the Metropolis-Hastings acceptance probability to reflect this.
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Note Note
+status open
+
+\begin_layout Paragraph
+Computational complexity.
+\end_layout
+
+\begin_layout Plain Layout
+Kernel gradients in matrix 
+\begin_inset Formula $\Mz$
+\end_inset
+
+ are easily obtained for commonly used kernels, including the Gaussian kernel
+ (see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Examples-of-covariance"
+
+\end_inset
+
+), for which the computational complexity is equal to evaluating the kernel
+ itself.
+ Samples from the proposal distribution can be generated in the form 
+\begin_inset Formula $y+\gamma u+\nu\Mz Hv$
+\end_inset
+
+, where 
+\begin_inset Formula $u\sim\mathcal{N}(0,I_{d})$
+\end_inset
+
+ and 
+\begin_inset Formula $v\sim\mathcal{N}(0,I_{n})$
+\end_inset
+
+.
+ Since the centering operation 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $Hv$
+\end_inset
+
+ is in 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $O(n)$
+\end_inset
+
+, and the matrix-vector multiplication 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\Mz(Hv)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is in 
+\begin_inset Formula $O(nd)$
+\end_inset
+
+, the overall computational complexity of generating one proposal is in
+ 
+\begin_inset Formula $O(nd)$
+\end_inset
+
+, linear in the size of the subsample 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Note that we do not have to compute any Cholesky factors nor 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Note Note
+status open
+
+\begin_layout Paragraph
+Covariance operator estimation
+\end_layout
+
+\begin_layout Plain Layout
+While it would be ideal to estimate the true covariance operator 
+\begin_inset Formula $C_{P}$
+\end_inset
+
+ on the fly (similarly as the estimation of the true covariance matrix in
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haario2001"
+
+\end_inset
+
+), this requires storing the entire chain history and the corresponding
+ weights (rather than keeping the on-line estimate of the covariance) and
+ then recomputing the proposal covariance at every iteration where the kernel-gr
+adient matrix 
+\begin_inset Formula $\Mz$
+\end_inset
+
+ would also increase in size.
+ This is not computationally tractable, so we opt for a simpler sub-sampling
+ procedure with weighing all points in the subsample equally.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1.5cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Relationship to MALA and Manifold MALA.
+\end_layout
+
+\begin_layout Standard
+Some superficial similarity exists between our approach and the standard
+ Metropolis Adjusted Langevin Algorithms (MALA), which use the information
+ about the gradient of the log-target density at the current chain state
+ to construct a proposed point for the Metropolis step.
+ Note that our approach does not require that the log-target density gradient
+ is available or can be computed.
+ Kernel gradients in matrix 
+\begin_inset Formula $\Mz$
+\end_inset
+
+ are easily obtained for commonly used kernels, including the Gaussian kernel
+ (see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Examples-of-covariance"
+
+\end_inset
+
+), for which the computational complexity is equal to evaluating the kernel
+ itself.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Therefore, our approach does not require expensive evaluations of gradients
+ of the log-target density.
+ Rather, we simply compute the gradients of the kernel functions.
+ 
+\end_layout
+
+\end_inset
+
+Moreover, while standard MALA simply shifts the mean of the proposal distributio
+n along the gradient and then adds an isotropic exploration term, our proposal
+ is centered at the current state and it is the covariance structure of
+ the proposal distribution that coerces the proposed points to belong to
+ the high-density regions of the target.
+ It would be straightforward to modify our approach to include the drift
+ term along the gradient of the log-density, should such information be
+ available, but it is unclear whether this should provide additional performance
+ gains.
+ In addition, further work is required to elucidate possible connections
+ between our approach and using of a preconditioning matrix 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Roberts2003"
+
+\end_inset
+
+ in the MALA proposal, i.e., where the exploration term is scaled using an
+ appropriate metric tensor information, as in Riemannian manifold MALA 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "RSSB:RSSB765"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Examples-of-covariance"
+
+\end_inset
+
+Examples of Covariance Structure for Standard Kernels
+\end_layout
+
+\begin_layout Paragraph
+
+\series bold
+Linear kernel
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In the case of a linear kernel 
+\begin_inset Formula $k(x,x')=x^{\top}x'$
+\end_inset
+
+, we obtain
+\begin_inset Formula 
+\begin{eqnarray*}
+\Mz & = & 2\left[\nabla_{x}x^{\top}z_{1}|_{x=y},\ldots,\nabla_{x}x^{\top}z_{n}|_{x=y}\right]\\
+ & = & 2\mathbf{Z}^{\top},
+\end{eqnarray*}
+
+\end_inset
+
+so the proposal is given by 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)=\mathcal{N}(y,\gamma^{2}I+4\nu^{2}\mathbf{Z}^{\top}H\mathbf{Z})$
+\end_inset
+
+; thus, this proposal simply uses the scaled empirical covariance 
+\begin_inset Formula $\mathbf{Z}^{\top}H\mathbf{Z}$
+\end_inset
+
+ just like in the standard Adaptive Metropolis of 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Haario1999"
+
+\end_inset
+
+, with an additional isotropic exploration component and depends on 
+\begin_inset Formula $y$
+\end_inset
+
+ only through mean.
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $a_{y}=\nabla_{x}x^{\top}x|_{x=y}-2\nabla_{x}x^{\top}y|_{x=y}=2y-2y=0$
+\end_inset
+
+,
+\end_layout
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\end_layout
+
+\begin_layout Paragraph
+
+\series bold
+Gaussian kernel.
+
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+In the case of a Gaussian kernel 
+\begin_inset Formula $k(x,x')=\exp\left(-\frac{\left\Vert x-x'\right\Vert _{2}^{2}}{2\sigma^{2}}\right)$
+\end_inset
+
+, since 
+\begin_inset Formula $\nabla_{x}k(x,x')=\frac{1}{\sigma^{2}}k(x,x')(x'-x)$
+\end_inset
+
+, we obtain
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $a_{y}=\nabla_{x}1|_{x=y}-2\nabla_{x}k(x,y)|_{x=y}=0+k(x,y)\frac{2(x-y)}{\sigma^{2}}|_{x=y}=0,$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\Mz & = & \frac{2}{\sigma^{2}}\left[k(y,z_{1})(z_{1}-y),\ldots,k(y,z_{n})(z_{n}-y)\right].
+\end{eqnarray*}
+
+\end_inset
+
+Consider how this encodes the covariance structure of the target distribution:
+\begin_inset Formula 
+\begin{eqnarray*}
+R_{ij} & = & \gamma^{2}\delta_{ij}+\frac{4\nu^{2}(n-1)}{\sigma^{4}n}\sum_{a=1}^{n}\left[k(y,z_{a})\right]^{2}(z_{a,i}-y_{i})(z_{a,j}-y_{j})\\
+ &  & \qquad-\frac{4\nu^{2}}{\sigma^{4}n}\sum_{a\neq b}k(y,z_{a})k(y,z_{b})(z_{a,i}-y_{i})(z_{b,j}-y_{j}).
+\end{eqnarray*}
+
+\end_inset
+
+As the first term dominates, the previous points 
+\begin_inset Formula $z_{a}$
+\end_inset
+
+ which are close to the current state 
+\begin_inset Formula $y$
+\end_inset
+
+ (for which 
+\begin_inset Formula $k(y,z_{a})$
+\end_inset
+
+ is large) have larger weights and thus, they have more influence on determining
+ the covariance of the proposal at 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+---Note that the adaptation affects both the size and spatial orientation
+ of the proposal distribution (as in Haario(2001)) but we do not get updates
+ for the covariance operator (which would be the analog of computing the
+ empirical covariance at each step computed from the previous accepted points
+ in the linear case Adaptive metropolis) but gradient information through
+ 
+\begin_inset Formula $M_{\textbf{z,y}}=M_{y}(z_{n-\kappa,}\ldots,z_{n})$
+\end_inset
+
+.
+ Maybe explain how this encodes information about gradient of the cost function
+ (which tells you how to find points which features are close in RKHS norm
+ to features of points in the support of the target, this means that it
+ would give smart proposals since they are not too far away (but the correspondi
+ng features are not the closest in norm since we are not solving exactly
+ the optimization problem) from where the target distribution doesn't vanish.---
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+-The chain is non-Markovian, non-reversible.
+ Ergodicity requirements (?) (Maybe not for NIPS but we could see if Theo
+ 2 can be used to show this.) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+- In the paper by Haario they explain that since the chain is no longer
+ Markovian or reversible they just choose to do a Metropolis step rather
+ than Metropolis Hastings (since if we run the usual Metropolis Hastings
+ algorithm we get a Markov chain which is reversible since it satisfies
+ detail balance by construction).
+ So it is not really clear why do a MH step rather than just M step.
+ We could say something like: we propose to do an MH step rather than M
+ step to encode more info about how to move, empirically it performs better
+ than just M step...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+-Explain how this is related to the pilot chain run (offline approach) for
+ obtaining an initial estimate of the covariance matrix.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Experiments"
+
+\end_inset
+
+Experiments
+\end_layout
+
+\begin_layout Paragraph
+
+\series bold
+Banana target.
+
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haario1999"
+
+\end_inset
+
+, the following family of nonlinear target distributions is considered.
+ Let 
+\begin_inset Formula $X\sim\mathcal{N}(0,\Sigma)$
+\end_inset
+
+ be a multivariate normal in 
+\begin_inset Formula $d\geq2$
+\end_inset
+
+ dimensions, with 
+\begin_inset Formula $\Sigma=\text{{diag}}(v,1,\ldots,1)$
+\end_inset
+
+, which undergoes the transformation 
+\begin_inset Formula $X\to Y$
+\end_inset
+
+, where 
+\begin_inset Formula $Y_{2}=X_{2}+b(X_{1}^{2}-v)$
+\end_inset
+
+, and 
+\begin_inset Formula $Y_{i}=X_{i}$
+\end_inset
+
+ for 
+\begin_inset Formula $i\neq2$
+\end_inset
+
+.
+ We will write 
+\begin_inset Formula $Y\sim\mathcal{B}(b,v)$
+\end_inset
+
+.
+ It is clear that 
+\begin_inset Formula $\mathbb{E}Y=0$
+\end_inset
+
+, and that 
+\begin_inset Formula 
+\[
+\mathcal{B}(y;b,v)=\mathcal{N}(y_{1};0,v)\mathcal{N}(y_{2};b(y_{1}^{2}-v),1)\prod_{j=3}^{d}\mathcal{N}(y_{j};0,1).
+\]
+
+\end_inset
+
+In particular, we study performance of MCMC Kameleon on the moderately twisted
+ Banana target 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{B}(0.03,100)$
+\end_inset
+
+ and the strongly twisted Banana target 
+\begin_inset Formula $\mathcal{B}(0.1,100)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Paragraph
+
+\series bold
+Flower target.
+
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+The second target distribution we consider is the 
+\begin_inset Formula $d$
+\end_inset
+
+-dimensional flower target 
+\begin_inset Formula $\mathcal{F}(r_{0},A,\omega,\sigma)$
+\end_inset
+
+, with
+\begin_inset Formula 
+\begin{eqnarray*}
+\pi(x) & = & \exp\left(-\frac{\sqrt{x_{1}^{2}+x_{2}^{2}}-r_{0}-A\cos\left(\omega\textrm{atan2}\left(x_{2},x_{1}\right)\right)}{2\sigma^{2}}\right)\mathcal{N}(x_{3:d};0,I)
+\end{eqnarray*}
+
+\end_inset
+
+This distribution concentrates around the 
+\begin_inset Formula $r_{0}$
+\end_inset
+
+-circle with a periodic perturbation (with amplitude 
+\begin_inset Formula $A$
+\end_inset
+
+ and frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+) in the first two dimensions.
+ For 
+\begin_inset Formula $A=0$
+\end_inset
+
+, we obtain a band around the 
+\begin_inset Formula $r_{0}$
+\end_inset
+
+-circle, which we term the ring target.
+\end_layout
+
+\begin_layout Standard
+In the experiments, we compare the following samplers: 
+\series bold
+(M)
+\series default
+ Standard Metropolis with the isotropic proposal 
+\begin_inset Formula $q(\cdot|y)=\mathcal{N}(y,\nu^{2}I)$
+\end_inset
+
+ and scaling 
+\begin_inset Formula $\nu=2.38/\sqrt{d}$
+\end_inset
+
+, 
+\series bold
+(AM-FS)
+\series default
+ Adaptive Metropolis with a learned covariance matrix and fixed scaling
+ 
+\begin_inset Formula $\nu=2.38/\sqrt{d}$
+\end_inset
+
+, 
+\series bold
+(AM-LS)
+\series default
+ Adaptive Metropolis with a learned covariance matrix and scaling learned
+ to coerce the acceptance rate close to 
+\begin_inset Formula $\alpha^{*}=0.234$
+\end_inset
+
+, and 
+\series bold
+(KAMH-LS)
+\series default
+ Kameleon MCMC with the scaling learned in the same fashion, and which also
+ stops adapting the proposal after the burn-in of the chain.
+ We compute the following measures of performance (similarly as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haario1999,Andrieu08"
+
+\end_inset
+
+) based on the chain after burn-in: average acceptance rate, norm of the
+ empirical mean (the true mean is by construction zero for all targets),
+ as well as the empirical quantiles: 
+\begin_inset Formula $q$
+\end_inset
+
+-quantile denotes the proportion of samples which lie in the 
+\begin_inset Formula $q\cdot100\%$
+\end_inset
+
+ confidence regions of the target distributions.
+ We consider three nonlinear 8-dimensional target distributions: the moderately
+ twisted 
+\begin_inset Formula $\mathcal{B}(0.03,100)$
+\end_inset
+
+ banana target (Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab: results"
+
+\end_inset
+
+, top), the strongly twisted 
+\begin_inset Formula $\mathcal{B}(0.1,100)$
+\end_inset
+
+ banana target (Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab: results"
+
+\end_inset
+
+, middle), and the 
+\begin_inset Formula $\mathcal{F}(10,6,6,1)$
+\end_inset
+
+ flower target (Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab: results"
+
+\end_inset
+
+, bottom).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plots/proposals_Flower.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename plots/proposals_Ring.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plots/proposals_Banana.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig: proposal_contours"
+
+\end_inset
+
+
+\begin_inset Formula $95\%$
+\end_inset
+
+ contours of resulting proposal distributions evaluated at a number of points
+ (red) of various densities.
+ Underneath are heatmaps of the used densities and samples (blue) used to
+ construct the proposals.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The results for all three targets are indicative of the advantages of Kameleon
+ MCMC in comparison to other approaches.
+ While Standard Metropolis correctly captures the quantiles of the target,
+ it has a significantly larger norm of the empirical mean, due to its purely
+ random walk behaviour (e.g., the chain is not able to equally well traverse
+ both tails of the banana target).
+ Adaptive Metropolis with fixed scale has a low acceptance rate (indicating
+ that the scaling of the proposal is too large), and even though the norm
+ of the empirical mean is much closer to the true value, quantile performance
+ of the chain are poor.
+ In addition, low acceptance rates cause a poor autocorrelation of the chain.
+ Even if the estimated covariance matrix closely resembles the true global
+ covariance matrix of the target, using it to construct proposal distributions
+ at every state of the chain may not be the best choice.
+ In particular, the flower target, due to its symmetry, has an isotropic
+ covariance in the first two dimensions -- even though they are highly dependent.
+ Therefore, there is a mismatch in the scale of the covariance and the scale
+ of the target, which concentrates on a thin band in the joint space.
+ Adaptive Metropolis with learned scale, on the other hand, has the 
+\begin_inset Quotes eld
+\end_inset
+
+correct
+\begin_inset Quotes erd
+\end_inset
+
+ acceptance rate, but the quantile performance is even worse as the scaling
+ now becomes too small to traverse high-density regions of the target.
+\size footnotesize
+
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab: results"
+
+\end_inset
+
+Results for three non-linear distributions, averaged over 100 chains for
+ each sampler.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\size footnotesize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{Moderately twisted 8-dimensional} $
+\backslash
+mathbf{
+\backslash
+mathcal{B}(0.03,100)}$ 
+\backslash
+textbf{target; iterations: 40000, burn-in: 20000}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{l||l|l|l|l} 
+\backslash
+hline Sampler & M & AM-FS & AM-LS & KAMH-LS
+\backslash
+
+\backslash
+ 
+\backslash
+hline Acceptance & $0.292 
+\backslash
+pm 0.004$ & $0.136 
+\backslash
+pm 0.013$ & $0.233 
+\backslash
+pm 0.003$ & $0.244 
+\backslash
+pm 0.037$
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}} [X] 
+\backslash
+Vert$ & $3.045 
+\backslash
+pm 2.290$ & $1.073 
+\backslash
+pm 0.470$ & $1.107 
+\backslash
+pm 0.455$ & $1.205 
+\backslash
+pm 0.871$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.014$ & $0.109 
+\backslash
+pm 0.015$ & $0.111 
+\backslash
+pm 0.010$ & $0.100 
+\backslash
+pm 0.012$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.201 
+\backslash
+pm 0.025$ & $0.215 
+\backslash
+pm 0.020$ & $0.220 
+\backslash
+pm 0.016$ & $0.200 
+\backslash
+pm 0.016$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.301 
+\backslash
+pm 0.033$ & $0.323 
+\backslash
+pm 0.024$ & $0.327 
+\backslash
+pm 0.021$ & $0.301 
+\backslash
+pm 0.018$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.401 
+\backslash
+pm 0.038$ & $0.428 
+\backslash
+pm 0.026$ & $0.430 
+\backslash
+pm 0.022$ & $0.402 
+\backslash
+pm 0.018$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.502 
+\backslash
+pm 0.041$ & $0.531 
+\backslash
+pm 0.027$ & $0.534 
+\backslash
+pm 0.023$ & $0.503 
+\backslash
+pm 0.020$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.602 
+\backslash
+pm 0.043$ & $0.632 
+\backslash
+pm 0.026$ & $0.635 
+\backslash
+pm 0.022$ & $0.604 
+\backslash
+pm 0.021$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.702 
+\backslash
+pm 0.042$ & $0.731 
+\backslash
+pm 0.022$ & $0.733 
+\backslash
+pm 0.020$ & $0.704 
+\backslash
+pm 0.021$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.802 
+\backslash
+pm 0.036$ & $0.826 
+\backslash
+pm 0.018$ & $0.827 
+\backslash
+pm 0.017$ & $0.805 
+\backslash
+pm 0.017$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.902 
+\backslash
+pm 0.026$ & $0.917 
+\backslash
+pm 0.012$ & $0.918 
+\backslash
+pm 0.012$ & $0.904 
+\backslash
+pm 0.011$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{Strongly twisted 8-dimensional} $
+\backslash
+mathbf{
+\backslash
+mathcal{B}(0.1,100)}$ 
+\backslash
+textbf{target; iterations: 80000, burn-in: 40000}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{l||l|l|l|l} 
+\backslash
+hline Sampler & M & AM-FS & AM-LS & KAMH-LS
+\backslash
+
+\backslash
+ 
+\backslash
+hline Acceptance  & $0.245 
+\backslash
+pm 0.025$ & $0.063 
+\backslash
+pm 0.010$ & $0.233 
+\backslash
+pm 0.003$ & $0.278 
+\backslash
+pm 0.072$
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}} [X] 
+\backslash
+Vert$ & $7.456 
+\backslash
+pm 7.938$ & $3.686 
+\backslash
+pm 0.971$ & $4.330 
+\backslash
+pm 0.856$ & $3.547 
+\backslash
+pm 3.210$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.026$ & $0.117 
+\backslash
+pm 0.017$ & $0.126 
+\backslash
+pm 0.012$ & $0.101 
+\backslash
+pm 0.015$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.200 
+\backslash
+pm 0.046$ & $0.229 
+\backslash
+pm 0.024$ & $0.244 
+\backslash
+pm 0.017$ & $0.203 
+\backslash
+pm 0.025$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.299 
+\backslash
+pm 0.064$ & $0.339 
+\backslash
+pm 0.027$ & $0.357 
+\backslash
+pm 0.021$ & $0.306 
+\backslash
+pm 0.035$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.397 
+\backslash
+pm 0.078$ & $0.446 
+\backslash
+pm 0.027$ & $0.467 
+\backslash
+pm 0.022$ & $0.408 
+\backslash
+pm 0.041$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.495 
+\backslash
+pm 0.087$ & $0.548 
+\backslash
+pm 0.028$ & $0.570 
+\backslash
+pm 0.022$ & $0.510 
+\backslash
+pm 0.044$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.594 
+\backslash
+pm 0.092$ & $0.648 
+\backslash
+pm 0.027$ & $0.670 
+\backslash
+pm 0.020$ & $0.611 
+\backslash
+pm 0.043$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.693 
+\backslash
+pm 0.090$ & $0.744 
+\backslash
+pm 0.025$ & $0.763 
+\backslash
+pm 0.018$ & $0.712 
+\backslash
+pm 0.039$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.795 
+\backslash
+pm 0.078$ & $0.838 
+\backslash
+pm 0.018$ & $0.851 
+\backslash
+pm 0.014$ & $0.812 
+\backslash
+pm 0.031$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.896 
+\backslash
+pm 0.054$ & $0.924 
+\backslash
+pm 0.012$ & $0.931 
+\backslash
+pm 0.010$ & $0.909 
+\backslash
+pm 0.019$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{8-dimensional} $
+\backslash
+mathbf{
+\backslash
+mathcal{F}(10,6,6,1)}$ 
+\backslash
+textbf{target; iterations: 120000, burn-in: 60000}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{l||l|l|l|l} 
+\backslash
+hline Sampler & M & AM-FS & AM-LS & KAMH-LS
+\backslash
+
+\backslash
+ 
+\backslash
+hline 
+\end_layout
+
+\begin_layout Plain Layout
+
+Acceptance & $0.215 
+\backslash
+pm 0.006$ & $0.065 
+\backslash
+pm 0.001$ & $0.234 
+\backslash
+pm 0.001$ & $0.252 
+\backslash
+pm 0.035$
+\backslash
+
+\backslash
+ $
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}}[X] 
+\backslash
+Vert$ & $4.700 
+\backslash
+pm 2.210$ & $0.530 
+\backslash
+pm 0.255$ & $1.089 
+\backslash
+pm 0.563$ & $1.448 
+\backslash
+pm 0.759$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.006$ & $0.103 
+\backslash
+pm 0.012$ & $0.118 
+\backslash
+pm 0.011$ & $0.100 
+\backslash
+pm 0.005$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.200 
+\backslash
+pm 0.009$ & $0.207 
+\backslash
+pm 0.018$ & $0.230 
+\backslash
+pm 0.015$ & $0.200 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.301 
+\backslash
+pm 0.010$ & $0.310 
+\backslash
+pm 0.021$ & $0.340 
+\backslash
+pm 0.018$ & $0.300 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.401 
+\backslash
+pm 0.011$ & $0.411 
+\backslash
+pm 0.021$ & $0.445 
+\backslash
+pm 0.019$ & $0.399 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.502 
+\backslash
+pm 0.011$ & $0.513 
+\backslash
+pm 0.022$ & $0.548 
+\backslash
+pm 0.019$ & $0.500 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.602 
+\backslash
+pm 0.011$ & $0.613 
+\backslash
+pm 0.020$ & $0.648 
+\backslash
+pm 0.019$ & $0.600 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.702 
+\backslash
+pm 0.010$ & $0.713 
+\backslash
+pm 0.017$ & $0.744 
+\backslash
+pm 0.017$ & $0.700 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.802 
+\backslash
+pm 0.009$ & $0.812 
+\backslash
+pm 0.015$ & $0.837 
+\backslash
+pm 0.014$ & $0.800 
+\backslash
+pm 0.006$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.902 
+\backslash
+pm 0.006$ & $0.908 
+\backslash
+pm 0.009$ & $0.924 
+\backslash
+pm 0.009$ & $0.900 
+\backslash
+pm 0.004$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab: big_banana"
+
+\end_inset
+
+Strongly twisted 8-dimensional 
+\begin_inset Formula $\mathcal{B}(0.1,100)$
+\end_inset
+
+ target; iterations: 80000, burn-in: 40000
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\size footnotesize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{l||l|l|l|l} 
+\backslash
+hline Sampler & M & AM-FS & AM-LS & KAMH-LS
+\backslash
+
+\backslash
+ 
+\backslash
+hline Acceptance  & $0.245 
+\backslash
+pm 0.025$ & $0.063 
+\backslash
+pm 0.010$ & $0.233 
+\backslash
+pm 0.003$ & $0.278 
+\backslash
+pm 0.072$
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}} [X] 
+\backslash
+Vert$ & $7.456 
+\backslash
+pm 7.938$ & $3.686 
+\backslash
+pm 0.971$ & $4.330 
+\backslash
+pm 0.856$ & $3.547 
+\backslash
+pm 3.210$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.026$ & $0.117 
+\backslash
+pm 0.017$ & $0.126 
+\backslash
+pm 0.012$ & $0.101 
+\backslash
+pm 0.015$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.200 
+\backslash
+pm 0.046$ & $0.229 
+\backslash
+pm 0.024$ & $0.244 
+\backslash
+pm 0.017$ & $0.203 
+\backslash
+pm 0.025$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.299 
+\backslash
+pm 0.064$ & $0.339 
+\backslash
+pm 0.027$ & $0.357 
+\backslash
+pm 0.021$ & $0.306 
+\backslash
+pm 0.035$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.397 
+\backslash
+pm 0.078$ & $0.446 
+\backslash
+pm 0.027$ & $0.467 
+\backslash
+pm 0.022$ & $0.408 
+\backslash
+pm 0.041$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.495 
+\backslash
+pm 0.087$ & $0.548 
+\backslash
+pm 0.028$ & $0.570 
+\backslash
+pm 0.022$ & $0.510 
+\backslash
+pm 0.044$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.594 
+\backslash
+pm 0.092$ & $0.648 
+\backslash
+pm 0.027$ & $0.670 
+\backslash
+pm 0.020$ & $0.611 
+\backslash
+pm 0.043$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.693 
+\backslash
+pm 0.090$ & $0.744 
+\backslash
+pm 0.025$ & $0.763 
+\backslash
+pm 0.018$ & $0.712 
+\backslash
+pm 0.039$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.795 
+\backslash
+pm 0.078$ & $0.838 
+\backslash
+pm 0.018$ & $0.851 
+\backslash
+pm 0.014$ & $0.812 
+\backslash
+pm 0.031$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.896 
+\backslash
+pm 0.054$ & $0.924 
+\backslash
+pm 0.012$ & $0.931 
+\backslash
+pm 0.010$ & $0.909 
+\backslash
+pm 0.019$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab: flower"
+
+\end_inset
+
+8-dimensional 
+\begin_inset Formula $\mathcal{F}(10,6,6,1)$
+\end_inset
+
+ target; iterations: 120000, burn-in: 60000
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\size footnotesize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{l||l|l|l|l} 
+\backslash
+hline Sampler & M & AM-FS & AM-LS & KAMH-LS
+\backslash
+
+\backslash
+ 
+\backslash
+hline 
+\end_layout
+
+\begin_layout Plain Layout
+
+Acceptance & $0.215 
+\backslash
+pm 0.006$ & $0.065 
+\backslash
+pm 0.001$ & $0.234 
+\backslash
+pm 0.001$ & $0.252 
+\backslash
+pm 0.035$
+\backslash
+
+\backslash
+ $
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}}[X] 
+\backslash
+Vert$ & $4.700 
+\backslash
+pm 2.210$ & $0.530 
+\backslash
+pm 0.255$ & $1.089 
+\backslash
+pm 0.563$ & $1.448 
+\backslash
+pm 0.759$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.006$ & $0.103 
+\backslash
+pm 0.012$ & $0.118 
+\backslash
+pm 0.011$ & $0.100 
+\backslash
+pm 0.005$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.200 
+\backslash
+pm 0.009$ & $0.207 
+\backslash
+pm 0.018$ & $0.230 
+\backslash
+pm 0.015$ & $0.200 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.301 
+\backslash
+pm 0.010$ & $0.310 
+\backslash
+pm 0.021$ & $0.340 
+\backslash
+pm 0.018$ & $0.300 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.401 
+\backslash
+pm 0.011$ & $0.411 
+\backslash
+pm 0.021$ & $0.445 
+\backslash
+pm 0.019$ & $0.399 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.502 
+\backslash
+pm 0.011$ & $0.513 
+\backslash
+pm 0.022$ & $0.548 
+\backslash
+pm 0.019$ & $0.500 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.602 
+\backslash
+pm 0.011$ & $0.613 
+\backslash
+pm 0.020$ & $0.648 
+\backslash
+pm 0.019$ & $0.600 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.702 
+\backslash
+pm 0.010$ & $0.713 
+\backslash
+pm 0.017$ & $0.744 
+\backslash
+pm 0.017$ & $0.700 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.802 
+\backslash
+pm 0.009$ & $0.812 
+\backslash
+pm 0.015$ & $0.837 
+\backslash
+pm 0.014$ & $0.800 
+\backslash
+pm 0.006$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.902 
+\backslash
+pm 0.006$ & $0.908 
+\backslash
+pm 0.009$ & $0.924 
+\backslash
+pm 0.009$ & $0.900 
+\backslash
+pm 0.004$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kameleon MCMC is superior to the competing samplers since the covariance
+ of the proposal adapts to the local structure of the target at the current
+ chain state, as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig: proposal_contours"
+
+\end_inset
+
+.
+ Therefore, even though scaling is learned in the same way as in AM-LS,
+ Kameleon MCMC does not suffer from wrongly scaled proposal distributions.
+ This results in superior quantile performance in comparison to AM-FS and
+ AM-LS as well as better norm of the empirical mean than Standard Metropolis.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Float table
+placement t
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab: small_banana-1"
+
+\end_inset
+
+Results for 8-dimensional non-linear distributions.
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+Top:
+\series default
+ 
+\begin_inset Formula $\mathcal{B}(0.03,100)$
+\end_inset
+
+ target; iterations: 40000, burn-in: 20000.
+ 
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+Middle:
+\series default
+ 
+\begin_inset Formula $\mathcal{B}(0.1,100)$
+\end_inset
+
+ target; iterations: 80000, burn-in: 40000.
+ 
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+Bottom:
+\series default
+ 
+\begin_inset Formula $\mathcal{F}(10,6,6,1)$
+\end_inset
+
+ target; iterations: 120000, burn-in: 60000
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{l||l|l|l|l} 
+\backslash
+hline Sampler & M & AM-FS & AM-LS & KAMH-LS
+\backslash
+
+\backslash
+ 
+\backslash
+hline Acceptance & $0.292 
+\backslash
+pm 0.004$ & $0.136 
+\backslash
+pm 0.013$ & $0.233 
+\backslash
+pm 0.003$ & $0.244 
+\backslash
+pm 0.037$
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}} [X] 
+\backslash
+Vert$ & $3.045 
+\backslash
+pm 2.290$ & $1.073 
+\backslash
+pm 0.470$ & $1.107 
+\backslash
+pm 0.455$ & $1.205 
+\backslash
+pm 0.871$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.014$ & $0.109 
+\backslash
+pm 0.015$ & $0.111 
+\backslash
+pm 0.010$ & $0.100 
+\backslash
+pm 0.012$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.201 
+\backslash
+pm 0.025$ & $0.215 
+\backslash
+pm 0.020$ & $0.220 
+\backslash
+pm 0.016$ & $0.200 
+\backslash
+pm 0.016$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.301 
+\backslash
+pm 0.033$ & $0.323 
+\backslash
+pm 0.024$ & $0.327 
+\backslash
+pm 0.021$ & $0.301 
+\backslash
+pm 0.018$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.401 
+\backslash
+pm 0.038$ & $0.428 
+\backslash
+pm 0.026$ & $0.430 
+\backslash
+pm 0.022$ & $0.402 
+\backslash
+pm 0.018$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.502 
+\backslash
+pm 0.041$ & $0.531 
+\backslash
+pm 0.027$ & $0.534 
+\backslash
+pm 0.023$ & $0.503 
+\backslash
+pm 0.020$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.602 
+\backslash
+pm 0.043$ & $0.632 
+\backslash
+pm 0.026$ & $0.635 
+\backslash
+pm 0.022$ & $0.604 
+\backslash
+pm 0.021$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.702 
+\backslash
+pm 0.042$ & $0.731 
+\backslash
+pm 0.022$ & $0.733 
+\backslash
+pm 0.020$ & $0.704 
+\backslash
+pm 0.021$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.802 
+\backslash
+pm 0.036$ & $0.826 
+\backslash
+pm 0.018$ & $0.827 
+\backslash
+pm 0.017$ & $0.805 
+\backslash
+pm 0.017$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.902 
+\backslash
+pm 0.026$ & $0.917 
+\backslash
+pm 0.012$ & $0.918 
+\backslash
+pm 0.012$ & $0.904 
+\backslash
+pm 0.011$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline Acceptance  & $0.245 
+\backslash
+pm 0.025$ & $0.063 
+\backslash
+pm 0.010$ & $0.233 
+\backslash
+pm 0.003$ & $0.278 
+\backslash
+pm 0.072$
+\backslash
+
+\backslash
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}} [X] 
+\backslash
+Vert$ & $7.456 
+\backslash
+pm 7.938$ & $3.686 
+\backslash
+pm 0.971$ & $4.330 
+\backslash
+pm 0.856$ & $3.547 
+\backslash
+pm 3.210$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.026$ & $0.117 
+\backslash
+pm 0.017$ & $0.126 
+\backslash
+pm 0.012$ & $0.101 
+\backslash
+pm 0.015$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.200 
+\backslash
+pm 0.046$ & $0.229 
+\backslash
+pm 0.024$ & $0.244 
+\backslash
+pm 0.017$ & $0.203 
+\backslash
+pm 0.025$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.299 
+\backslash
+pm 0.064$ & $0.339 
+\backslash
+pm 0.027$ & $0.357 
+\backslash
+pm 0.021$ & $0.306 
+\backslash
+pm 0.035$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.397 
+\backslash
+pm 0.078$ & $0.446 
+\backslash
+pm 0.027$ & $0.467 
+\backslash
+pm 0.022$ & $0.408 
+\backslash
+pm 0.041$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.495 
+\backslash
+pm 0.087$ & $0.548 
+\backslash
+pm 0.028$ & $0.570 
+\backslash
+pm 0.022$ & $0.510 
+\backslash
+pm 0.044$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.594 
+\backslash
+pm 0.092$ & $0.648 
+\backslash
+pm 0.027$ & $0.670 
+\backslash
+pm 0.020$ & $0.611 
+\backslash
+pm 0.043$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.693 
+\backslash
+pm 0.090$ & $0.744 
+\backslash
+pm 0.025$ & $0.763 
+\backslash
+pm 0.018$ & $0.712 
+\backslash
+pm 0.039$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.795 
+\backslash
+pm 0.078$ & $0.838 
+\backslash
+pm 0.018$ & $0.851 
+\backslash
+pm 0.014$ & $0.812 
+\backslash
+pm 0.031$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.896 
+\backslash
+pm 0.054$ & $0.924 
+\backslash
+pm 0.012$ & $0.931 
+\backslash
+pm 0.010$ & $0.909 
+\backslash
+pm 0.019$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline 
+\end_layout
+
+\begin_layout Plain Layout
+
+Acceptance & $0.215 
+\backslash
+pm 0.006$ & $0.065 
+\backslash
+pm 0.001$ & $0.234 
+\backslash
+pm 0.001$ & $0.252 
+\backslash
+pm 0.035$
+\backslash
+
+\backslash
+ $
+\backslash
+Vert 
+\backslash
+hat {
+\backslash
+mathbb{E}}[X] 
+\backslash
+Vert$ & $4.700 
+\backslash
+pm 2.210$ & $0.530 
+\backslash
+pm 0.255$ & $1.089 
+\backslash
+pm 0.563$ & $1.448 
+\backslash
+pm 0.759$
+\backslash
+
+\backslash
+ 0.1-quantile & $0.100 
+\backslash
+pm 0.006$ & $0.103 
+\backslash
+pm 0.012$ & $0.118 
+\backslash
+pm 0.011$ & $0.100 
+\backslash
+pm 0.005$
+\backslash
+
+\backslash
+ 0.2-quantile & $0.200 
+\backslash
+pm 0.009$ & $0.207 
+\backslash
+pm 0.018$ & $0.230 
+\backslash
+pm 0.015$ & $0.200 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.3-quantile & $0.301 
+\backslash
+pm 0.010$ & $0.310 
+\backslash
+pm 0.021$ & $0.340 
+\backslash
+pm 0.018$ & $0.300 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.4-quantile & $0.401 
+\backslash
+pm 0.011$ & $0.411 
+\backslash
+pm 0.021$ & $0.445 
+\backslash
+pm 0.019$ & $0.399 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.5-quantile & $0.502 
+\backslash
+pm 0.011$ & $0.513 
+\backslash
+pm 0.022$ & $0.548 
+\backslash
+pm 0.019$ & $0.500 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.6-quantile & $0.602 
+\backslash
+pm 0.011$ & $0.613 
+\backslash
+pm 0.020$ & $0.648 
+\backslash
+pm 0.019$ & $0.600 
+\backslash
+pm 0.008$
+\backslash
+
+\backslash
+ 0.7-quantile & $0.702 
+\backslash
+pm 0.010$ & $0.713 
+\backslash
+pm 0.017$ & $0.744 
+\backslash
+pm 0.017$ & $0.700 
+\backslash
+pm 0.007$
+\backslash
+
+\backslash
+ 0.8-quantile & $0.802 
+\backslash
+pm 0.009$ & $0.812 
+\backslash
+pm 0.015$ & $0.837 
+\backslash
+pm 0.014$ & $0.800 
+\backslash
+pm 0.006$
+\backslash
+
+\backslash
+ 0.9-quantile & $0.902 
+\backslash
+pm 0.006$ & $0.908 
+\backslash
+pm 0.009$ & $0.924 
+\backslash
+pm 0.009$ & $0.900 
+\backslash
+pm 0.004$
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Conclusions"
+
+\end_inset
+
+Conclusions
+\end_layout
+
+\begin_layout Standard
+We have constructed a simple, versatile, adaptive MCMC sampler that, based
+ on the chain samples, constructs a family of proposal distributions that
+ automatically conform to the local structure of the target at the current
+ chain state.
+ In experiments, the sampler outperforms existing approaches on nonlinear
+ target distributions in terms of empirical quantiles, indicating faster
+ mixing.
+ Possible extensions include incorporating additional information about
+ the target densities and exploring the interplay between adaptation in
+ terms of sub-sampling chain history and convergence of the sampler.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+footnotesize
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "bibfile,local"
+options "unsrt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+normalsize
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Proofs"
+
+\end_inset
+
+Proofs
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Proposition.
+
+\series default
+ Let 
+\begin_inset Formula $k$
+\end_inset
+
+ be a differentiable positive definite kernel.
+ Then 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\nabla_{x}k(x,x)|_{x=y}-2\nabla_{x}k(x,y)|_{x=y}=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+Since 
+\begin_inset Formula $k$
+\end_inset
+
+ is a positive definite kernel there exists a Hilbert space 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+ and a feature map 
+\begin_inset Formula $\varphi:\mathcal{\mathbb{R}}^{d}\to\mathcal{H},$
+\end_inset
+
+ such that 
+\begin_inset Formula $k(x,x')=\left\langle \varphi(x),\varphi(x')\right\rangle _{\mathcal{H}}$
+\end_inset
+
+.
+ Consider first the map 
+\begin_inset Formula $\tau:\mathbb{R}^{d}\to\mathbb{R}$
+\end_inset
+
+, defined by 
+\begin_inset Formula $\tau(x)=k(x,x)$
+\end_inset
+
+.
+ We write 
+\begin_inset Formula $\tau=\psi\circ\varphi$
+\end_inset
+
+, where 
+\begin_inset Formula $\psi:\mathcal{H}\to\mathbb{R}$
+\end_inset
+
+, 
+\begin_inset Formula $\psi(f)=\left\Vert f\right\Vert _{\mathcal{H}}^{2}.$
+\end_inset
+
+ We can view 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\nabla_{x}k(x,x)|_{x=y}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ as a 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Fr
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+'{e}
+\end_layout
+
+\end_inset
+
+chet
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ derivative 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\tau(y)\in\mathcal{B}(\mathbb{R}^{d},\mathbb{R})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ of 
+\begin_inset Formula $\tau$
+\end_inset
+
+ at 
+\begin_inset Formula $y$
+\end_inset
+
+, i.e., a bounded linear operator from 
+\begin_inset Formula $\mathbb{R}^{d}$
+\end_inset
+
+ to 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+.
+ By the chain rule of the 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Fr
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+'{e}
+\end_layout
+
+\end_inset
+
+chet
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ derivatives, the value of 
+\begin_inset Formula $D\tau(y)$
+\end_inset
+
+ at some 
+\begin_inset Formula $x'\in\mathbb{R}^{d}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{eqnarray*}
+\left[D\tau(y)\right](x') & = & \left[D\psi\left(\varphi(y)\right)\circ D\varphi(y)\right](x'),
+\end{eqnarray*}
+
+\end_inset
+
+ where 
+\begin_inset Formula $D\varphi(x)\in\mathcal{B}(\mathbb{R}^{d},\mathcal{H})$
+\end_inset
+
+, and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\psi\left(\varphi(x)\right)\in\mathbb{\mathcal{B}}(\mathcal{H},\mathbb{R})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
+ Derivative 
+\begin_inset Formula $D\varphi(x)$
+\end_inset
+
+ of the feature map exists whenever 
+\begin_inset Formula $k$
+\end_inset
+
+ is a differentiable function 
+\begin_inset CommandInset citation
+LatexCommand citep
+after "Section 4.3"
+key "Steinwart2008book"
+
+\end_inset
+
+.
+ It is readily shown that 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\psi\left[\varphi(x)\right]=2\left\langle \varphi(x),\cdot\right\rangle _{\mathcal{H}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, so that 
+\begin_inset Formula 
+\begin{eqnarray*}
+\left[D\tau(y)\right](x') & = & 2\left\langle \varphi(y),\left[D\varphi(y)\right](x')\right\rangle _{\mathcal{H}}.
+\end{eqnarray*}
+
+\end_inset
+
+Next, we consider the map 
+\begin_inset Formula $\kappa_{y}(x)=k(x,y)=\left\langle \varphi(x),\varphi(y)\right\rangle _{\mathcal{H}}$
+\end_inset
+
+, i.e., 
+\begin_inset Formula $\kappa_{y}=\psi_{y}\circ\varphi$
+\end_inset
+
+ where 
+\begin_inset Formula $\psi_{y}(f)=\left\langle f,\varphi(y)\right\rangle _{\mathcal{H}}$
+\end_inset
+
+.
+ Since 
+\begin_inset Formula $\psi_{y}$
+\end_inset
+
+ is a linear scalar function on 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\psi_{y}\left(f\right)=\left\langle \varphi(y),\cdot\right\rangle _{\mathcal{H}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ Again, by the chain rule:
+\begin_inset Formula 
+\begin{eqnarray*}
+\left[D\kappa_{y}(y)\right](x') & = & \left[D\psi_{y}\left(\varphi(y)\right)\circ D\varphi(y)\right](x')\\
+ & = & \left\langle \varphi(y),\left[D\varphi(y)\right](x')\right\rangle _{\mathcal{H}},
+\end{eqnarray*}
+
+\end_inset
+
+and thus 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\left(D\tau(y)-2D\kappa_{y}(y)\right)(x')=0$
+\end_inset
+
+, for all 
+\begin_inset Formula $x'\in\mathbb{R}^{d}$
+\end_inset
+
+, i.e., we obtain equality of operators.
+ Since Fr
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+'{e}
+\end_layout
+
+\end_inset
+
+chet derivatives can also be written as inner products with the gradients,
+ 
+\begin_inset Formula $\left(\nabla_{x}k(x,x)|_{x=y}-2\nabla_{x}k(x,y)|_{x=y}\right)^{\top}x'=\left(D\tau(y)-2D\kappa_{y}(y)\right)(x')=0$
+\end_inset
+
+, 
+\begin_inset Formula $\forall x'\in\mathbb{R}^{d}$
+\end_inset
+
+, which proves the claim.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Proposition.
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)=\mathcal{N}(y,\gamma^{2}I+\nu^{2}\Mz H\Mz^{\top})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+We start with
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{eqnarray*}
+p(\beta)p(x^{*}|y,\beta) & = & \frac{1}{\left(2\pi\right)^{\frac{n+d}{2}}\gamma^{d}\nu^{n}}\exp\left(-\frac{1}{2\nu^{2}}\beta^{\top}\beta\right)\\
+ &  & \cdot\exp\left(-\frac{1}{2\gamma^{2}}\left(x^{*}-y-\Mz H\beta\right)^{\top}\left(x^{*}-y-\Mz H\beta\right)\right)\\
+ & = & \frac{1}{\left(2\pi\right)^{\frac{n+d}{2}}\gamma^{d}\nu^{n}}\exp\left(-\frac{1}{2\gamma^{2}}\left(x^{*}-y\right)^{\top}\left(x^{*}-y\right)\right)\\
+ &  & \cdot\exp\left(-\frac{1}{2}\left(\beta^{\top}\left(\frac{1}{\nu^{2}}I+\frac{1}{\gamma^{2}}H\Mz^{\top}\Mz H\right)\beta-\frac{2}{\gamma^{2}}\beta^{\top}H\Mz^{\top}(x^{*}-y)\right)\right).
+\end{eqnarray*}
+
+\end_inset
+
+Now, we set
+\begin_inset Formula 
+\begin{eqnarray*}
+\Sigma^{-1} & = & \frac{1}{\nu^{2}}I+\frac{1}{\gamma^{2}}H\Mz^{\top}\Mz H\\
+\mu & = & \frac{1}{\gamma^{2}}\Sigma H\Mz^{\top}(x^{*}-y),
+\end{eqnarray*}
+
+\end_inset
+
+and application of the standard Gaussian integral
+\begin_inset Formula 
+\begin{eqnarray*}
+\int\exp\left(-\frac{1}{2}\left(\beta^{\top}\Sigma^{-1}\beta-2\beta^{\top}\Sigma^{-1}\mu\right)\right)d\beta & =\\
+(2\pi)^{n/2}\sqrt{\det\Sigma}\exp\left(\frac{1}{2}\mu^{\top}\Sigma^{-1}\mu\right),
+\end{eqnarray*}
+
+\end_inset
+
+leads to
+\begin_inset Formula 
+\begin{eqnarray*}
+q_{\mathbf{z}}(x^{*}|y) & = & \frac{\sqrt{\det\Sigma}}{\left(2\pi\right)^{\frac{d}{2}}\gamma^{d}\nu^{n}}\exp\left(-\frac{1}{2\gamma^{2}}\left(x^{*}-y\right)^{\top}\left(x^{*}-y\right)\right)\\
+ &  & \cdot\exp\left(\frac{1}{2}\mu^{\top}\Sigma^{-1}\mu\right).
+\end{eqnarray*}
+
+\end_inset
+
+This is just a 
+\begin_inset Formula $d$
+\end_inset
+
+-dimensional Gaussian density where both the mean and covariance will, in
+ general, depend on 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ Let us consider the exponent
+\begin_inset Formula 
+\begin{eqnarray*}
+ &  & -\frac{1}{2\gamma^{2}}\left(x^{*}-y\right)^{\top}\left(x^{*}-y\right)+\frac{1}{2}\mu^{\top}\Sigma^{-1}\mu=\\
+ &  & -\frac{1}{2}\Biggl\{\frac{1}{\gamma^{2}}\left(x^{*}-y\right)^{\top}\left(x^{*}-y\right)\\
+ &  & \qquad-\frac{1}{\gamma^{4}}\left(x^{*}-y\right)^{\top}\Mz H\Sigma H\Mz^{\top}\left(x^{*}-y\right)\Biggr\}=\\
+ &  & -\frac{1}{2}\left\{ \left(x^{*}-y\right)^{\top}R^{-1}\left(x^{*}-y\right)\right\} ,
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $R^{-1}=\frac{1}{\gamma^{2}}(I-\frac{1}{\gamma^{2}}\Mz H\Sigma H\Mz^{\top})$
+\end_inset
+
+.
+ We can simplify the covariance 
+\begin_inset Formula $R$
+\end_inset
+
+ using the Woodbury identity to obtain:
+\begin_inset Formula 
+\begin{eqnarray*}
+R & = & \gamma^{2}(I-\frac{1}{\gamma^{2}}\Mz H\Sigma H\Mz^{\top})^{-1}\\
+ & = & \gamma^{2}\left(I+\Mz H\left(\gamma^{2}\Sigma^{-1}-H\Mz^{\top}\Mz H\right)^{-1}H\Mz^{\top}\right)\\
+ & = & \gamma^{2}\left(I+\Mz H\left(\frac{\gamma^{2}}{\nu^{2}}I\right)^{-1}H\Mz^{\top}\right)\\
+ & = & \gamma^{2}I+\nu^{2}\Mz H\Mz^{\top}.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore, the proposal density is 
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)=\mathcal{N}(y,\gamma^{2}I+\nu^{2}\Mz H\Mz^{\top})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Principal-components-proposals"
+
+\end_inset
+
+Principal Components Proposals
+\end_layout
+
+\begin_layout Standard
+An alternative approach to the standard adaptive Metropolis, discussed in
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+after "Algorithm 8"
+key "Andrieu08"
+
+\end_inset
+
+, is to extract 
+\begin_inset Formula $m\leq d$
+\end_inset
+
+ principal eigenvalue-eigenvector pairs 
+\begin_inset Formula $\left\{ \left(\lambda_{j},v_{j}\right)\right\} _{j=1}^{m}$
+\end_inset
+
+ from the estimated covariance matrix 
+\begin_inset Formula $\Sigma_{\mathbf{z}}$
+\end_inset
+
+ and use the proposal that takes form of a mixture of one-dimensional random
+ walks along the principal eigendirections
+\begin_inset Formula 
+\begin{eqnarray}
+q_{\mathbf{z}}\left(\cdot|y\right) & = & \sum_{j=1}^{m}\omega_{j}\mathcal{N}(y,\nu_{j}^{2}\lambda_{j}v_{j}v_{j}^{\top}).\label{eq: pca_proposal}
+\end{eqnarray}
+
+\end_inset
+
+In other words, given the current chain state 
+\begin_inset Formula $y$
+\end_inset
+
+, the 
+\begin_inset Formula $j$
+\end_inset
+
+-th principal eigendirection is chosen with probability 
+\begin_inset Formula $\omega_{j}$
+\end_inset
+
+ (choice 
+\begin_inset Formula $\omega_{j}=\lambda_{j}/\sum_{l=1}^{m}\lambda_{l}$
+\end_inset
+
+ is suggested), and the proposed point is 
+\begin_inset Formula 
+\begin{equation}
+x^{*}=y+\rho\nu_{j}\sqrt{\lambda_{j}}v_{j},\label{eq: pca_update}
+\end{equation}
+
+\end_inset
+
+with 
+\begin_inset Formula $\rho\sim\mathcal{N}(0,1)$
+\end_inset
+
+.
+ Note that each eigendirection may have a different scaling factor 
+\begin_inset Formula $\nu_{j}$
+\end_inset
+
+ in addition to the scaling with the eigenvalue.
+\end_layout
+
+\begin_layout Standard
+We can consider an analogous version of the update 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq: pca_update"
+
+\end_inset
+
+ performed in the RKHS
+\begin_inset Formula 
+\begin{eqnarray}
+f & = & k(\cdot,y)+\rho\nu_{j}\sqrt{\lambda_{j}}\mathbf{v}_{j},\label{eq: kpca_update}
+\end{eqnarray}
+
+\end_inset
+
+with 
+\begin_inset Formula $m\leq n$
+\end_inset
+
+ principal eigenvalue-eigenfunction pairs 
+\begin_inset Formula $\left\{ \left(\lambda_{j},\mathbf{v}_{j}\right)\right\} _{j=1}^{m}$
+\end_inset
+
+.
+ It is readily shown that the eigenfunctions 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{v}_{j}=\sum_{i=1}^{n}\tilde{\alpha}_{i}^{(j)}\left[k(\cdot,z_{i})-\muz\right]$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ lie in the subspace 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{H}_{\mathbf{z}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ induced by 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+, and that the coefficients vectors 
+\begin_inset Formula $\tilde{\alpha}^{(j)}=\left(\tilde{\alpha}_{1}^{(j)}\cdots\tilde{\alpha}_{n}^{(j)}\right)^{\top}$
+\end_inset
+
+ are proportional to the eigenvector of the centered kernel matrix 
+\begin_inset Formula $HKH$
+\end_inset
+
+, with normalization chosen so that 
+\begin_inset Formula $\left\Vert \mathbf{v}_{j}\right\Vert _{\mathcal{H}_{k}}^{2}=\left(\tilde{\alpha}^{(j)}\right)^{\top}HKH\tilde{\alpha}^{(j)}=\lambda_{j}\left\Vert \tilde{\alpha}^{(j)}\right\Vert _{2}^{2}=1$
+\end_inset
+
+ (so that the eigenfunctions have the unit RKHS norm).
+ Therefore, the update 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq: kpca_update"
+
+\end_inset
+
+ has form 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+f=k(\cdot,y)+\sum_{i=1}^{n}\beta_{i}^{(j)}\left[k(\cdot,z_{i})-\muz\right],
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+where 
+\begin_inset Formula $\beta^{\ensuremath{\left(j\right)}}=\rho\nu_{j}\sqrt{\lambda_{j}}\tilde{\alpha}^{(j)}$
+\end_inset
+
+.
+ But 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\aj=\sqrt{\lambda_{j}}\tilde{\alpha}^{(j)}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ are themselves the (unit norm) eigenvectors of 
+\begin_inset Formula $HKH,$
+\end_inset
+
+ as 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\left\Vert \aj\right\Vert _{2}^{2}=\lambda_{j}\left\Vert \tilde{\alpha}^{(j)}\right\Vert _{2}^{2}=1$
+\end_inset
+
+.
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ Therefore, the appropriate scaling with eigenvalues is already included
+ in the 
+\begin_inset Formula $\beta$
+\end_inset
+
+-coefficients, just like in the MCMC Kameleon, where the 
+\begin_inset Formula $\beta$
+\end_inset
+
+-coefficients are isotropic.
+ 
+\end_layout
+
+\begin_layout Standard
+Now, we can construct the MCMC PCA-Kameleon by simply substituting 
+\begin_inset Formula $\beta$
+\end_inset
+
+-coefficients with 
+\begin_inset Formula $\rho\nu_{j}\alpha^{(j)}$
+\end_inset
+
+, where 
+\begin_inset Formula $j$
+\end_inset
+
+ is the selected eigendirection, and 
+\begin_inset Formula $\nu_{j}$
+\end_inset
+
+ is the scaling factor associated to the 
+\begin_inset Formula $j$
+\end_inset
+
+-th eigendirection.
+ We have the following steps:
+\end_layout
+
+\begin_layout Enumerate
+Perform eigendecomposition of 
+\begin_inset Formula $HKH$
+\end_inset
+
+ to obtain the 
+\begin_inset Formula $m\leq n$
+\end_inset
+
+ eigenvectors 
+\begin_inset Formula $\left\{ \alpha_{j}\right\} _{j=1}^{m}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Draw 
+\begin_inset Formula $j\sim\text{{Discrete}}\left[\omega_{1},\ldots,\omega_{m}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\rho\sim\mathcal{N}(0,1)$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $x^{*}|y,\rho,j\sim\mathcal{N}(y+\rho\nu_{j}M_{\mathbf{z},y}H\aj,\gamma^{2}I)$
+\end_inset
+
+ (
+\begin_inset Formula $d\times1$
+\end_inset
+
+ normal in the original space)
+\end_layout
+
+\begin_layout Standard
+Similarly as before, we can simplfy the proposal by integrating out the
+ scale 
+\begin_inset Formula $\rho$
+\end_inset
+
+ of the moves in the RKHS.
+\end_layout
+
+\begin_layout Proposition
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|y)=\sum_{j=1}^{m}\omega_{j}\mathcal{N}(y,\gamma^{2}I+\nu_{j}^{2}\Mz H\alpha^{(j)}\left(\alpha^{(j)}\right)^{\top}H\Mz^{\top})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+We start with
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{eqnarray*}
+p(\rho)p(x^{*}\mid y,\rho,j) & \propto & \exp\left[-\frac{1}{2\gamma^{2}}(x^{*}-y)^{\top}(x^{*}-y)\right]\\
+ &  & \;\cdot\exp\left[-\frac{1}{2}\left\{ \left(1+\frac{\nu_{j}^{2}}{\gamma^{2}}\ajt H\Mz^{\top}\Mz H\aj\right)\rho^{2}-2\rho\frac{\nu_{j}}{\gamma^{2}}\ajt H\Mz^{\top}\left(x^{*}-y\right)\right\} \right].
+\end{eqnarray*}
+
+\end_inset
+
+By substituting
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{eqnarray*}
+\sigma^{-2} & = & 1+\frac{\nu_{j}^{2}}{\gamma^{2}}\ajt H\Mz^{\top}\Mz H\aj,\\
+\mu & = & \sigma^{2}\left(\frac{\nu_{j}}{\gamma^{2}}\ajt H\Mz^{\top}\left(x^{*}-y\right)\right),
+\end{eqnarray*}
+
+\end_inset
+
+we integrate out 
+\begin_inset Formula $\rho$
+\end_inset
+
+ to obtain:
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{eqnarray*}
+p\left(x^{*}\mid y,j\right) & \propto & \exp\left[-\frac{1}{2}\left\{ \frac{1}{\gamma^{2}}(x^{*}-y)^{\top}(x^{*}-y)-\frac{\nu_{j}^{2}\sigma^{2}}{\gamma^{4}}\left(x^{*}-y\right)^{\top}\Mz H\alpha^{(j)}\left(\alpha^{(j)}\right)^{\top}H\Mz^{\top}\left(x^{*}-y\right)\right\} \right]\\
+ & = & \exp\left[-\frac{1}{2}\left(x^{*}-y\right)^{\top}R^{-1}\left(x^{*}-y\right)\right]
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $R^{-1}=\frac{1}{\gamma^{2}}\left(I-\frac{\nu_{j}^{2}\sigma^{2}}{\gamma^{2}}\Mz H\alpha^{(j)}\left(\alpha^{(j)}\right)^{\top}H\Mz^{\top}\right)$
+\end_inset
+
+.
+ We can simplify the covariance 
+\begin_inset Formula $R$
+\end_inset
+
+ using the Woodbury identity to obtain:
+\begin_inset Formula 
+\begin{eqnarray*}
+R & = & \gamma^{2}(I-\frac{\nu_{j}^{2}\sigma^{2}}{\gamma^{2}}\Mz H\alpha^{(j)}\left(\alpha^{(j)}\right)^{\top}H\Mz^{\top})^{-1}\\
+ & = & \gamma^{2}\left(I+\frac{\nu_{j}^{2}\sigma^{2}}{\gamma^{2}}\Mz H\aj\left(1-\frac{\nu_{j}^{2}\sigma^{2}}{\gamma^{2}}\ajt H\Mz^{\top}\Mz H\aj\right)^{-1}\ajt H\Mz^{\top}\right)\\
+ & = & \gamma^{2}\left(I+\frac{\nu_{j}^{2}}{\gamma^{2}}\Mz H\alpha^{(j)}\left(\alpha^{(j)}\right)^{\top}H\Mz^{\top}\right)\\
+ & = & \gamma^{2}I+\nu_{j}^{2}\Mz H\alpha^{(j)}\left(\alpha^{(j)}\right)^{\top}H\Mz^{\top}.
+\end{eqnarray*}
+
+\end_inset
+
+The claim follows after summing over the choice 
+\begin_inset Formula $j$
+\end_inset
+
+ of the eigendirection (w.p.
+ 
+\begin_inset Formula $\omega_{j}$
+\end_inset
+
+).
+\end_layout
+
+\end_body
+\end_document
