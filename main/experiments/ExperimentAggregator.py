@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from main.experiments.ClusterTools import ClusterTools
 from main.experiments.Experiment import Experiment
-from main.tools.GitTools import GitTools
 from pickle import load
 from sets import Set
 import os
