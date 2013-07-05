@@ -46,7 +46,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append(str(mean(norm_of_means)) + " +- " + str(std(norm_of_means)))
         
         lines.append("acceptance rate:")
-        lines.append(str(mean(acceptance_rates)))
+        lines.append(str(mean(acceptance_rates)) + " +- " + str(std(acceptance_rates)))
         
         # mean as a function of iterations
         step = 1000
