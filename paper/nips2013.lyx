@@ -17,7 +17,7 @@
 %funding agencies.}
 
 \author{
- Dino Sejdinovic, Maria Lomeli Garcia, Heiko Strathmann \\
+ Dino Sejdinovic, Maria Lomeli Garcia$^*$, Heiko Strathmann$^*$ \\
 Gatsby Unit, CSML, UCL, UK \\
 \texttt{ \{dino.sejdinovic,maria.lomelig,heiko.strathmann\}@gmail.com } \\
 \AND
@@ -29,7 +29,7 @@ Arthur Gretton \\
 Gatsby Unit, CSML, UCL, UK \\
 \texttt{arthur.gretton@gmail.com}
 }
-
+\footnotetext{$^*$These authors contributed equally}
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
 %
@@ -37,6 +37,8 @@ Gatsby Unit, CSML, UCL, UK \\
 % the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
 % puts 3 of 4 authors names on the first line, and the last on the second
 % line, try using \AND instead of \And before the third author name.
+
+\nipsfinalcopy
 
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
@@ -145,6 +147,22 @@ MCMC Kameleon:
 Kernel Adaptive Metropolis-Hastings
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-0.5cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Abstract
 A Kernel Adaptive Metropolis-Hastings algorithm is introduced, for the purpose
  of sampling from a target distribution with strongly nonlinear support.
@@ -191,40 +209,8 @@ Most of the exisiting adaptive MCMC strategies have been developed for the
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-2mm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Introduction
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-1mm}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -296,6 +282,9 @@ key "SchSmoMul98,SmoMikSchWil01"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
 We begin our presentation in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -351,7 +340,7 @@ status open
 
 
 \backslash
-vspace{-2mm}
+vspace{-0.25cm}
 \end_layout
 
 \end_inset
@@ -367,22 +356,6 @@ name "sec:Background"
 \end_inset
 
 Background
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-1mm}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -868,7 +841,7 @@ status open
 
 
 \backslash
-vspace{-2mm}
+vspace{-2.5mm}
 \end_layout
 
 \end_inset
@@ -921,6 +894,22 @@ In construction of the proposal distribution at iteration
  associated to the empirical covariance operator, and then performing a
  gradient descent step on a cost function associated to those samples.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-0.5cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1359,7 +1348,7 @@ name "fig: gPlots"
 
 \end_inset
 
-Heatmaps (white denotes high values) of 
+Heatmaps (white denotes large) and gradients of 
 \begin_inset Formula $g(x)$
 \end_inset
 
@@ -1410,7 +1399,7 @@ Things that we can add
 
 -sample we obtain a new estimate of the target negative log-density.
  Note that we integrate out all these gradient steps and obtain a simple
- proposal centred at the current chain state.
+ proposal centered at the current chain state.
  Therefore, we do not need to explicitly make the gradient moves - they
  are now pulled into covariance of the proposal, and only thing we need
  to compute is the gradient of the kernel function, i.e., no parametric model
@@ -2264,7 +2253,7 @@ Some superficial similarity exists between our approach and the standard
 \end_inset
 
  are easily obtained for commonly used kernels, including the Gaussian kernel
- (see Appendix 
+ (see section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Examples-of-covariance"
@@ -2897,7 +2886,7 @@ The results for all three targets are indicative of the advantages of Kameleon
  MCMC in comparison to other approaches.
  While Standard Metropolis correctly captures the quantiles of the target,
  it has a significantly larger norm of the empirical mean, due to its purely
- random walk behaviour (e.g., the chain is not able to equally well traverse
+ random walk behavior (e.g., the chain is not able to equally well traverse
  both tails of the banana target).
  Adaptive Metropolis with fixed scale has a low acceptance rate (indicating
  that the scaling of the proposal is too large), and even though the norm
@@ -2923,6 +2912,12 @@ correct
  now becomes too small to traverse high-density regions of the target.
 \size footnotesize
 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\size footnotesize
 \begin_inset Float table
 wide false
 sideways false
@@ -3533,445 +3528,6 @@ end{tabular}
 \end_inset
 
 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\size footnotesize
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-
-\size footnotesize
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab: big_banana"
-
-\end_inset
-
-Strongly twisted 8-dimensional 
-\begin_inset Formula $\mathcal{B}(0.1,100)$
-\end_inset
-
- target; iterations: 80000, burn-in: 40000
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-
-\size footnotesize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{tabular}{l||l|l|l|l} 
-\backslash
-hline Sampler & M & AM-FS & AM-LS & KAMH-LS
-\backslash
-
-\backslash
- 
-\backslash
-hline Acceptance  & $0.245 
-\backslash
-pm 0.025$ & $0.063 
-\backslash
-pm 0.010$ & $0.233 
-\backslash
-pm 0.003$ & $0.278 
-\backslash
-pm 0.072$
-\backslash
-
-\backslash
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-$
-\backslash
-Vert 
-\backslash
-hat {
-\backslash
-mathbb{E}} [X] 
-\backslash
-Vert$ & $7.456 
-\backslash
-pm 7.938$ & $3.686 
-\backslash
-pm 0.971$ & $4.330 
-\backslash
-pm 0.856$ & $3.547 
-\backslash
-pm 3.210$
-\backslash
-
-\backslash
- 0.1-quantile & $0.100 
-\backslash
-pm 0.026$ & $0.117 
-\backslash
-pm 0.017$ & $0.126 
-\backslash
-pm 0.012$ & $0.101 
-\backslash
-pm 0.015$
-\backslash
-
-\backslash
- 0.2-quantile & $0.200 
-\backslash
-pm 0.046$ & $0.229 
-\backslash
-pm 0.024$ & $0.244 
-\backslash
-pm 0.017$ & $0.203 
-\backslash
-pm 0.025$
-\backslash
-
-\backslash
- 0.3-quantile & $0.299 
-\backslash
-pm 0.064$ & $0.339 
-\backslash
-pm 0.027$ & $0.357 
-\backslash
-pm 0.021$ & $0.306 
-\backslash
-pm 0.035$
-\backslash
-
-\backslash
- 0.4-quantile & $0.397 
-\backslash
-pm 0.078$ & $0.446 
-\backslash
-pm 0.027$ & $0.467 
-\backslash
-pm 0.022$ & $0.408 
-\backslash
-pm 0.041$
-\backslash
-
-\backslash
- 0.5-quantile & $0.495 
-\backslash
-pm 0.087$ & $0.548 
-\backslash
-pm 0.028$ & $0.570 
-\backslash
-pm 0.022$ & $0.510 
-\backslash
-pm 0.044$
-\backslash
-
-\backslash
- 0.6-quantile & $0.594 
-\backslash
-pm 0.092$ & $0.648 
-\backslash
-pm 0.027$ & $0.670 
-\backslash
-pm 0.020$ & $0.611 
-\backslash
-pm 0.043$
-\backslash
-
-\backslash
- 0.7-quantile & $0.693 
-\backslash
-pm 0.090$ & $0.744 
-\backslash
-pm 0.025$ & $0.763 
-\backslash
-pm 0.018$ & $0.712 
-\backslash
-pm 0.039$
-\backslash
-
-\backslash
- 0.8-quantile & $0.795 
-\backslash
-pm 0.078$ & $0.838 
-\backslash
-pm 0.018$ & $0.851 
-\backslash
-pm 0.014$ & $0.812 
-\backslash
-pm 0.031$
-\backslash
-
-\backslash
- 0.9-quantile & $0.896 
-\backslash
-pm 0.054$ & $0.924 
-\backslash
-pm 0.012$ & $0.931 
-\backslash
-pm 0.010$ & $0.909 
-\backslash
-pm 0.019$
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{tabular}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\size footnotesize
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-
-\size footnotesize
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab: flower"
-
-\end_inset
-
-8-dimensional 
-\begin_inset Formula $\mathcal{F}(10,6,6,1)$
-\end_inset
-
- target; iterations: 120000, burn-in: 60000
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-
-\size footnotesize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{tabular}{l||l|l|l|l} 
-\backslash
-hline Sampler & M & AM-FS & AM-LS & KAMH-LS
-\backslash
-
-\backslash
- 
-\backslash
-hline 
-\end_layout
-
-\begin_layout Plain Layout
-
-Acceptance & $0.215 
-\backslash
-pm 0.006$ & $0.065 
-\backslash
-pm 0.001$ & $0.234 
-\backslash
-pm 0.001$ & $0.252 
-\backslash
-pm 0.035$
-\backslash
-
-\backslash
- $
-\backslash
-Vert 
-\backslash
-hat {
-\backslash
-mathbb{E}}[X] 
-\backslash
-Vert$ & $4.700 
-\backslash
-pm 2.210$ & $0.530 
-\backslash
-pm 0.255$ & $1.089 
-\backslash
-pm 0.563$ & $1.448 
-\backslash
-pm 0.759$
-\backslash
-
-\backslash
- 0.1-quantile & $0.100 
-\backslash
-pm 0.006$ & $0.103 
-\backslash
-pm 0.012$ & $0.118 
-\backslash
-pm 0.011$ & $0.100 
-\backslash
-pm 0.005$
-\backslash
-
-\backslash
- 0.2-quantile & $0.200 
-\backslash
-pm 0.009$ & $0.207 
-\backslash
-pm 0.018$ & $0.230 
-\backslash
-pm 0.015$ & $0.200 
-\backslash
-pm 0.007$
-\backslash
-
-\backslash
- 0.3-quantile & $0.301 
-\backslash
-pm 0.010$ & $0.310 
-\backslash
-pm 0.021$ & $0.340 
-\backslash
-pm 0.018$ & $0.300 
-\backslash
-pm 0.007$
-\backslash
-
-\backslash
- 0.4-quantile & $0.401 
-\backslash
-pm 0.011$ & $0.411 
-\backslash
-pm 0.021$ & $0.445 
-\backslash
-pm 0.019$ & $0.399 
-\backslash
-pm 0.008$
-\backslash
-
-\backslash
- 0.5-quantile & $0.502 
-\backslash
-pm 0.011$ & $0.513 
-\backslash
-pm 0.022$ & $0.548 
-\backslash
-pm 0.019$ & $0.500 
-\backslash
-pm 0.008$
-\backslash
-
-\backslash
- 0.6-quantile & $0.602 
-\backslash
-pm 0.011$ & $0.613 
-\backslash
-pm 0.020$ & $0.648 
-\backslash
-pm 0.019$ & $0.600 
-\backslash
-pm 0.008$
-\backslash
-
-\backslash
- 0.7-quantile & $0.702 
-\backslash
-pm 0.010$ & $0.713 
-\backslash
-pm 0.017$ & $0.744 
-\backslash
-pm 0.017$ & $0.700 
-\backslash
-pm 0.007$
-\backslash
-
-\backslash
- 0.8-quantile & $0.802 
-\backslash
-pm 0.009$ & $0.812 
-\backslash
-pm 0.015$ & $0.837 
-\backslash
-pm 0.014$ & $0.800 
-\backslash
-pm 0.006$
-\backslash
-
-\backslash
- 0.9-quantile & $0.902 
-\backslash
-pm 0.006$ & $0.908 
-\backslash
-pm 0.009$ & $0.924 
-\backslash
-pm 0.009$ & $0.900 
-\backslash
-pm 0.004$
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{tabular}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -3980,6 +3536,91 @@ end{tabular}
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\series bold
+Moderately twisted 8-dimensional
+\series default
+ 
+\begin_inset Formula $\mathbf{\mathcal{B}(0.03,100)}$
+\end_inset
+
+ 
+\series bold
+target; iterations: 40000, burn-in: 20000
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/results_banana_small.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\series bold
+Strongly twisted 8-dimensional 
+\begin_inset Formula $\mathbf{\mathcal{B}(0.1,100)}$
+\end_inset
+
+ target; iterations: 80000, burn-in: 40000
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/results_banana_big.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\series bold
+8-dimensional 
+\series default
+
+\begin_inset Formula $\mathbf{\mathcal{F}(10,6,6,1)}$
+\end_inset
+
+
+\series bold
+ target; iterations: 120000, burn-in: 60000
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/results_flower.eps
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for three non-linear distributions, averaged over 100 chains for
+ each sampler with standard error.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
 Kameleon MCMC is superior to the competing samplers since the covariance
  of the proposal adapts to the local structure of the target at the current
  chain state, as illustrated in Figure 
@@ -3994,612 +3635,6 @@ reference "fig: proposal_contours"
  Kameleon MCMC does not suffer from wrongly scaled proposal distributions.
  This results in superior quantile performance in comparison to AM-FS and
  AM-LS as well as better norm of the empirical mean than Standard Metropolis.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset Float table
-placement t
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab: small_banana-1"
-
-\end_inset
-
-Results for 8-dimensional non-linear distributions.
-\series bold
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-
-\backslash
-
-\end_layout
-
-\end_inset
-
-Top:
-\series default
- 
-\begin_inset Formula $\mathcal{B}(0.03,100)$
-\end_inset
-
- target; iterations: 40000, burn-in: 20000.
- 
-\series bold
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-
-\backslash
-
-\end_layout
-
-\end_inset
-
-Middle:
-\series default
- 
-\begin_inset Formula $\mathcal{B}(0.1,100)$
-\end_inset
-
- target; iterations: 80000, burn-in: 40000.
- 
-\series bold
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-
-\backslash
-
-\end_layout
-
-\end_inset
-
-Bottom:
-\series default
- 
-\begin_inset Formula $\mathcal{F}(10,6,6,1)$
-\end_inset
-
- target; iterations: 120000, burn-in: 60000
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{tabular}{l||l|l|l|l} 
-\backslash
-hline Sampler & M & AM-FS & AM-LS & KAMH-LS
-\backslash
-
-\backslash
- 
-\backslash
-hline Acceptance & $0.292 
-\backslash
-pm 0.004$ & $0.136 
-\backslash
-pm 0.013$ & $0.233 
-\backslash
-pm 0.003$ & $0.244 
-\backslash
-pm 0.037$
-\backslash
-
-\backslash
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-$
-\backslash
-Vert 
-\backslash
-hat {
-\backslash
-mathbb{E}} [X] 
-\backslash
-Vert$ & $3.045 
-\backslash
-pm 2.290$ & $1.073 
-\backslash
-pm 0.470$ & $1.107 
-\backslash
-pm 0.455$ & $1.205 
-\backslash
-pm 0.871$
-\backslash
-
-\backslash
- 0.1-quantile & $0.100 
-\backslash
-pm 0.014$ & $0.109 
-\backslash
-pm 0.015$ & $0.111 
-\backslash
-pm 0.010$ & $0.100 
-\backslash
-pm 0.012$
-\backslash
-
-\backslash
- 0.2-quantile & $0.201 
-\backslash
-pm 0.025$ & $0.215 
-\backslash
-pm 0.020$ & $0.220 
-\backslash
-pm 0.016$ & $0.200 
-\backslash
-pm 0.016$
-\backslash
-
-\backslash
- 0.3-quantile & $0.301 
-\backslash
-pm 0.033$ & $0.323 
-\backslash
-pm 0.024$ & $0.327 
-\backslash
-pm 0.021$ & $0.301 
-\backslash
-pm 0.018$
-\backslash
-
-\backslash
- 0.4-quantile & $0.401 
-\backslash
-pm 0.038$ & $0.428 
-\backslash
-pm 0.026$ & $0.430 
-\backslash
-pm 0.022$ & $0.402 
-\backslash
-pm 0.018$
-\backslash
-
-\backslash
- 0.5-quantile & $0.502 
-\backslash
-pm 0.041$ & $0.531 
-\backslash
-pm 0.027$ & $0.534 
-\backslash
-pm 0.023$ & $0.503 
-\backslash
-pm 0.020$
-\backslash
-
-\backslash
- 0.6-quantile & $0.602 
-\backslash
-pm 0.043$ & $0.632 
-\backslash
-pm 0.026$ & $0.635 
-\backslash
-pm 0.022$ & $0.604 
-\backslash
-pm 0.021$
-\backslash
-
-\backslash
- 0.7-quantile & $0.702 
-\backslash
-pm 0.042$ & $0.731 
-\backslash
-pm 0.022$ & $0.733 
-\backslash
-pm 0.020$ & $0.704 
-\backslash
-pm 0.021$
-\backslash
-
-\backslash
- 0.8-quantile & $0.802 
-\backslash
-pm 0.036$ & $0.826 
-\backslash
-pm 0.018$ & $0.827 
-\backslash
-pm 0.017$ & $0.805 
-\backslash
-pm 0.017$
-\backslash
-
-\backslash
- 0.9-quantile & $0.902 
-\backslash
-pm 0.026$ & $0.917 
-\backslash
-pm 0.012$ & $0.918 
-\backslash
-pm 0.012$ & $0.904 
-\backslash
-pm 0.011$
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hline Acceptance  & $0.245 
-\backslash
-pm 0.025$ & $0.063 
-\backslash
-pm 0.010$ & $0.233 
-\backslash
-pm 0.003$ & $0.278 
-\backslash
-pm 0.072$
-\backslash
-
-\backslash
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-$
-\backslash
-Vert 
-\backslash
-hat {
-\backslash
-mathbb{E}} [X] 
-\backslash
-Vert$ & $7.456 
-\backslash
-pm 7.938$ & $3.686 
-\backslash
-pm 0.971$ & $4.330 
-\backslash
-pm 0.856$ & $3.547 
-\backslash
-pm 3.210$
-\backslash
-
-\backslash
- 0.1-quantile & $0.100 
-\backslash
-pm 0.026$ & $0.117 
-\backslash
-pm 0.017$ & $0.126 
-\backslash
-pm 0.012$ & $0.101 
-\backslash
-pm 0.015$
-\backslash
-
-\backslash
- 0.2-quantile & $0.200 
-\backslash
-pm 0.046$ & $0.229 
-\backslash
-pm 0.024$ & $0.244 
-\backslash
-pm 0.017$ & $0.203 
-\backslash
-pm 0.025$
-\backslash
-
-\backslash
- 0.3-quantile & $0.299 
-\backslash
-pm 0.064$ & $0.339 
-\backslash
-pm 0.027$ & $0.357 
-\backslash
-pm 0.021$ & $0.306 
-\backslash
-pm 0.035$
-\backslash
-
-\backslash
- 0.4-quantile & $0.397 
-\backslash
-pm 0.078$ & $0.446 
-\backslash
-pm 0.027$ & $0.467 
-\backslash
-pm 0.022$ & $0.408 
-\backslash
-pm 0.041$
-\backslash
-
-\backslash
- 0.5-quantile & $0.495 
-\backslash
-pm 0.087$ & $0.548 
-\backslash
-pm 0.028$ & $0.570 
-\backslash
-pm 0.022$ & $0.510 
-\backslash
-pm 0.044$
-\backslash
-
-\backslash
- 0.6-quantile & $0.594 
-\backslash
-pm 0.092$ & $0.648 
-\backslash
-pm 0.027$ & $0.670 
-\backslash
-pm 0.020$ & $0.611 
-\backslash
-pm 0.043$
-\backslash
-
-\backslash
- 0.7-quantile & $0.693 
-\backslash
-pm 0.090$ & $0.744 
-\backslash
-pm 0.025$ & $0.763 
-\backslash
-pm 0.018$ & $0.712 
-\backslash
-pm 0.039$
-\backslash
-
-\backslash
- 0.8-quantile & $0.795 
-\backslash
-pm 0.078$ & $0.838 
-\backslash
-pm 0.018$ & $0.851 
-\backslash
-pm 0.014$ & $0.812 
-\backslash
-pm 0.031$
-\backslash
-
-\backslash
- 0.9-quantile & $0.896 
-\backslash
-pm 0.054$ & $0.924 
-\backslash
-pm 0.012$ & $0.931 
-\backslash
-pm 0.010$ & $0.909 
-\backslash
-pm 0.019$
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hline 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hline 
-\end_layout
-
-\begin_layout Plain Layout
-
-Acceptance & $0.215 
-\backslash
-pm 0.006$ & $0.065 
-\backslash
-pm 0.001$ & $0.234 
-\backslash
-pm 0.001$ & $0.252 
-\backslash
-pm 0.035$
-\backslash
-
-\backslash
- $
-\backslash
-Vert 
-\backslash
-hat {
-\backslash
-mathbb{E}}[X] 
-\backslash
-Vert$ & $4.700 
-\backslash
-pm 2.210$ & $0.530 
-\backslash
-pm 0.255$ & $1.089 
-\backslash
-pm 0.563$ & $1.448 
-\backslash
-pm 0.759$
-\backslash
-
-\backslash
- 0.1-quantile & $0.100 
-\backslash
-pm 0.006$ & $0.103 
-\backslash
-pm 0.012$ & $0.118 
-\backslash
-pm 0.011$ & $0.100 
-\backslash
-pm 0.005$
-\backslash
-
-\backslash
- 0.2-quantile & $0.200 
-\backslash
-pm 0.009$ & $0.207 
-\backslash
-pm 0.018$ & $0.230 
-\backslash
-pm 0.015$ & $0.200 
-\backslash
-pm 0.007$
-\backslash
-
-\backslash
- 0.3-quantile & $0.301 
-\backslash
-pm 0.010$ & $0.310 
-\backslash
-pm 0.021$ & $0.340 
-\backslash
-pm 0.018$ & $0.300 
-\backslash
-pm 0.007$
-\backslash
-
-\backslash
- 0.4-quantile & $0.401 
-\backslash
-pm 0.011$ & $0.411 
-\backslash
-pm 0.021$ & $0.445 
-\backslash
-pm 0.019$ & $0.399 
-\backslash
-pm 0.008$
-\backslash
-
-\backslash
- 0.5-quantile & $0.502 
-\backslash
-pm 0.011$ & $0.513 
-\backslash
-pm 0.022$ & $0.548 
-\backslash
-pm 0.019$ & $0.500 
-\backslash
-pm 0.008$
-\backslash
-
-\backslash
- 0.6-quantile & $0.602 
-\backslash
-pm 0.011$ & $0.613 
-\backslash
-pm 0.020$ & $0.648 
-\backslash
-pm 0.019$ & $0.600 
-\backslash
-pm 0.008$
-\backslash
-
-\backslash
- 0.7-quantile & $0.702 
-\backslash
-pm 0.010$ & $0.713 
-\backslash
-pm 0.017$ & $0.744 
-\backslash
-pm 0.017$ & $0.700 
-\backslash
-pm 0.007$
-\backslash
-
-\backslash
- 0.8-quantile & $0.802 
-\backslash
-pm 0.009$ & $0.812 
-\backslash
-pm 0.015$ & $0.837 
-\backslash
-pm 0.014$ & $0.800 
-\backslash
-pm 0.006$
-\backslash
-
-\backslash
- 0.9-quantile & $0.902 
-\backslash
-pm 0.006$ & $0.908 
-\backslash
-pm 0.009$ & $0.924 
-\backslash
-pm 0.009$ & $0.900 
-\backslash
-pm 0.004$
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{tabular}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -4635,6 +3670,19 @@ status open
 
 \backslash
 footnotesize
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-0.2cm}
 \end_layout
 
 \end_inset
@@ -4753,7 +3801,7 @@ Since
 \begin_inset Formula $\psi(f)=\left\Vert f\right\Vert _{\mathcal{H}}^{2}.$
 \end_inset
 
- We can view 
+ We can obtain 
 \family roman
 \series medium
 \shape up
@@ -4781,7 +3829,7 @@ Since
 \uwave default
 \noun default
 \color inherit
- as a 
+ from the 
 \family roman
 \series medium
 \shape up
@@ -4854,7 +3902,11 @@ chet
 \begin_inset Formula $y$
 \end_inset
 
-, i.e., a bounded linear operator from 
+, which to each 
+\begin_inset Formula $y\in\mathbb{R}^{d}$
+\end_inset
+
+ associates a bounded linear operator from 
 \begin_inset Formula $\mathbb{R}^{d}$
 \end_inset
 
@@ -4862,8 +3914,20 @@ chet
 \begin_inset Formula $\mathbb{R}$
 \end_inset
 
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Definition A.5.14"
+key "Steinwart2008book"
+
+\end_inset
+
 .
- By the chain rule of the 
+ By the chain rule for
+\end_layout
+
+\begin_layout Proof
+
 \family roman
 \series medium
 \shape up
@@ -4900,7 +3964,15 @@ chet
 \uwave default
 \noun default
 \color inherit
- derivatives, the value of 
+ derivatives 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Lemma A.5.15(b)"
+key "Steinwart2008book"
+
+\end_inset
+
+, the value of 
 \begin_inset Formula $D\tau(y)$
 \end_inset
 
@@ -4916,8 +3988,8 @@ chet
 
 \end_inset
 
- where 
-\begin_inset Formula $D\varphi(x)\in\mathcal{B}(\mathbb{R}^{d},\mathcal{H})$
+where 
+\begin_inset Formula $D\varphi(y)\in\mathcal{B}(\mathbb{R}^{d},\mathcal{H})$
 \end_inset
 
 , and 
@@ -4933,7 +4005,7 @@ chet
 \noun off
 \color none
 
-\begin_inset Formula $D\psi\left(\varphi(x)\right)\in\mathbb{\mathcal{B}}(\mathcal{H},\mathbb{R})$
+\begin_inset Formula $D\psi\left(\varphi(y)\right)\in\mathbb{\mathcal{B}}(\mathcal{H},\mathbb{R})$
 \end_inset
 
 
@@ -4949,8 +4021,8 @@ chet
 \noun default
 \color inherit
 .
- Derivative 
-\begin_inset Formula $D\varphi(x)$
+ The derivative 
+\begin_inset Formula $D\varphi$
 \end_inset
 
  of the feature map exists whenever 
@@ -4979,7 +4051,7 @@ key "Steinwart2008book"
 \noun off
 \color none
 
-\begin_inset Formula $D\psi\left[\varphi(x)\right]=2\left\langle \varphi(x),\cdot\right\rangle _{\mathcal{H}}$
+\begin_inset Formula $D\psi\left[\varphi(y)\right]=2\left\langle \varphi(y),\cdot\right\rangle _{\mathcal{H}}$
 \end_inset
 
 
@@ -5039,6 +4111,7 @@ Next, we consider the map
 \begin_inset Formula $D\psi_{y}\left(f\right)=\left\langle \varphi(y),\cdot\right\rangle _{\mathcal{H}}$
 \end_inset
 
+.
 
 \family default
 \series default
@@ -5080,7 +4153,7 @@ and thus
 \begin_inset Formula $x'\in\mathbb{R}^{d}$
 \end_inset
 
-, i.e., we obtain equality of operators.
+, and we obtain equality of operators.
  Since Fr
 \begin_inset ERT
 status open
@@ -5104,6 +4177,442 @@ chet derivatives can also be written as inner products with the gradients,
 \end_inset
 
 , which proves the claim.
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+OTHER VERSION
+\end_layout
+
+\begin_layout Proof
+Since 
+\begin_inset Formula $k$
+\end_inset
+
+ is a positive definite kernel there exists a reproducing kernel Hilbert
+ space 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+ and a feature map 
+\begin_inset Formula $\varphi:\mathcal{\mathbb{R}}^{d}\to\mathcal{H},$
+\end_inset
+
+ such that 
+\begin_inset Formula $k(x,x')=\left\langle \varphi(x),\varphi(x')\right\rangle _{\mathcal{H}}$
+\end_inset
+
+.
+ Consider first the map 
+\begin_inset Formula $\tau:\mathbb{R}^{d}\to\mathbb{R}$
+\end_inset
+
+, defined by 
+\begin_inset Formula $\tau(x)=k(x,x)$
+\end_inset
+
+.
+ We write 
+\begin_inset Formula $\tau=\psi\circ\varphi$
+\end_inset
+
+, where 
+\begin_inset Formula $\psi:\mathcal{H}\to\mathbb{R}$
+\end_inset
+
+, 
+\begin_inset Formula $\psi(f)=\left\Vert f\right\Vert _{\mathcal{H}}^{2}.$
+\end_inset
+
+ We can view 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\nabla_{x}k(x,x)|_{x=y}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ as a 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Fr
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+'{e}
+\end_layout
+
+\end_inset
+
+chet
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ derivative of 
+\begin_inset Formula $\tau$
+\end_inset
+
+ evaluated at 
+\begin_inset Formula $y\in\mathbb{R}^{d}$
+\end_inset
+
+, written 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\tau(y)$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ where 
+\begin_inset Formula $D\tau\::\:\mathbb{R}^{d}\rightarrow\mathbb{\mathcal{B}}(\mathbb{R}^{d},\mathbb{R})$
+\end_inset
+
+ takes the point at which the derivative is evaluated, and returns a bounded
+ linear operator from 
+\begin_inset Formula $\mathbb{R}^{d}$
+\end_inset
+
+ to 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Definition A.5.14"
+key "Steinwart2008book"
+
+\end_inset
+
+.
+ By the chain rule for 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Fr
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+'{e}
+\end_layout
+
+\end_inset
+
+chet
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ derivatives 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Lemma A.5.15(b)"
+key "Steinwart2008book"
+
+\end_inset
+
+, the value of 
+\begin_inset Formula $D\tau$
+\end_inset
+
+ at 
+\begin_inset Formula $y$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{eqnarray*}
+D\tau(y) & = & D\psi\left(\varphi(y)\right)\circ D\varphi(y),
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $D\varphi\::\:\mathbb{R}^{d}\rightarrow\mathcal{B}(\mathbb{R}^{d},\mathcal{H})$
+\end_inset
+
+, and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\psi\::\:\mathcal{H}\rightarrow\mathbb{\mathcal{B}}(\mathcal{H},\mathbb{R})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
+ The derivative 
+\begin_inset Formula $D\varphi$
+\end_inset
+
+ of the feature map exists whenever 
+\begin_inset Formula $k$
+\end_inset
+
+ is a differentiable function 
+\begin_inset CommandInset citation
+LatexCommand citep
+after "Section 4.3"
+key "Steinwart2008book"
+
+\end_inset
+
+.
+ Given that 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\psi(f)=2\left\langle f,\cdot\right\rangle _{\mathcal{H}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, the derivative evaluated at 
+\begin_inset Formula $y$
+\end_inset
+
+ is 
+\begin_inset Formula 
+\begin{eqnarray*}
+D\tau(y) & = & 2\left\langle \varphi(y),D\varphi(y)\right\rangle _{\mathcal{H}},
+\end{eqnarray*}
+
+\end_inset
+
+where we emphasize that 
+\begin_inset Formula $D\varphi(y)$
+\end_inset
+
+ is a mapping from 
+\begin_inset Formula $\mathbb{R}^{d}$
+\end_inset
+
+ to 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+.
+ Next, consider the map 
+\begin_inset Formula $\kappa_{y}(x)=k(x,y)=\left\langle \varphi(x),\varphi(y)\right\rangle _{\mathcal{H}}$
+\end_inset
+
+, i.e., 
+\begin_inset Formula $\kappa_{y}=\psi_{y}\circ\varphi$
+\end_inset
+
+, where 
+\begin_inset Formula $\psi_{y}(f)=\left\langle f,\varphi(y)\right\rangle _{\mathcal{H}}\:\forall f\in\mathcal{H}$
+\end_inset
+
+.
+ Since 
+\begin_inset Formula $\psi_{y}$
+\end_inset
+
+ is a linear scalar function on 
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\psi_{y}=\left\langle \varphi(y),\cdot\right\rangle _{\mathcal{H}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ , and the chain rule yields
+\begin_inset Formula 
+\begin{eqnarray*}
+D\kappa_{y}(y) & = & D\psi_{y}\circ D\varphi(y)\\
+ & = & \left\langle \varphi(y),D\varphi(y)\right\rangle _{\mathcal{H}}.
+\end{eqnarray*}
+
+\end_inset
+
+Thus 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $D\tau(y)-2D\kappa_{y}(y)=0$
+\end_inset
+
+, for all 
+\begin_inset Formula $y\in\mathbb{R}^{d}$
+\end_inset
+
+.
+ ADD last part.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5581,7 +5090,7 @@ Draw
 \end_layout
 
 \begin_layout Standard
-Similarly as before, we can simplfy the proposal by integrating out the
+Similarly as before, we can simplify the proposal by integrating out the
  scale 
 \begin_inset Formula $\rho$
 \end_inset
