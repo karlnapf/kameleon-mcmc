@@ -17,7 +17,7 @@ if __name__ == '__main__':
     if len(sys.argv) != 4:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<idx_from> <idx_to> <folder_base>"
         print "example:"
-        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " 0 2 /nfs/home1/ucabhst/mcmc_hammer_experiments/MCMCHammerWindow_Ring_"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " 0 2 /nfs/home1/ucabhst/kameleon_experiments/KameleonWindow_Ring_"
         exit()
         
     a = int(str(sys.argv[1]))

@@ -5,7 +5,7 @@ from numpy import eye
 from numpy.linalg import cholesky
 from numpy.ma.core import shape
 
-class MCMCHammer(MCMCSampler):
+class Kameleon(MCMCSampler):
     """
     MCMC Hammer with oracle samples Z
     """

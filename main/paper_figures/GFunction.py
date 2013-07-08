@@ -11,7 +11,7 @@ Written (W) 2013 Dino Sejdinovic
 from main.distribution.Gaussian import Gaussian
 from main.kernel.GaussianKernel import GaussianKernel
 from main.kernel.Kernel import Kernel
-from main.mcmc.samplers.MCMCHammer import MCMCHammer
+from main.mcmc.samplers.Kameleon import Kameleon
 from main.tools.Visualise import Visualise
 from matplotlib.pyplot import hold, quiver, draw
 from numpy.core.function_base import linspace
@@ -129,7 +129,7 @@ class GFunction(object):
         Visualise.visualise_distribution(self.distribution, Z=self.Z, Xs=self.Xs, Ys=self.Ys)
         
         # precompute constants of proposal
-        mcmc_hammer = MCMCHammer(self.distribution, self.kernel, self.Z, \
+        mcmc_hammer = Kameleon(self.distribution, self.kernel, self.Z, \
                                  self.nu2, self.gamma)
         
         # plot proposal around each y

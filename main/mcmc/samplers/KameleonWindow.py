@@ -1,12 +1,12 @@
-from main.mcmc.samplers.MCMCHammer import MCMCHammer
+from main.mcmc.samplers.Kameleon import Kameleon
 from numpy.ma.extras import unique
 from numpy.random import randint
 
-class MCMCHammerWindow(MCMCHammer):
+class KameleonWindow(Kameleon):
     def __init__(self, distribution, kernel, nu2=0.1, gamma=0.1, \
                  sample_discard=500, num_samples_Z=1000, stop_adapt=20000):
         
-        MCMCHammer.__init__(self, distribution, kernel, Z=None, nu2=nu2, gamma=gamma)
+        Kameleon.__init__(self, distribution, kernel, Z=None, nu2=nu2, gamma=gamma)
         
         assert(stop_adapt > sample_discard)
         assert(num_samples_Z > 0)
@@ -16,7 +16,7 @@ class MCMCHammerWindow(MCMCHammer):
         self.stop_adapt = stop_adapt
     
     def init(self, start):
-        MCMCHammer.init(self, start)
+        Kameleon.init(self, start)
         self.Z = None
     
     def __str__(self):
@@ -24,7 +24,7 @@ class MCMCHammerWindow(MCMCHammer):
         s += "sample_discard=" + str(self.sample_discard)
         s += ", num_samples_Z=" + str(self.num_samples_Z)
         s += ", stop_adapt=" + str(self.stop_adapt)
-        s += ", " + MCMCHammer.__str__(self)
+        s += ", " + Kameleon.__str__(self)
         s += "]"
         return s
     

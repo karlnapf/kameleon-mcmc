@@ -75,7 +75,7 @@ if __name__ == '__main__':
     if len(sys.argv)!=2:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<qsub_output_filename>"
         print "example:"
-        print "python "  +str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments/" + \
+        print "python "  +str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/kameleon_experiments/" + \
               ClusterTools.qsub_filename
         exit()
         

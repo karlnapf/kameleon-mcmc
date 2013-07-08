@@ -15,9 +15,9 @@ from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.MCMCHammer import MCMCHammer
-from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
-    MCMCHammerWindowLearnScale
+from main.mcmc.samplers.Kameleon import Kameleon
+from main.mcmc.samplers.KameleonWindowLearnScale import \
+    KameleonWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from main.tools.Visualise import Visualise
 from matplotlib.pyplot import show
@@ -37,7 +37,7 @@ def main():
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
-    mcmc_sampler = MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=inf)
+    mcmc_sampler = KameleonWindowLearnScale(distribution, kernel, stop_adapt=inf)
     
     start = zeros(distribution.dimension)
     mcmc_params = MCMCParams(start=start, num_iterations=30000)

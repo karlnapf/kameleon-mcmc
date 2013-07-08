@@ -28,7 +28,7 @@ if __name__ == '__main__':
               "/home/heiko/hammer_plots_before_rebuttal/ " + \
               "AdaptiveMetropolisLearnScale_Banana_results_0_99.txt " + \
               "AdaptiveMetropolis_Banana_results_0_99.txt " + \
-              "MCMCHammerWindowLearnScale_Banana_results_0_99.txt " + \
+              "KameleonWindowLearnScale_Banana_results_0_99.txt " + \
               "StandardMetropolis_Banana_results_0_99.txt"
         exit()
         
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     filename_to_plot_name = {"StandardMetropolis_Banana_results_0_99.txt":"M", \
                            "AdaptiveMetropolis_Banana_results_0_99.txt":"AM-FS", \
                            "AdaptiveMetropolisLearnScale_Banana_results_0_99.txt":"AM-LS", \
-                           "MCMCHammerWindowLearnScale_Banana_results_0_99.txt":"KAMH-LS"}
+                           "KameleonWindowLearnScale_Banana_results_0_99.txt":"KAMH-LS"}
     
     def filename_to_plot_name(filename):
         if filename.find("StandardMetropolis") is not -1:
@@ -127,7 +127,7 @@ if __name__ == '__main__':
             return "AM-LS"
         elif filename.find("AdaptiveMetropolis") is not -1:
             return "AM-FS"
-        elif filename.find("MCMCHammerWindowLearnScale") is not -1:
+        elif filename.find("KameleonWindowLearnScale") is not -1:
             return "KAMH-LS"
         else:
             print "cannot process filename"

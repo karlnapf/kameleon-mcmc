@@ -18,8 +18,8 @@ from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
-from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
-    MCMCHammerWindowLearnScale
+from main.mcmc.samplers.KameleonWindowLearnScale import \
+    KameleonWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import zeros
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     if len(sys.argv)!=3:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments>"
         print "example:"
-        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments/ 3"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/kameleon_experiments/ 3"
         exit()
     
     experiment_dir_base=str(sys.argv[1])
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         burnin=20000
         num_iterations=40000
         
-        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel, stop_adapt=burnin))
+        mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
         mean_est = zeros(distribution.dimension, dtype="float64")
         cov_est = 1.0 * eye(distribution.dimension)

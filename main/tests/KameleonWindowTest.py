@@ -13,7 +13,7 @@ from main.kernel.GaussianKernel import GaussianKernel
 from main.mcmc.MCMCChain import MCMCChain
 from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.MCMCHammerWindow import MCMCHammerWindow
+from main.mcmc.samplers.KameleonWindow import KameleonWindow
 from numpy.core.numeric import zeros
 import cProfile
 import pstats
@@ -26,7 +26,7 @@ def main():
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
-    mcmc_sampler = MCMCHammerWindow(distribution, kernel)
+    mcmc_sampler = KameleonWindow(distribution, kernel)
     
     start = zeros(distribution.dimension)
     mcmc_params = MCMCParams(start=start, num_iterations=80000)

@@ -2,19 +2,19 @@ from main.distribution.Discrete import Discrete
 from main.distribution.Gaussian import Gaussian
 from main.distribution.MixtureDistribution import MixtureDistribution
 from main.kernel.Kernel import Kernel
-from main.mcmc.samplers.MCMCHammer import MCMCHammer
+from main.mcmc.samplers.Kameleon import Kameleon
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import svd
 from numpy.ma.core import shape, outer
 
-class KameleonPCA(MCMCHammer):
+class KameleonPCA(Kameleon):
     '''
     PCA version of the Kameleon MCMC sampler
     performs eigendecomposition of the centred kernel matrix HKH
     to inform proposals
     '''
     def __init__(self, distribution, kernel, Z, nu2=0.1, gamma=0.1, num_eigen=10):
-        MCMCHammer.__init__(self, distribution, kernel, Z, nu2, gamma)
+        Kameleon.__init__(self, distribution, kernel, Z, nu2, gamma)
         self.num_eigen = num_eigen
         if Z is None:
             self.Kc=None

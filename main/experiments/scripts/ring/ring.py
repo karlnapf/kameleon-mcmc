@@ -8,8 +8,8 @@ from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
-from main.mcmc.samplers.MCMCHammerWindowLearnScale import \
-    MCMCHammerWindowLearnScale
+from main.mcmc.samplers.KameleonWindowLearnScale import \
+    KameleonWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     if len(sys.argv)!=5:
         print "usage:", str(sys.argv[0]).split(os.sep)[-1], "<experiment_dir_base> <number_of_experiments> <number_of_iterations> <burnin>"
         print "example:"
-        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/mcmc_hammer_experiments 3 5000 2000"
+        print "python " + str(sys.argv[0]).split(os.sep)[-1] + " /nfs/home1/ucabhst/kameleon_experiments 3 5000 2000"
         exit()
     
     experiment_dir_base=str(sys.argv[1])
@@ -39,8 +39,8 @@ if __name__ == '__main__':
         mcmc_samplers = []
         
         kernel = GaussianKernel(sigma=1)
-#        mcmc_samplers.append(MCMCHammerWindow(distribution, kernel))
-        mcmc_samplers.append(MCMCHammerWindowLearnScale(distribution, kernel))
+#        mcmc_samplers.append(KameleonWindow(distribution, kernel))
+        mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel))
         
         mean_est = array([-2.0, -2.0])
         cov_est = 0.05 * eye(2)
