@@ -5,7 +5,7 @@ the Free Software Foundation; either version 3 of the License, or
 
 Written (W) 2013 Heiko Strathmann and Dino Sejdinovic
 
-Code for the Kernel Adaptive Metropolis-Hastings project.
+Code for Adaptive Metropolis-Hastings.
 
 See main.examples for demonstrations how to run the sampler on example distributions.
 All experiments in the paper can be reproduced with the scripts in experiments.scripts.
