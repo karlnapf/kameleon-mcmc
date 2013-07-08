@@ -2773,7 +2773,8 @@ key "Haario1999,Andrieu08"
 
 ) based on the chain after burn-in: average acceptance rate, norm of the
  empirical mean (the true mean is by construction zero for all targets),
- as well as the empirical quantiles: 
+ as well as the deviation of the empirical quantiles from the true quantiles:
+ 
 \begin_inset Formula $q$
 \end_inset
 
@@ -2787,10 +2788,10 @@ key "Haario1999,Andrieu08"
 \begin_inset Formula $\mathcal{B}(0.03,100)$
 \end_inset
 
- banana target (Table 
+ banana target (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab: results"
+reference "fig:Results-for-three"
 
 \end_inset
 
@@ -2798,10 +2799,10 @@ reference "tab: results"
 \begin_inset Formula $\mathcal{B}(0.1,100)$
 \end_inset
 
- banana target (Table 
+ banana target (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab: results"
+reference "fig:Results-for-three"
 
 \end_inset
 
@@ -2809,10 +2810,10 @@ reference "tab: results"
 \begin_inset Formula $\mathcal{F}(10,6,6,1)$
 \end_inset
 
- flower target (Table 
+ flower target (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab: results"
+reference "fig:Results-for-three"
 
 \end_inset
 
@@ -3610,8 +3611,36 @@ Strongly twisted 8-dimensional
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Results-for-three"
+
+\end_inset
+
 Results for three non-linear distributions, averaged over 100 chains for
  each sampler with standard error.
+ 
+\emph on
+Accept
+\emph default
+ is the acceptance rate scaled to the interval 
+\begin_inset Formula $[0,1]$
+\end_inset
+
+, the norm of the mean 
+\begin_inset Formula $||\hat{\mathbb{E}}[X]||$
+\end_inset
+
+ is scaled by 1/10 to fit into the figure scalling, the bars over the 
+\begin_inset Formula $0.1,\dots,0.9$
+\end_inset
+
+-quantiles represent the deviation from the exact quantiles, scalled by
+ 10, i.e., 
+\begin_inset Formula $0.1$
+\end_inset
+
+ corresponds to 1% deviation.
 \end_layout
 
 \end_inset
