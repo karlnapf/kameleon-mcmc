@@ -1,3 +1,13 @@
+"""
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+Written (W) 2013 Heiko Strathmann
+Written (W) 2013 Dino Sejdinovic
+"""
+
 from main.mcmc.output.Output import Output
 from main.tools.Visualise import Visualise
 from matplotlib.pyplot import subplot, plot, xlabel, ylabel, title, hist, show, \
