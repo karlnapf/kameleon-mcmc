@@ -1,1 +1,1 @@
-Code for the Kernel Adaptive Metropolis project.
+Code for the Kernel Adaptive Metropolis-Hastings project.
