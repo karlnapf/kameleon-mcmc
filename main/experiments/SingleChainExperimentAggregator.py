@@ -83,10 +83,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
         
         lines.append("median ess:")
-        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
+        lines.append(str(mean(ess_medians)) + " +- " + str(std(ess_medians)))
         
         lines.append("maximum ess:")
-        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
+        lines.append(str(mean(ess_maxima)) + " +- " + str(std(ess_maxima)))
         
         lines.append("times:")
         lines.append(str(mean(times)) + " +- " + str(std(times)))
