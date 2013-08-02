@@ -9,10 +9,10 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from main.experiments.ExperimentAggregator import ExperimentAggregator
+from main.tools.StatisticTools import StatisticTools
 from matplotlib.pyplot import plot, fill_between, savefig, ylim
-from numpy.lib.npyio import savetxt
 from numpy.linalg.linalg import norm
-from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt
+from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
@@ -31,6 +31,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         quantiles = zeros((len(self.experiments), len(self.ref_quantiles)))
         norm_of_means = zeros(len(self.experiments))
         acceptance_rates = zeros(len(self.experiments))
+        ess_minima = zeros(len(self.experiments))
+        times = zeros(len(self.experiments))
         
         for i in range(len(self.experiments)):
             burned_in = self.experiments[i].mcmc_chain.samples[burnin:, :]
@@ -43,12 +45,21 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
                                   burned_in, self.ref_quantiles)
                 
+            dim = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.dimension
             norm_of_means[i] = norm(mean(burned_in, 0))
             acceptance_rates[i] = mean(self.experiments[i].mcmc_chain.accepteds[burnin:])
             
             # dump burned in samples to disc
-            sample_filename=self.experiments[0].experiment_dir + self.experiments[0].name + "_burned_in.txt"
-            savetxt(sample_filename, burned_in)
+            # sample_filename=self.experiments[0].experiment_dir + self.experiments[0].name + "_burned_in.txt"
+            # savetxt(sample_filename, burned_in)
+            
+            # store minimum ess for every experiment
+            ess_per_covariate = asarray([StatisticTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
+            ess_minima[i] = min(ess_per_covariate)
+            
+            # save chain time needed
+            ellapsed = self.experiments[i].mcmc_chain.mcmc_outputs[0].times
+            times[i] = int(round(sum(ellapsed)))
 
         mean_quantiles = mean(quantiles, 0)
         std_quantiles = std(quantiles, 0)
@@ -63,9 +74,15 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append("acceptance rate:")
         lines.append(str(mean(acceptance_rates)) + " +- " + str(std(acceptance_rates)))
         
+        lines.append("minimum ess:")
+        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
+        
+        lines.append("times:")
+        lines.append(str(mean(times)) + " +- " + str(std(times)))
+        
         # mean as a function of iterations
         step = 1000
-        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations-burnin, step=step)
+        iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
         
         running_means = zeros(len(iterations))
         running_errors = zeros(len(iterations))
@@ -74,17 +91,17 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             
             norm_of_means_yet = zeros(len(self.experiments))
             for j in range(len(self.experiments)):
-                samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin+iterations[i] + 1 + step),:]
+                samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + iterations[i] + 1 + step), :]
                 norm_of_means_yet[j] = norm(mean(samples_yet, 0))
             
             running_means[i] = mean(norm_of_means_yet)
             error_level = 1.96
-            running_errors[i] = error_level*std(norm_of_means_yet) / sqrt(len(norm_of_means_yet))
+            running_errors[i] = error_level * std(norm_of_means_yet) / sqrt(len(norm_of_means_yet))
             
         plot(iterations, running_means)
         fill_between(iterations, running_means - running_errors, \
                      running_means + running_errors, hold=True, color="gray")
-        ylim(0,10)
+        ylim(0, 10)
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
 #        show()
         
