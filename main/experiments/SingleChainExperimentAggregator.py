@@ -32,6 +32,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         quantiles = zeros((len(self.experiments), len(self.ref_quantiles)))
         norm_of_means = zeros(len(self.experiments))
         acceptance_rates = zeros(len(self.experiments))
+        ess_0 = zeros(len(self.experiments))
+        ess_1 = zeros(len(self.experiments))
         ess_minima = zeros(len(self.experiments))
         ess_medians = zeros(len(self.experiments))
         ess_maxima = zeros(len(self.experiments))
@@ -58,6 +60,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             
             # store minimum ess for every experiment
             ess_per_covariate = asarray([StatisticTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
+            ess_0=ess_per_covariate[0]
+            ess_1=ess_per_covariate[1]
             ess_minima[i] = min(ess_per_covariate)
             ess_medians[i] = median(ess_per_covariate)
             ess_maxima[i] = max(ess_per_covariate)
@@ -78,6 +82,12 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         lines.append("acceptance rate:")
         lines.append(str(mean(acceptance_rates)) + " +- " + str(std(acceptance_rates)))
+        
+        lines.append("ess dimension 0:")
+        lines.append(str(mean(ess_0)) + " +- " + str(std(ess_0)))
+        
+        lines.append("ess dimension 1:")
+        lines.append(str(mean(ess_1)) + " +- " + str(std(ess_1)))
         
         lines.append("minimum ess:")
         lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
