@@ -10,6 +10,7 @@ Written (W) 2013 Dino Sejdinovic
 
 from main.experiments.ExperimentAggregator import ExperimentAggregator
 from matplotlib.pyplot import plot, fill_between, savefig, ylim
+from numpy.lib.npyio import savetxt
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt
 
@@ -44,6 +45,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 
             norm_of_means[i] = norm(mean(burned_in, 0))
             acceptance_rates[i] = mean(self.experiments[i].mcmc_chain.accepteds[burnin:])
+            
+            # dump burned in samples to disc
+            sample_filename=self.experiments[0].experiment_dir + self.experiments[0].name + "_burned_in.txt"
+            savetxt(sample_filename, burned_in)
 
         mean_quantiles = mean(quantiles, 0)
         std_quantiles = std(quantiles, 0)
