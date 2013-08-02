@@ -9,8 +9,28 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from numpy.ma.core import mean
+import rpy2.robjects as robjects
 
 class StatisticTools(object):
+    
+    @staticmethod
+    def ess_coda(data):
+        """
+        Computes the effective samples size of a 1d-array using R-coda via
+        an external R call. The python package rpy2 and the R-library
+        "library(coda)" have to be installed. Inspired by Charles Blundell's
+        neat little python script :)
+        """
+        robjects.r('library(coda)')
+        r_ess = robjects.r['effectiveSize']
+        data = robjects.r.matrix(robjects.FloatVector(data), nrow=len(data))
+        return r_ess(data)[0]
+
+def effectiveSampleSize(data):
+    # charles's script for computing ESS
+    r_ess = robjects.r['effectiveSize']
+    data = robjects.r.matrix(robjects.FloatVector(data), nrow=len(data))
+    return r_ess(data)[0]
     
     @staticmethod
     def effective_sample_size(data, step_size=1) :
