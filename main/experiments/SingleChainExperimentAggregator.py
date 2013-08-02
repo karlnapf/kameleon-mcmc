@@ -13,6 +13,7 @@ from main.tools.StatisticTools import StatisticTools
 from matplotlib.pyplot import plot, fill_between, savefig, ylim
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray
+from numpy.ma.extras import median
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
@@ -32,6 +33,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         norm_of_means = zeros(len(self.experiments))
         acceptance_rates = zeros(len(self.experiments))
         ess_minima = zeros(len(self.experiments))
+        ess_medians = zeros(len(self.experiments))
+        ess_maxima = zeros(len(self.experiments))
         times = zeros(len(self.experiments))
         
         for i in range(len(self.experiments)):
@@ -56,6 +59,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             # store minimum ess for every experiment
             ess_per_covariate = asarray([StatisticTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
             ess_minima[i] = min(ess_per_covariate)
+            ess_medians[i] = median(ess_per_covariate)
+            ess_maxima[i] = max(ess_per_covariate)
             
             # save chain time needed
             ellapsed = self.experiments[i].mcmc_chain.mcmc_outputs[0].times
@@ -75,6 +80,12 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append(str(mean(acceptance_rates)) + " +- " + str(std(acceptance_rates)))
         
         lines.append("minimum ess:")
+        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
+        
+        lines.append("median ess:")
+        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
+        
+        lines.append("maximum ess:")
         lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
         
         lines.append("times:")
