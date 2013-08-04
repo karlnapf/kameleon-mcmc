@@ -5,7 +5,6 @@ the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
 Written (W) 2013 Heiko Strathmann
-Written (W) 2013 Dino Sejdinovic
 """
 
 from abc import abstractmethod
@@ -16,17 +15,17 @@ class Covariance(Kernel):
         Kernel.__init__(self)
         
     @abstractmethod
-    def get_num_parameters(self):
-        raise NotImplementedError()
-    
-    @abstractmethod
-    def set_theta(self, theta):
-        raise NotImplementedError()
-    
-    @abstractmethod
-    def get_theta(self):
-        raise NotImplementedError()
-    
-    @abstractmethod
     def compute(self, X, Y=None):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def gen_num_hyperparameters(self):
+        raise NotImplementedError()
+    
+    @abstractmethod
+    def get_hyperparameters(self):
+        raise NotImplementedError()
+    
+    @abstractmethod
+    def set_hyperparameters(self, theta):
         raise NotImplementedError()

@@ -5,15 +5,21 @@ the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
 Written (W) 2013 Heiko Strathmann
-Written (W) 2013 Dino Sejdinovic
 """
-
+from abc import abstractmethod
 from main.distribution.Gaussian import Gaussian
-from numpy.linalg.linalg import cholesky
-from numpy.ma.core import zeros, asarray
+from main.gp.GPTools import GPTools
+from main.gp.covariance.SquaredExponentialCovariance import \
+    SquaredExponentialCovariance
+from main.gp.inference.LaplaceApproximation import LaplaceApproximation
+from main.gp.likelihood.LogitLikelihood import LogitLikelihood
+from numpy.lib.function_base import delete
+from numpy.linalg.linalg import solve
+from numpy.ma.core import zeros, reshape, asarray, log, exp, shape, array, mean
+from numpy.ma.extras import hstack, cov
 
 class GaussianProcess(object):
-    def __init__(self, y, X, covariance, likelihood, hyper_prior, theta=None):
+    def __init__(self, y, X, covariance, likelihood):
         """
         y - data (labels)
         X - covariates
@@ -22,52 +28,88 @@ class GaussianProcess(object):
         self.X = X
         self.covariance = covariance
         self.likelihood = likelihood
-        self.hyper_prior=hyper_prior
-        self.theta=None
-        if theta is not None:
-            self.update_gp_prior(theta)
+        self.K = self.covariance.compute(self.X)
 
-    def update_gp_prior(self, theta):
-        self.covariance.set_theta(theta)
-        L=cholesky(self.covariance.compute(self.X))
-        self.gp_prior=Gaussian(mu=zeros(len(self.y)), Sigma=L, is_cholesky=True)
-        
-    def log_lik_f_given_theta(self, f, theta=None):
+    def get_gp_prior(self):
         """
-        Computes log(p(f|theta))
-        
-        f can be 1d or 2d array
+        Returns GP prior N(0,K), only possible do if K is psd
         """
-        assert(len(f)==len(self.y))
-        if theta is not None:
-            self.update_gp_prior(theta)
+        return Gaussian(zeros(len(self.K)), self.K, is_cholesky=False)
         
-        return self.gp_prior.log_pdf(f)
-        
-    def log_lik_theta(self, theta=None):
+    def log_prior(self, f):
         """
-        Computes log(p(theta))
+        Computes log(p(f)), only possible do if K is psd
         
-        theta can be 1d or 2d array or None (then last one is used)
+        f - 1d vector
         """
-        if theta is None:
-            theta=asarray([self.covariance.get_theta(), self.likelihood.get_theta()])
+        assert(len(f) == len(self.y))
+        f_2d = reshape(f, (1, len(f)))
+        return self.get_gp_prior().log_pdf(f_2d)
+    
+    def log_prior_grad_vector(self, f):
+        return -solve(self.K, f)
+    
+    def log_likelihood_grad_vector(self, f):
+        return self.likelihood.log_lik_grad_vector(self.y, f)
         
-        return self.hyper_prior.log_lik(theta)
-          
-    def log_lik_y_given_f(self, f):
+    def log_likelihood(self, f):
         """
         Computes log(p(y|f))
         """
-        return self.likelihood.log_lik(self.y, f)
+        return sum(self.likelihood.log_lik_vector(self.y, f))
     
-    def log_lik(self, f, theta=None):
+    def log_likelihood_multiple(self, F):
+        all=self.likelihood.log_lik_vector_multiple(self.y, F)
+        return asarray([sum(a) for a in all])
+    
+    def log_posterior_unnormalised(self, f):
         """
-        Computes log(p(y,f,theta))
+        Computes log(p(y,f))=log(p(y|f)+log(p(f)), only possible do if K is psd
         """
-        prior=self.log_lik_theta(theta)
-        latent=self.log_lik_f_given_theta(f, theta)
-        lik=self.log_lik(f, theta)
+        lik = self.log_likelihood(f)
+        prior = self.log_prior(f)
         
-        return prior+latent+lik
+        return prior + lik
     
+    def log_posterior_grad_vector(self, f):
+        lik = self.log_likelihood_grad_vector(f)
+        prior = self.log_prior_grad_vector(f)
+        
+        return prior + lik
+
+    def log_ml_estimate(self, proposal, n=1):
+        """
+        Computes an estimate for the marginal likelihood p(y) using importance
+        sampling the provided proposal distribution
+        """
+        
+        prior = self.get_gp_prior()
+        
+        # sample from proposal
+        samples = proposal.sample(n).samples
+        
+        # compute log likelihoods of samples
+        log_likelihood=self.log_likelihood_multiple(samples)
+        log_prior = prior.log_pdf(samples)
+        log_proposal = proposal.log_pdf(samples)
+        
+        # compute estimate of marginal likelihood, log sum exp trick
+        X=log_likelihood+log_prior-log_proposal
+        
+        return GPTools.log_mean_exp(X)
+    
+    def gen_num_hyperparameters(self):
+        return self.covariance.get_num_hyperparameters() + \
+            self.likelihood.get_num_hyperparameters()
+    
+    def get_hyperparameters(self):
+        theta=self.covariance.get_hyperparameters()
+        theta=hstack((theta, self.likelihood.get_hyperparameters()))
+
+        return theta
+    
+    def set_hyperparameters(self, theta):
+        num_cov=self.covariance.gen_num_hyperparameters()
+        self.covariance.set_hyperparameters(theta[:num_cov])
+        self.likelihood.set_hyperparameters(theta[num_cov:])
+
