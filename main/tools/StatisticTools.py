@@ -9,7 +9,7 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from numpy.ma.core import mean
-import rpy2.robjects as robjects
+from rpy2 import robjects
 
 class StatisticTools(object):
     
@@ -26,12 +26,6 @@ class StatisticTools(object):
         data = robjects.r.matrix(robjects.FloatVector(data), nrow=len(data))
         return r_ess(data)[0]
 
-def effectiveSampleSize(data):
-    # charles's script for computing ESS
-    r_ess = robjects.r['effectiveSize']
-    data = robjects.r.matrix(robjects.FloatVector(data), nrow=len(data))
-    return r_ess(data)[0]
-    
     @staticmethod
     def effective_sample_size(data, step_size=1) :
         """ Computes the effective sample size for the given 1D array of points.
