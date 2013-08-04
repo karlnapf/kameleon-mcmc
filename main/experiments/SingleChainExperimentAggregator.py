@@ -9,7 +9,7 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from main.experiments.ExperimentAggregator import ExperimentAggregator
-from main.tools.StatisticTools import StatisticTools
+from main.tools.RCodaTools import RCodaTools
 from matplotlib.pyplot import plot, fill_between, savefig, ylim
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray
@@ -59,7 +59,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             # savetxt(sample_filename, burned_in)
             
             # store minimum ess for every experiment
-            ess_per_covariate = asarray([StatisticTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
+            ess_per_covariate = asarray([RCodaTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
             ess_0=ess_per_covariate[0]
             ess_1=ess_per_covariate[1]
             ess_minima[i] = min(ess_per_covariate)
