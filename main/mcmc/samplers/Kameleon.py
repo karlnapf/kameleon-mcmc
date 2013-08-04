@@ -9,12 +9,15 @@ class Kameleon(MCMCSampler):
     """
     MCMC Hammer with oracle samples Z
     """
-    def __init__(self, distribution, kernel, Z, nu2=0.1, gamma=0.1):
+    def __init__(self, distribution, kernel, Z, nu2=0.1, gamma=None):
         MCMCSampler.__init__(self, distribution)
         
         self.kernel = kernel
         self.nu2 = nu2
-        self.gamma = gamma
+        if gamma is not None:
+            self.gamma = gamma
+        else:
+            self.gamma=0.5
         self.Z = Z
     
     def __str__(self):

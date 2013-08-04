@@ -3,7 +3,7 @@ from numpy.ma.extras import unique
 from numpy.random import randint
 
 class KameleonWindow(Kameleon):
-    def __init__(self, distribution, kernel, nu2=0.1, gamma=0.1, \
+    def __init__(self, distribution, kernel, nu2=0.1, gamma=None, \
                  sample_discard=500, num_samples_Z=1000, stop_adapt=20000):
         
         Kameleon.__init__(self, distribution, kernel, Z=None, nu2=nu2, gamma=gamma)

@@ -2,7 +2,7 @@ from main.mcmc.samplers.KameleonWindow import KameleonWindow
 from numpy.ma.core import sqrt, exp, log
 
 class KameleonWindowLearnScale(KameleonWindow):
-    def __init__(self, distribution, kernel, nu2=0.1, gamma=0.1, \
+    def __init__(self, distribution, kernel, nu2=0.1, gamma=None, \
                  sample_discard=500, num_samples_Z=1000, stop_adapt=20000, accstar=0.234):
         KameleonWindow.__init__(self, distribution, kernel, nu2, gamma, \
                                   sample_discard, num_samples_Z, stop_adapt)
