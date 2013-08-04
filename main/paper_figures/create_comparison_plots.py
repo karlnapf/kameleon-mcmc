@@ -82,9 +82,9 @@ if __name__ == '__main__':
         to_plot[i, 0] = acceptance_rates[i] * acceptace_scaler
         to_plot[i, 1] = norms_of_means[i] * mean_scaler
         to_plot[i, 2:] = quantile_errors[i] * quantile_scaler
-        error_bars[i, 0] = acceptance_rate_stds[i] * acceptace_scaler / sqrt_num_trials
-        error_bars[i, 1] = norm_of_mean_stds[i] * mean_scaler / sqrt_num_trials
-        error_bars[i, 2:] = quantile_error_stds[i] * quantile_scaler / sqrt_num_trials
+        error_bars[i, 0] = acceptance_rate_stds[i] * acceptace_scaler
+        error_bars[i, 1] = norm_of_mean_stds[i] * mean_scaler
+        error_bars[i, 2:] = quantile_error_stds[i] * quantile_scaler
         
     # plotting things
     bar_width = 0.15

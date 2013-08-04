@@ -73,33 +73,35 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         mean_quantiles = mean(quantiles, 0)
         std_quantiles = std(quantiles, 0)
         
+        sqrt_num_trials=len(self.experiments)
+        
         lines.append("quantiles:")
         for i in range(len(self.ref_quantiles)):
-            lines.append(str(mean_quantiles[i]) + " +- " + str(std_quantiles[i]))
+            lines.append(str(mean_quantiles[i]) + " +- " + str(std_quantiles[i]/sqrt_num_trials))
         
         lines.append("norm of means:")
-        lines.append(str(mean(norm_of_means)) + " +- " + str(std(norm_of_means)))
+        lines.append(str(mean(norm_of_means)) + " +- " + str(std(norm_of_means)/sqrt_num_trials))
         
         lines.append("acceptance rate:")
-        lines.append(str(mean(acceptance_rates)) + " +- " + str(std(acceptance_rates)))
+        lines.append(str(mean(acceptance_rates)) + " +- " + str(std(acceptance_rates)/sqrt_num_trials))
         
         lines.append("ess dimension 0:")
-        lines.append(str(mean(ess_0)) + " +- " + str(std(ess_0)))
+        lines.append(str(mean(ess_0)) + " +- " + str(std(ess_0)/sqrt_num_trials))
         
         lines.append("ess dimension 1:")
-        lines.append(str(mean(ess_1)) + " +- " + str(std(ess_1)))
+        lines.append(str(mean(ess_1)) + " +- " + str(std(ess_1)/sqrt_num_trials))
         
         lines.append("minimum ess:")
-        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)))
+        lines.append(str(mean(ess_minima)) + " +- " + str(std(ess_minima)/sqrt_num_trials))
         
         lines.append("median ess:")
-        lines.append(str(mean(ess_medians)) + " +- " + str(std(ess_medians)))
+        lines.append(str(mean(ess_medians)) + " +- " + str(std(ess_medians)/sqrt_num_trials))
         
         lines.append("maximum ess:")
-        lines.append(str(mean(ess_maxima)) + " +- " + str(std(ess_maxima)))
+        lines.append(str(mean(ess_maxima)) + " +- " + str(std(ess_maxima)/sqrt_num_trials))
         
         lines.append("times:")
-        lines.append(str(mean(times)) + " +- " + str(std(times)))
+        lines.append(str(mean(times)) + " +- " + str(std(times)/sqrt_num_trials))
         
         # mean as a function of iterations
         step = 1000
@@ -141,10 +143,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         latex_lines = []
         latex_lines.append(self.experiments[0].mcmc_chain.mcmc_sampler.__class__.__name__)
-        latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % std(acceptance_rates))
-        latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(norm_of_means))
+        latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % std(acceptance_rates)/sqrt_num_trials)
+        latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(norm_of_means)/sqrt_num_trials)
         for i in range(len(self.ref_quantiles)):
-            latex_lines.append('$%.3f' % mean_quantiles[i] + " \pm " + '%.3f$' % std_quantiles[i])
+            latex_lines.append('$%.3f' % mean_quantiles[i] + " \pm " + '%.3f$' % std_quantiles[i]/sqrt_num_trials)
         
         
         lines.append(" & ".join(latex_lines) + "\\\\")
