@@ -17,7 +17,7 @@ class Kameleon(MCMCSampler):
         if gamma is not None:
             self.gamma = gamma
         else:
-            self.gamma=0.5
+            self.gamma=0.2
         self.Z = Z
     
     def __str__(self):
