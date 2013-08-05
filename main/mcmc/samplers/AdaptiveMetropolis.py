@@ -14,14 +14,19 @@ class AdaptiveMetropolis(MCMCSampler):
     adapt_scale = False
     
     def __init__(self, distribution, \
-                 mean_est=None, cov_est=0.05 * eye(2), \
+                 mean_est=None, cov_est=None, \
                  sample_discard=500, sample_lag=20, accstar=0.234):
-        assert (len(mean_est) == distribution.dimension)
         MCMCSampler.__init__(self, distribution)
         self.globalscale = (2.38 ** 2) / distribution.dimension
         
         if mean_est is None:
             mean_est=2*ones(distribution.dimension)
+            
+        if cov_est is None:
+            cov_est=0.05 * eye(distribution.dimension)
+            
+        assert (len(mean_est) == distribution.dimension)
+        assert (len(cov_est) == distribution.dimension)
             
         self.mean_est = mean_est
         self.cov_est = cov_est
