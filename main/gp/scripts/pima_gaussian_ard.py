@@ -57,7 +57,7 @@ if __name__ == '__main__':
     num_iterations=burnin+20000
     kernel = GaussianKernel(sigma=5.0)
     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
-#    sampler=AdaptiveMetropolisLearnScale(target, sample_discard=200)
+#    sampler=AdaptiveMetropolisLearnScale(target)
     #sampler=StandardMetropolis(target)
     
     # posterior mode derived by initial tests
