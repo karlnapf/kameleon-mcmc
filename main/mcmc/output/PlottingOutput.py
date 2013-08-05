@@ -15,13 +15,15 @@ from matplotlib.pyplot import subplot, plot, xlabel, ylabel, title, hist, show, 
     draw, clf, figure, axis, suptitle, ion
 from numpy.core.numeric import zeros
 from numpy.ma.core import array, exp, sqrt
+from numpy.random import permutation
 
 class PlottingOutput(Output):
-    def __init__(self, distribution=None, plot_from=0, lag=1):
+    def __init__(self, distribution=None, plot_from=0, lag=1, num_samples_plot=2000):
         ion()
         self.distribution=distribution
         self.plot_from = plot_from
         self.lag=lag
+        self.num_samples_plot=num_samples_plot
         
         if distribution is not None:
             self.Xs, self.Ys=Visualise.get_plotting_arrays(distribution)
@@ -33,21 +35,28 @@ class PlottingOutput(Output):
                 if self.distribution is not None:
                     Visualise.plot_array(self.Xs, self.Ys, self.P)
                 
+                # only plot 2000 random samples otherwise this is too slow
+                num_plot=min(mcmc_chain.iteration-1,self.num_samples_plot)
+                indices=permutation(mcmc_chain.iteration)[:num_plot]
                 samples=mcmc_chain.samples[0:mcmc_chain.iteration]
+                samples_to_plot=mcmc_chain.samples[indices]
+                
+                # still plot all likelihoods
                 likelihoods=mcmc_chain.log_liks[0:mcmc_chain.iteration]
+                likelihoods_to_plot=mcmc_chain.log_liks[indices]
                 proposal_1d=step_output.proposal_object.samples[0,:]
                 
                 y = samples[len(samples) - 1]
                 
                 # plot samples, coloured by likelihood
-                normalised=likelihoods.copy()
-                normalised=normalised-normalised.min()
-                normalised=normalised/normalised.max()
+                likelihoods_to_plot=likelihoods_to_plot.copy()
+                likelihoods_to_plot=likelihoods_to_plot-likelihoods_to_plot.min()
+                likelihoods_to_plot=likelihoods_to_plot/likelihoods_to_plot.max()
                 
                 cm=get_cmap("jet")
-                for i in range(len(samples)):
-                    color = cm(normalised[i])
-                    plot(samples[i,0], samples[i,1]  ,"o", color=color)       
+                for i in range(len(samples_to_plot)):
+                    color = cm(likelihoods_to_plot[i])
+                    plot(samples_to_plot[i,0], samples_to_plot[i,1]  ,"o", color=color)       
                 
                 plot(y[0], y[1], 'r*', markersize=15.0)
                 plot(proposal_1d[0], proposal_1d[1], 'y*', markersize=15.0)
@@ -60,7 +69,7 @@ class PlottingOutput(Output):
                 
                 xlabel("$x_1$")
                 ylabel("$x_2$")
-                title("Samples")
+                title(str(self.num_samples_plot) + " random samples")
             
                 subplot(2, 3, 2)
                 plot(samples[:, 0], 'b')
