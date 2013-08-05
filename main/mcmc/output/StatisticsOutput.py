@@ -45,14 +45,6 @@ class StatisticsOutput(Output):
             print "total (estimated):", total, "seconds"
             
             print ""
-            
-#            if self.plot_times:
-#                plot(self.times, 'b-')
-#                xlabel("Iteration x" + str(self.lag))
-#                ylabel("Seconds per " + str(self.lag) + " samples")
-#                title("Seconds per " + str(self.lag) + " samples")
-#                show(block=False)
-#                draw()
          
     def prepare(self):
         pass

@@ -12,12 +12,13 @@ from main.mcmc.output.Output import Output
 from main.tools.Visualise import Visualise
 from matplotlib.cm import get_cmap
 from matplotlib.pyplot import subplot, plot, xlabel, ylabel, title, hist, show, \
-    draw, clf, figure, axis, suptitle
+    draw, clf, figure, axis, suptitle, ion
 from numpy.core.numeric import zeros
 from numpy.ma.core import array, exp, sqrt
 
 class PlottingOutput(Output):
     def __init__(self, distribution=None, plot_from=0, lag=1):
+        ion()
         self.distribution=distribution
         self.plot_from = plot_from
         self.lag=lag
@@ -98,7 +99,7 @@ class PlottingOutput(Output):
                 title("Log-Likelihood")
                 
             suptitle(mcmc_chain.mcmc_sampler.__class__.__name__)
-            show(block=False)
+            show()
             draw()
             clf()
     
