@@ -28,11 +28,15 @@ class SingleChainExperiment(Experiment):
         print "starting mcmc chain"
         self.mcmc_chain.run()
         
-        # compute quantiles of burn_in
-        print "precomputing std quantiles"
-        burned_in = self.mcmc_chain.samples[self.mcmc_chain.mcmc_params.burnin:, :]
-        self.quantiles = self.mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
-                              burned_in, self.ref_quantiles)
+        # compute quantiles after burn_in if possible
+            
+        try:
+            print "trying to precompute std quantiles"
+            burned_in = self.mcmc_chain.samples[self.mcmc_chain.mcmc_params.burnin:, :]
+            self.quantiles = self.mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
+                                  burned_in, self.ref_quantiles)
+        except NotImplementedError:
+            print "computing quantiles is not possible, skipping"
 
     def __str__(self):
         s = self.__class__.__name__ + "=["
