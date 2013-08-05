@@ -19,6 +19,7 @@ from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
+from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import cholesky
 from numpy.ma.core import mean, ones, shape, asarray
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     kernel = GaussianKernel(sigma=5.0)
     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
 #    sampler=AdaptiveMetropolisLearnScale(target)
-    #sampler=StandardMetropolis(target)
+#    sampler=StandardMetropolis(target)
     
     # posterior mode derived by initial tests
     start=asarray([-1., -0.5, -4., -3., -3, -3, -2, -1])
@@ -67,7 +68,7 @@ if __name__ == '__main__':
     # create MCMC chain
     chain=MCMCChain(sampler, params)
     chain.append_mcmc_output(StatisticsOutput(print_from=0, lag=100))
-    #chain.append_mcmc_output(PlottingOutput(plot_from=0, lag=500))
+    chain.append_mcmc_output(PlottingOutput(plot_from=0, lag=500))
     
     # create experiment instance to store results
     experiment_dir = str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep

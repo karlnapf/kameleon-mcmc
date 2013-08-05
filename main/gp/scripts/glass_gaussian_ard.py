@@ -19,6 +19,7 @@ from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
+from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.linalg.linalg import cholesky
 from numpy.ma.core import mean, ones, shape, asarray, zeros
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     kernel = GaussianKernel(sigma=5.0)
     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
 #    sampler=AdaptiveMetropolisLearnScale(target)
-    #sampler=StandardMetropolis(target)
+#    sampler=StandardMetropolis(target)
     
     # posterior mode derived by initial tests
     start=zeros(target.dimension)
