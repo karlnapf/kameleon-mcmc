@@ -143,10 +143,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         latex_lines = []
         latex_lines.append(self.experiments[0].mcmc_chain.mcmc_sampler.__class__.__name__)
-        latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % std(acceptance_rates)/sqrt_num_trials)
-        latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % std(norm_of_means)/sqrt_num_trials)
+        latex_lines.append('$%.3f' % mean(acceptance_rates) + " \pm " + '%.3f$' % (std(acceptance_rates)/sqrt_num_trials))
+        latex_lines.append('$%.3f' % mean(norm_of_means) + " \pm " + '%.3f$' % (std(norm_of_means)/sqrt_num_trials))
         for i in range(len(self.ref_quantiles)):
-            latex_lines.append('$%.3f' % mean_quantiles[i] + " \pm " + '%.3f$' % std_quantiles[i]/sqrt_num_trials)
+            latex_lines.append('$%.3f' % mean_quantiles[i] + " \pm " + '%.3f$' % (std_quantiles[i]/sqrt_num_trials))
         
         
         lines.append(" & ".join(latex_lines) + "\\\\")
