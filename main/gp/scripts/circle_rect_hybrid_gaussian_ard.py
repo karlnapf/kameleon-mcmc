@@ -19,7 +19,7 @@ from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
 from main.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
-from matplotlib.pyplot import plot, show
+from matplotlib.pyplot import plot
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import mean, std, ones, shape
 from numpy.ma.extras import vstack, hstack
