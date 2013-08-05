@@ -2,7 +2,7 @@ from abc import abstractmethod
 from main.distribution.Gaussian import Gaussian
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from numpy import eye
-from numpy.ma.core import array, sqrt, exp, log, shape, reshape, outer
+from numpy.ma.core import sqrt, exp, log, shape, reshape, outer, ones
 
 class AdaptiveMetropolis(MCMCSampler):
     '''
@@ -14,11 +14,15 @@ class AdaptiveMetropolis(MCMCSampler):
     adapt_scale = False
     
     def __init__(self, distribution, \
-                 mean_est=array([-2.0, -2.0]), cov_est=0.05 * eye(2), \
+                 mean_est=None, cov_est=0.05 * eye(2), \
                  sample_discard=500, sample_lag=20, accstar=0.234):
         assert (len(mean_est) == distribution.dimension)
         MCMCSampler.__init__(self, distribution)
         self.globalscale = (2.38 ** 2) / distribution.dimension
+        
+        if mean_est is None:
+            mean_est=2*ones(distribution.dimension)
+            
         self.mean_est = mean_est
         self.cov_est = cov_est
         self.sample_discard = sample_discard
