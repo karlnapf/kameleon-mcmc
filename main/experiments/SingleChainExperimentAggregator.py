@@ -135,9 +135,9 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         ioff()
         figure()
-        plot(iterations, running_means/mean(times))
-        fill_between(iterations, (running_means - running_errors)/mean(times), \
-                     (running_means + running_errors)/mean(times), hold=True, color="gray")
+        plot(iterations, running_means*mean(times))
+        fill_between(iterations, (running_means - running_errors)*mean(times), \
+                     (running_means + running_errors)*mean(times), hold=True, color="gray")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
         close()
         
@@ -145,9 +145,9 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_X.txt", \
                 iterations)
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_Y.txt", \
-                running_means/mean(times))
+                running_means*mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_errors.txt", \
-                running_errors/mean(times))
+                running_errors*mean(times))
         
         # quantile convergence of a single one
         desired_quantile=0.5
@@ -169,11 +169,11 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         ioff()
         figure()
-        plot(iterations, running_quantiles/mean(times))
-        fill_between(iterations, (running_quantiles - running_quantile_errors)/mean(times), \
-                     (running_quantiles + running_quantile_errors)/mean(times), hold=True, color="gray")
+        plot(iterations, running_quantiles*mean(times))
+        fill_between(iterations, (running_quantiles - running_quantile_errors)*mean(times), \
+                     (running_quantiles + running_quantile_errors)*mean(times), hold=True, color="gray")
         
-        plot([iterations.min(),iterations.max()], [desired_quantile/mean(times) for _ in range(2)])
+        plot([iterations.min(),iterations.max()], [desired_quantile*mean(times) for _ in range(2)])
         
         title(str(desired_quantile)+"-quantile convergence")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile.png")
@@ -183,11 +183,11 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_X.txt", \
                 iterations)
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_Y.txt", \
-                running_quantiles/mean(times))
+                running_quantiles*mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_errors.txt", \
-                running_quantile_errors/mean(times))
+                running_quantile_errors*mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_reference.txt", \
-                [desired_quantile/mean(times)])
+                [desired_quantile*mean(times)])
         
         # add latex table line
         latex_lines = []
