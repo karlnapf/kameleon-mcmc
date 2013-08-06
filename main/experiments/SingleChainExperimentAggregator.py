@@ -14,6 +14,7 @@ from matplotlib.pyplot import plot, fill_between, savefig, ylim
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray
 from numpy.ma.extras import median
+from main.kernel.GaussianKernel import GaussianKernel
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
@@ -80,6 +81,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         sqrt_num_trials=len(self.experiments)
         
+        # print median kernel width sigma
+        sigma=GaussianKernel.get_sigma_median_heuristic(burned_in.T)
+        lines.append("median kernel sigma: "+sigma)
+        
         lines.append("quantiles:")
         for i in range(len(self.ref_quantiles)):
             lines.append(str(mean_quantiles[i]) + " +- " + str(std_quantiles[i]/sqrt_num_trials))
@@ -108,7 +113,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append("times:")
         lines.append(str(mean(times)) + " +- " + str(std(times)/sqrt_num_trials))
         
-        # mean as a function of iterations
+        # mean as a function of iterations, normalised by time
         step = 1000
         iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
         
@@ -116,7 +121,6 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         running_errors = zeros(len(iterations))
         for i in arange(len(iterations)):
             # norm of mean of chain up 
-            
             norm_of_means_yet = zeros(len(self.experiments))
             for j in range(len(self.experiments)):
                 samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + iterations[i] + 1 + step), :]
@@ -126,7 +130,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             error_level = 1.96
             running_errors[i] = error_level * std(norm_of_means_yet) / sqrt(len(norm_of_means_yet))
             
-        plot(iterations, running_means)
+        plot(iterations, running_means/mean(times))
         fill_between(iterations, running_means - running_errors, \
                      running_means + running_errors, hold=True, color="gray")
         ylim(0, 10)
