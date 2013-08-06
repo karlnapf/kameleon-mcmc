@@ -58,11 +58,18 @@ class Banana(Distribution):
         assert(len(shape(X)) == 2)
         assert(shape(X)[1] == self.dimension)
         
-        transformed = X.copy()
-        transformed[:, 1] = X[:, 1] - self.bananicity * ((X[:, 0] ** 2) - self.V)
-        transformed[:, 0] = X[:, 0] / sqrt(self.V)
+        substract=self.bananicity * ((X[:, 0] ** 2) - self.V)
+        divide=sqrt(self.V)
+        X[:, 1] -= substract
+        X[:, 0] /= divide
         phi = Gaussian(zeros([self.dimension]), eye(self.dimension))
-        return phi.emp_quantiles(transformed, quantiles)
+        quantiles=phi.emp_quantiles(X, quantiles)
+        
+        # undo changes to X
+        X[:, 1] += substract
+        X[:, 0] *= divide
+        
+        return quantiles
     
     def get_plotting_bounds(self):
         if self.bananicity == 0.03 and self.V == 100.0:
