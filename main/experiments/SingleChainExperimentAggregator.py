@@ -118,7 +118,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append(str(mean(times)) + " +- " + str(std(times)/sqrt_num_trials))
         
         # mean as a function of iterations, normalised by time
-        step = 5
+        step = round((self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin)/5)
         iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
         
         running_means = zeros(len(iterations))
