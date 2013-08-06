@@ -44,11 +44,16 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             
             # use precomputed quantiles if they match with the provided ones
             if hasattr(self.experiments[i], "ref_quantiles") and \
+               hasattr(self.experiments[i], "quantiles") and \
                allclose(self.ref_quantiles, self.experiments[i].ref_quantiles):
                 quantiles[i, :] = self.experiments[i].quantiles
             else:
-                quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
-                                  burned_in, self.ref_quantiles)
+                try:
+                    quantiles[i, :] = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(\
+                                      burned_in, self.ref_quantiles)
+                except NotImplementedError:
+                    print "skipping quantile computations, distribution does", \
+                          "not support it."
                 
             dim = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.dimension
             norm_of_means[i] = norm(mean(burned_in, 0))
