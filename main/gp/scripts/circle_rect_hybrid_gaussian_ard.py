@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # create sampler
     burnin=10000
     num_iterations=burnin+300000
-    kernel = GaussianKernel(sigma=5.0)
+    kernel = GaussianKernel(sigma=35.0)
     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
 #    sampler=AdaptiveMetropolisLearnScale(target)
 #    sampler=StandardMetropolis(target)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # create MCMC chain
     chain=MCMCChain(sampler, params)
     chain.append_mcmc_output(StatisticsOutput(print_from=0, lag=100))
-    #chain.append_mcmc_output(PlottingOutput(plot_from=0, lag=500))
+#    chain.append_mcmc_output(PlottingOutput(plot_from=0, lag=500))
     
     # create experiment instance to store results
     experiment_dir = str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep

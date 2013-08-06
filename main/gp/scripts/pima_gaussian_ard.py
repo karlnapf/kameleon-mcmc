@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # create sampler
     burnin=10000
     num_iterations=burnin+300000
-    kernel = GaussianKernel(sigma=5.0)
+    kernel = GaussianKernel(sigma=22.0)
     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
 #    sampler=AdaptiveMetropolisLearnScale(target)
 #    sampler=StandardMetropolis(target)
