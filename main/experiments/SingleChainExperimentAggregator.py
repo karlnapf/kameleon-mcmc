@@ -8,6 +8,8 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
+from matplotlib import use
+use('Agg')
 from main.experiments.ExperimentAggregator import ExperimentAggregator
 from main.kernel.GaussianKernel import GaussianKernel
 from main.tools.RCodaTools import RCodaTools
@@ -18,6 +20,7 @@ from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray, \
     array
 from numpy.ma.extras import median
+
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
     def __init__(self, folders, ref_quantiles=arange(0.1, 1, 0.1)):
