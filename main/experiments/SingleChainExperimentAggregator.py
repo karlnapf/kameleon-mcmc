@@ -131,9 +131,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             running_errors[i] = error_level * std(norm_of_means_yet) / sqrt(len(norm_of_means_yet))
             
         plot(iterations, running_means/mean(times))
-        fill_between(iterations, running_means - running_errors, \
-                     running_means + running_errors, hold=True, color="gray")
-        ylim(0, 10)
+        fill_between(iterations, (running_means - running_errors)/mean(times), \
+                     (running_means + running_errors)/mean(times), hold=True, color="gray")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
 #        show()
         
