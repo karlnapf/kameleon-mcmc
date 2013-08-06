@@ -136,6 +136,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         fill_between(iterations, (running_means - running_errors)/mean(times), \
                      (running_means + running_errors)/mean(times), hold=True, color="gray")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
+        clf()
         
         # also store plot X and Y
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_X.txt", \
@@ -144,8 +145,6 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_means/mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_errors.txt", \
                 running_errors/mean(times))
-        clf()
-#        show()
         
         # quantile convergence of a single one
         desired_quantile=0.1
@@ -168,7 +167,11 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         fill_between(iterations, (running_quantiles - running_quantile_errors)/mean(times), \
                      (running_quantiles + running_quantile_errors)/mean(times), hold=True, color="gray")
         
+        plot([iterations.min(),iterations.max()], [desired_quantile/mean(times) for _ in range(2)])
+        
+        title(str(desired_quantile)+"-quantile convergence")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile.png")
+        clf()
         
         # also store plot X and Y
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_X.txt", \
@@ -177,9 +180,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_quantiles/mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_errors.txt", \
                 running_quantile_errors/mean(times))
-        title(str(desired_quantile)+"-quantile convergence")
-        clf()
-        
+        savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_reference.txt", \
+                desired_quantile/mean(times))
         
         # add latex table line
         latex_lines = []
