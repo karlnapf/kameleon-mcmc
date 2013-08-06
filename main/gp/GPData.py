@@ -89,3 +89,12 @@ class GPData(object):
         
         return data,lab
 
+    @staticmethod
+    def get_madelon_data():
+        data_dir=os.sep.join(__file__.split(os.sep)[:-3] + ["data"])
+        filename_dat=data_dir+os.sep+"madelon_train.data"
+        filename_lab=data_dir+os.sep+"madelon_train.labels"
+        data=loadtxt(filename_dat)
+        lab=loadtxt(filename_lab)
+        
+        return data,lab
