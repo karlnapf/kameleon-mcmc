@@ -11,9 +11,8 @@ Written (W) 2013 Dino Sejdinovic
 from main.experiments.ExperimentAggregator import ExperimentAggregator
 from main.kernel.GaussianKernel import GaussianKernel
 from main.tools.RCodaTools import RCodaTools
-from matplotlib import figure
 from matplotlib.pyplot import plot, fill_between, savefig, ylim, clf, title, \
-    ioff, close
+    ioff, close, figure
 from numpy.lib.npyio import savetxt
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray, \
