@@ -117,7 +117,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append(str(mean(times)) + " +- " + str(std(times)/sqrt_num_trials))
         
         # mean as a function of iterations, normalised by time
-        step = 1000
+        step = 10
         iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
         
         running_means = zeros(len(iterations))
@@ -150,7 +150,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_errors/mean(times))
         
         # quantile convergence of a single one
-        desired_quantile=0.1
+        desired_quantile=0.5
         running_quantiles=zeros(len(iterations))
         running_quantile_errors=zeros(len(iterations))
         for i in arange(len(iterations)):
@@ -161,6 +161,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 # just compute one quantile for now
                 quantiles_yet[j]=self.experiments[j].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(samples_yet, \
                                                                                           array([desired_quantile]))
+                quantiles_yet[j]=abs(quantiles_yet[j]-desired_quantile)
             running_quantiles[i] = mean(quantiles_yet)
             error_level = 1.96
             running_quantile_errors[i] = error_level * std(quantiles_yet) / sqrt(len(quantiles_yet))
