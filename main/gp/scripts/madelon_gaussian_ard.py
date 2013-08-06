@@ -34,7 +34,7 @@ if __name__ == '__main__':
     data,labels=GPData.get_madelon_data()
 
     # throw away some data
-    n=50
+    n=750
     seed(1)
     idx=permutation(len(data))
     idx=idx[:n]
@@ -53,8 +53,8 @@ if __name__ == '__main__':
                                                     ridge=1e-3)
     
     # create sampler
-    burnin=10000
-    num_iterations=burnin+300000
+    burnin=5000
+    num_iterations=burnin+50000
     kernel = GaussianKernel(sigma=8.0)
     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
 #    sampler=AdaptiveMetropolisLearnScale(target)
