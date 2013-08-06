@@ -66,8 +66,8 @@ class Banana(Distribution):
         quantiles=phi.emp_quantiles(X, quantiles)
         
         # undo changes to X
-        X[:, 1] += substract
         X[:, 0] *= divide
+        X[:, 1] += substract
         
         return quantiles
     
