@@ -14,7 +14,8 @@ from main.tools.RCodaTools import RCodaTools
 from matplotlib.pyplot import plot, fill_between, savefig, ylim
 from numpy.lib.npyio import savetxt
 from numpy.linalg.linalg import norm
-from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray
+from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray, \
+    array
 from numpy.ma.extras import median
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
@@ -145,7 +146,35 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_errors/mean(times))
 #        show()
         
+        # quantile convergence of a single one
+        desired_quantile=0.1
+        running_quantiles=zeros(len(iterations))
+        running_quantile_errors=zeros(len(iterations))
+        for i in arange(len(iterations)):
+            quantiles_yet = zeros(len(self.experiments))
+            for j in range(len(self.experiments)):
+                samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + iterations[i] + 1 + step), :]
+                
+                # just compute one quantile for now
+                quantile=self.experiments[j].mcmc_chain.mcmc_sampler.target.emp_quantiles(samples_yet, \
+                                                                                          array([desired_quantile]))
+            running_quantiles[i] = mean(quantiles_yet)
+            error_level = 1.96
+            running_quantile_errors[i] = error_level * std(quantiles_yet) / sqrt(len(quantiles_yet))
         
+        
+        plot(iterations, running_quantiles/mean(times))
+        fill_between(iterations, (running_quantiles - running_quantile_errors)/mean(times), \
+                     (running_quantiles + running_quantile_errors)/mean(times), hold=True, color="gray")
+        savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile.png")
+        
+        # also store plot X and Y
+        savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_X.txt", \
+                iterations)
+        savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_Y.txt", \
+                running_quantiles/mean(times))
+        savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_errors.txt", \
+                running_quantile_errors/mean(times))
         
         
         # add latex table line
