@@ -11,7 +11,7 @@ Written (W) 2013 Dino Sejdinovic
 from main.experiments.ExperimentAggregator import ExperimentAggregator
 from main.kernel.GaussianKernel import GaussianKernel
 from main.tools.RCodaTools import RCodaTools
-from matplotlib.pyplot import plot, fill_between, savefig, ylim
+from matplotlib.pyplot import plot, fill_between, savefig, ylim, clf, title
 from numpy.lib.npyio import savetxt
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray, \
@@ -144,6 +144,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_means/mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_errors.txt", \
                 running_errors/mean(times))
+        clf()
 #        show()
         
         # quantile convergence of a single one
@@ -166,6 +167,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         plot(iterations, running_quantiles/mean(times))
         fill_between(iterations, (running_quantiles - running_quantile_errors)/mean(times), \
                      (running_quantiles + running_quantile_errors)/mean(times), hold=True, color="gray")
+        
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile.png")
         
         # also store plot X and Y
@@ -175,6 +177,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_quantiles/mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_errors.txt", \
                 running_quantile_errors/mean(times))
+        title(str(desired_quantile)+"-quantile convergence")
+        clf()
         
         
         # add latex table line
