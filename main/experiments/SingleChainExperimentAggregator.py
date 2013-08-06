@@ -83,7 +83,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         # print median kernel width sigma
         sigma=GaussianKernel.get_sigma_median_heuristic(burned_in.T)
-        lines.append("median kernel sigma: "+sigma)
+        lines.append("median kernel sigma: "+str(sigma))
         
         lines.append("quantiles:")
         for i in range(len(self.ref_quantiles)):
