@@ -156,7 +156,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + iterations[i] + 1 + step), :]
                 
                 # just compute one quantile for now
-                quantile=self.experiments[j].mcmc_chain.mcmc_sampler.target.emp_quantiles(samples_yet, \
+                quantile=self.experiments[j].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(samples_yet, \
                                                                                           array([desired_quantile]))
             running_quantiles[i] = mean(quantiles_yet)
             error_level = 1.96
