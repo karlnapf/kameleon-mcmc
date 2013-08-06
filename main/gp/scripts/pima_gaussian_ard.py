@@ -75,3 +75,6 @@ if __name__ == '__main__':
     experiment = SingleChainExperiment(chain, experiment_dir)
     
     experiment.run()
+    
+    sigma=GaussianKernel.get_sigma_median_heuristic(experiment.mcmc_chain.samples.T)
+    print "median kernel width", sigma
