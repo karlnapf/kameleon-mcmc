@@ -68,7 +68,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             # savetxt(sample_filename, burned_in)
             
             # store minimum ess for every experiment
-            ess_per_covariate = asarray([RCodaTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
+            #ess_per_covariate = asarray([RCodaTools.ess_coda(burned_in[:, cov_idx]) for cov_idx in range(dim)])
+            ess_per_covariate = asarray([0 for _ in range(dim)])
             ess_0=ess_per_covariate[0]
             ess_1=ess_per_covariate[1]
             ess_minima[i] = min(ess_per_covariate)
@@ -85,8 +86,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         sqrt_num_trials=len(self.experiments)
         
         # print median kernel width sigma
-        sigma=GaussianKernel.get_sigma_median_heuristic(burned_in.T)
-        lines.append("median kernel sigma: "+str(sigma))
+        #sigma=GaussianKernel.get_sigma_median_heuristic(burned_in.T)
+        #lines.append("median kernel sigma: "+str(sigma))
         
         lines.append("quantiles:")
         for i in range(len(self.ref_quantiles)):
@@ -117,7 +118,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         lines.append(str(mean(times)) + " +- " + str(std(times)/sqrt_num_trials))
         
         # mean as a function of iterations, normalised by time
-        step = 10
+        step = 5
         iterations = arange(self.experiments[0].mcmc_chain.mcmc_params.num_iterations - burnin, step=step)
         
         running_means = zeros(len(iterations))
