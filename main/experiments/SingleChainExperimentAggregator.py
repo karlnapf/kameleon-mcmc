@@ -11,7 +11,9 @@ Written (W) 2013 Dino Sejdinovic
 from main.experiments.ExperimentAggregator import ExperimentAggregator
 from main.kernel.GaussianKernel import GaussianKernel
 from main.tools.RCodaTools import RCodaTools
-from matplotlib.pyplot import plot, fill_between, savefig, ylim, clf, title
+from matplotlib import figure
+from matplotlib.pyplot import plot, fill_between, savefig, ylim, clf, title, \
+    ioff, close
 from numpy.lib.npyio import savetxt
 from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray, \
@@ -131,12 +133,14 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
             running_means[i] = mean(norm_of_means_yet)
             error_level = 1.96
             running_errors[i] = error_level * std(norm_of_means_yet) / sqrt(len(norm_of_means_yet))
-            
+        
+        ioff()
+        figure()
         plot(iterations, running_means/mean(times))
         fill_between(iterations, (running_means - running_errors)/mean(times), \
                      (running_means + running_errors)/mean(times), hold=True, color="gray")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
-        clf()
+        close()
         
         # also store plot X and Y
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_X.txt", \
@@ -156,13 +160,15 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 samples_yet = self.experiments[j].mcmc_chain.samples[burnin:(burnin + iterations[i] + 1 + step), :]
                 
                 # just compute one quantile for now
-                quantile=self.experiments[j].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(samples_yet, \
+                quantiles_yet[j]=self.experiments[j].mcmc_chain.mcmc_sampler.distribution.emp_quantiles(samples_yet, \
                                                                                           array([desired_quantile]))
             running_quantiles[i] = mean(quantiles_yet)
             error_level = 1.96
             running_quantile_errors[i] = error_level * std(quantiles_yet) / sqrt(len(quantiles_yet))
         
         
+        ioff()
+        figure()
         plot(iterations, running_quantiles/mean(times))
         fill_between(iterations, (running_quantiles - running_quantile_errors)/mean(times), \
                      (running_quantiles + running_quantile_errors)/mean(times), hold=True, color="gray")
@@ -171,7 +177,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         
         title(str(desired_quantile)+"-quantile convergence")
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile.png")
-        clf()
+        close()
         
         # also store plot X and Y
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_X.txt", \
