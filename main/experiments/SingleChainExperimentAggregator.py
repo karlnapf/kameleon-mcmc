@@ -181,7 +181,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_errors.txt", \
                 running_quantile_errors/mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_reference.txt", \
-                desired_quantile/mean(times))
+                [desired_quantile/mean(times)])
         
         # add latex table line
         latex_lines = []
