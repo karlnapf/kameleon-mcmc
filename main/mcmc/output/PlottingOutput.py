@@ -65,7 +65,7 @@ class PlottingOutput(Output):
                                                    self.Ys, log_domain=False)
                 else:
                     Visualise.contour_plot_density(mcmc_chain.mcmc_sampler.Q)
-                    axis('equal')
+#                    axis('equal')
                 
                 xlabel("$x_1$")
                 ylabel("$x_2$")
