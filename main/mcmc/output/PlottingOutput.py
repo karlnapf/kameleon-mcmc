@@ -12,7 +12,7 @@ from main.mcmc.output.Output import Output
 from main.tools.Visualise import Visualise
 from matplotlib.cm import get_cmap
 from matplotlib.pyplot import subplot, plot, xlabel, ylabel, title, hist, show, \
-    draw, clf, figure, axis, suptitle, ion
+    draw, clf, figure, suptitle, ion
 from numpy.core.numeric import zeros
 from numpy.ma.core import array, exp, sqrt
 from numpy.random import permutation
