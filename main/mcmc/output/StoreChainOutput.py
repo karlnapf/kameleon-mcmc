@@ -25,8 +25,8 @@ class StoreChainOutput(Output):
     def update(self, mcmc_chain, step_output):
         i = mcmc_chain.iteration
         if i % self.lag == 0:
-            filename=self.folder + os.sep + self.instance_filename_base + str(i)
-            f=open(filename, 'wb')
+            filename = self.folder + os.sep + self.instance_filename_base + str(i)
+            f = open(filename, 'wb')
             dump(mcmc_chain, f)
             f.close()
         
@@ -43,14 +43,18 @@ class StoreChainOutput(Output):
             return None
         
         max_number = 0
-        max_filename = ""
+        max_filename = None
         for filename in filenames:
             idx = filename.find(self.instance_filename_base) + len(self.instance_filename_base)
             current = int(filename[idx:])
-            if current>max_number:
+            if current > max_number:
                 max_number = current
                 max_filename = filename
-            
+        
+        # if nothing was saved yet    
+        if max_filename is None:
+            return None
+        
         f = open(max_filename)
         chain = load(f)
         f.close()
