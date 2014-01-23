@@ -9,7 +9,7 @@ Written (W) 2013 Heiko Strathmann
 from main.distribution.Distribution import Distribution
 from numpy.ma.core import shape, zeros, exp
 from shogun.Features import BinaryLabels, RealFeatures
-from shogun.GaussianProcess import LaplacianInferenceMethod, LogitLikelihood, \
+from shogun.Classifier import LaplacianInferenceMethod, LogitLikelihood, \
     ZeroMean
 from shogun.Kernel import GaussianARDKernel
 
@@ -55,9 +55,9 @@ class PseudoMarginalHyperparameterDistribution(Distribution):
             inference.set_scale(exp(0))
             
             if self.ridge is not None:
-                log_ml_estimate=inference.get_log_ml_estimate(self.n_importance, self.ridge)
+                log_ml_estimate=inference.get_marginal_likelihood_estimate(self.n_importance, self.ridge)
             else:
-                log_ml_estimate=inference.get_log_ml_estimate(self.n_importance)
+                log_ml_estimate=inference.get_marginal_likelihood_estimate(self.n_importance)
             
             # prior is also in log-domain, so no exp of theta
             log_prior=self.prior.log_pdf(thetas[i].reshape(1,len(thetas[i])))
