@@ -43,17 +43,8 @@ if __name__ == '__main__':
     experiment_dir = experiment_dir_base + str(os.path.abspath(sys.argv[0])).split(os.sep)[-1].split(".")[0] + os.sep
     print "running experiments", n, "times at base", experiment_dir
    
-        
     # load data
     data,labels=GPData.get_glass_data()
-
-    # throw away some data
-    n_data=250
-    seed(1)
-    idx=permutation(len(data))
-    idx=idx[:n_data]
-    data=data[idx]
-    labels=labels[idx]
 
     # normalise and whiten dataset
     data-=mean(data, 0)
@@ -67,7 +58,7 @@ if __name__ == '__main__':
                                                     n_importance=100, prior=theta_prior, \
                                                     ridge=1e-3)
 
-    sigma = 23
+    sigma = 23.0
     print "using sigma", sigma
     kernel = GaussianKernel(sigma=sigma)
     
@@ -75,8 +66,8 @@ if __name__ == '__main__':
         
         mcmc_samplers = []
         
-        burnin=40
-        num_iterations=80
+        burnin=100000
+        num_iterations=1000000
         
         #mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
