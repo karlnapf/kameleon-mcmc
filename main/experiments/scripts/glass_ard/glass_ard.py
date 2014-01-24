@@ -73,7 +73,7 @@ if __name__ == '__main__':
         
         mean_est = zeros(distribution.dimension, dtype="float64")
         cov_est = 1.0 * eye(distribution.dimension)
-        cov_est[0, 0] = distribution.V
+        #cov_est[0, 0] = distribution.V
         mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
         mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
         #mcmc_samplers.append(StandardMetropolis(distribution))
