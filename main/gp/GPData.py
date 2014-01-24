@@ -13,6 +13,7 @@ from numpy.ma.core import sin, cos, asarray, zeros, array
 from numpy.random import randn, randint, seed, rand
 from scipy.constants.constants import pi
 import os
+import scipy.io
 
 class GPData(object):
     @staticmethod
@@ -97,4 +98,13 @@ class GPData(object):
         data=loadtxt(filename_dat)
         lab=loadtxt(filename_lab)
         
+        return data,lab
+
+    @staticmethod
+    def get_usps_data():
+        data_dir=os.sep.join(__file__.split(os.sep)[:-3] + ["data"])
+        filename=data_dir+os.sep+"usps3vs5.mat"
+        mat = scipy.io.loadmat(filename)
+        data=mat['usps3vs5_data']
+        lab=array([float(x) for x in mat['usps3vs5_labels'][:,0]])
         return data,lab
