@@ -31,7 +31,7 @@ class ClusterTools(object):
         
         job_name = filename.split(os.sep)[-2].split(".")[0]
         walltime = "walltime=99:59:59"
-        processors = "nodes=1:ppn=1"
+        processors = "nodes=1:ppn=2"
         memory = "pmem=2gb"
         workdir = experiment.foldername
         output=experiment.foldername + ClusterTools.cluster_output_filename
