@@ -66,17 +66,17 @@ if __name__ == '__main__':
         
         mcmc_samplers = []
         
-        burnin=50000
-        num_iterations=500000
+        burnin=20000
+        num_iterations=100000
         
-        #mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin))
+        mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
-        #mean_est = zeros(distribution.dimension, dtype="float64")
-        #cov_est = 1.0 * eye(distribution.dimension)
-        #cov_est[0, 0] = distribution.V
-        #mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
-        #mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
-        mcmc_samplers.append(StandardMetropolis(distribution))
+        mean_est = zeros(distribution.dimension, dtype="float64")
+        cov_est = 1.0 * eye(distribution.dimension)
+        cov_est[0, 0] = distribution.V
+        mcmc_samplers.append(AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est))
+        mcmc_samplers.append(AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est))
+        #mcmc_samplers.append(StandardMetropolis(distribution))
         
         start = zeros(distribution.dimension, dtype="float64")
         mcmc_params = MCMCParams(start=start, num_iterations=num_iterations, burnin=burnin)
