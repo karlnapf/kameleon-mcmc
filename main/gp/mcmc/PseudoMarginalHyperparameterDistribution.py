@@ -13,6 +13,10 @@ from shogun.Classifier import LaplacianInferenceMethod, LogitLikelihood, \
     ZeroMean
 from shogun.Kernel import GaussianARDKernel
 
+# tell shogun to use 1 thread only (extra to python)
+num_threads=1
+print "Using Shogun with %d threads" % num_threads
+ZeroMean().parallel.set_num_threads(num_threads)
 
 class PseudoMarginalHyperparameterDistribution(Distribution):
     """
