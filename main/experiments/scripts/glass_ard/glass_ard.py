@@ -16,6 +16,7 @@ from main.mcmc.MCMCParams import MCMCParams
 from main.mcmc.output.PlottingOutput import PlottingOutput
 from main.mcmc.output.StatisticsOutput import StatisticsOutput
 from main.mcmc.samplers.AdaptiveMetropolisLearnScale import AdaptiveMetropolisLearnScale
+from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
 from main.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
