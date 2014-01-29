@@ -12,9 +12,6 @@ import os
 import sys
 
 from main.experiments.GroundTruthSingleChainExperimentAggregator import GroundTruthSingleChainExperimentAggregator
-from main.experiments.SingleChainExperimentAggregator import \
-    SingleChainExperimentAggregator
-
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
