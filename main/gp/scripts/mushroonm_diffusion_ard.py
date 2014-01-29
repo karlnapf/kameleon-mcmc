@@ -21,11 +21,8 @@ from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
 from main.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
-from numpy.linalg.linalg import cholesky
-from numpy.ma.core import mean, ones, shape, asarray, zeros
-from numpy.ma.extras import cov
+from numpy.ma.core import  ones, shape, zeros
 from numpy.random import permutation, seed
-from scipy.linalg.basic import solve_triangular
 import os
 import sys
     
@@ -34,7 +31,7 @@ if __name__ == '__main__':
     data,labels=GPData.get_mushroom_data()
 
     # throw away some data
-    n=1000
+    n=200
     seed(1)
     idx=permutation(len(data))
     idx=idx[:n]
