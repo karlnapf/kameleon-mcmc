@@ -101,7 +101,6 @@ class ExperimentAggregator(object):
         Returns a list of strings with results
         """
         raise NotImplementedError()
-        return []
     
     def __str__(self):
         s=self.__class__.__name__+ "=["
