@@ -60,8 +60,8 @@ if __name__ == '__main__':
         
         mcmc_samplers = []
         
-        burnin=1000
-        num_iterations=10000
+        burnin=10000
+        num_iterations=100000
         
         #mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
