@@ -31,10 +31,11 @@ if __name__ == '__main__':
     data,labels=GPData.get_mushroom_data()
 
     # throw away some data
-    n=500
-    seed(1)
+    n=1000
+    #seed(1)
     idx=permutation(len(data))
     idx=idx[:n]
+    idx=range(n)
     data=data[idx]
     labels=labels[idx]
     
@@ -47,8 +48,8 @@ if __name__ == '__main__':
                                                     ridge=1e-3)
     
     # create sampler
-    burnin=1000
-    num_iterations=burnin+10000
+    burnin=10000
+    num_iterations=burnin+100000
     kernel = GaussianKernel(sigma=23.0)
 #     sampler=KameleonWindowLearnScale(target, kernel, stop_adapt=burnin)
 #    sampler=AdaptiveMetropolisLearnScale(target)
