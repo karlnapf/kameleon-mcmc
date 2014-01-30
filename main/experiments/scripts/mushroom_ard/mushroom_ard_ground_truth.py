@@ -42,7 +42,7 @@ if __name__ == '__main__':
     data,labels=GPData.get_mushroom_data()
     
     # throw away some data
-    n=1000
+    n=500
     idx=permutation(len(data))
     idx=idx[:n]
     data=data[idx]
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         mcmc_samplers = []
         
         burnin=1000
-        num_iterations=5000
+        num_iterations=10000
         
         #mcmc_samplers.append(KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin))
         
