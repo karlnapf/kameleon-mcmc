@@ -31,7 +31,7 @@ if __name__ == '__main__':
     data,labels=GPData.get_mushroom_data()
 
     # throw away some data
-    n=200
+    n=500
     seed(1)
     idx=permutation(len(data))
     idx=idx[:n]
