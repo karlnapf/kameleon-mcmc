@@ -65,7 +65,10 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 except NotImplementedError:
                     print "skipping quantile computations, distribution does", \
                           "not support it."
-                
+            
+            # quantiles should be about average error rather than average quantile
+            quantiles=abs(quantiles-self.ref_quantiles)
+            
             dim = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.dimension
             norm_of_means[i] = norm(mean(burned_in, 0))
             acceptance_rates[i] = mean(self.experiments[i].mcmc_chain.accepteds[burnin:])
@@ -90,7 +93,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         mean_quantiles = mean(quantiles, 0)
         std_quantiles = std(quantiles, 0)
         
-        sqrt_num_trials=len(self.experiments)
+        sqrt_num_trials=sqrt(len(self.experiments))
         
         # print median kernel width sigma
         #sigma=GaussianKernel.get_sigma_median_heuristic(burned_in.T)
