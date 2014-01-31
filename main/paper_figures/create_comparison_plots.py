@@ -64,8 +64,6 @@ if __name__ == '__main__':
             quantile_error_stds[-1][i] = float(quantile_line.split("+-")[1])
             quantile_index += 1
         #quantile_errors[-1] = abs(quantile_errors[-1] - ref_quantiles)+
-        print filename
-        print asarray(quantile_errors)
 
         acceptance_line = lines[lines.index("acceptance rate:") + 1]
         acceptance_rates.append(float(acceptance_line.split("+-")[0]))
@@ -112,11 +110,11 @@ if __name__ == '__main__':
         bars.append(bar(bar_positions + i * bar_width, to_plot[i], \
             width=bar_width, color=colours[i]))
         
-        # error-bars in the middle of bars
-        errorbar(bar_positions + (i + 0.5) * bar_width, to_plot[i], yerr=error_bars[i], \
+        # error-bars in the middle of bars (scalling from 1 std dev to 1.28 aka 80%)
+        errorbar(bar_positions + (i + 0.5) * bar_width, to_plot[i], yerr=error_bars[i]*1.28, \
                  fmt=' ', color="black", capsize=1, linewidth=0.5)
         
-    #ylim(0, 0.7)
+    ylim(0, .6)
     ax.set_xticks(bar_positions + 2 * bar_width)
     ax.set_xticklabels(x_tick_marks)
     
@@ -127,7 +125,7 @@ if __name__ == '__main__':
     
     def filename_to_plot_name(filename):
         if filename.find("StandardMetropolis") is not -1:
-            return "M"
+            return "SM"
         elif filename.find("AdaptiveMetropolisLearnScale") is not -1:
             return "AM-LS"
         elif filename.find("AdaptiveMetropolis") is not -1:
