@@ -40,13 +40,13 @@ if __name__ == '__main__':
     burnin = 40000
     num_iterations = 80000
     
-    mcmc_sampler = KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin)
+    #mcmc_sampler = KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin)
     mean_est = zeros(distribution.dimension, dtype="float64")
     cov_est = 1.0 * eye(distribution.dimension)
     cov_est[0, 0] = distribution.V
-    mcmc_sampler = AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est)
-    mcmc_sampler = AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est)
-    mcmc_sampler = StandardMetropolis(distribution)
+    #mcmc_sampler = AdaptiveMetropolisLearnScale(distribution, mean_est=mean_est, cov_est=cov_est)
+    #mcmc_sampler = AdaptiveMetropolis(distribution, mean_est=mean_est, cov_est=cov_est)
+    #mcmc_sampler = StandardMetropolis(distribution)
         
     start = zeros(distribution.dimension, dtype="float64")
     mcmc_params = MCMCParams(start=start, num_iterations=num_iterations, burnin=burnin)
