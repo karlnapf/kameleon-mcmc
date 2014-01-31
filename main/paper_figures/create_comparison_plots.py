@@ -9,10 +9,13 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from matplotlib.pyplot import bar, legend, figure, savefig, show, errorbar, ylim
+from numpy import asarray
 from numpy.ma.core import arange, zeros
-import latex_plot_init
 import os
 import sys
+
+import latex_plot_init
+
 
 if __name__ == '__main__':
     """
@@ -60,7 +63,9 @@ if __name__ == '__main__':
             quantile_errors[-1][i] = float(quantile_line.split("+-")[0])
             quantile_error_stds[-1][i] = float(quantile_line.split("+-")[1])
             quantile_index += 1
-        quantile_errors[-1] = abs(quantile_errors[-1] - ref_quantiles)
+        #quantile_errors[-1] = abs(quantile_errors[-1] - ref_quantiles)+
+        print filename
+        print asarray(quantile_errors)
 
         acceptance_line = lines[lines.index("acceptance rate:") + 1]
         acceptance_rates.append(float(acceptance_line.split("+-")[0]))
@@ -111,11 +116,11 @@ if __name__ == '__main__':
         errorbar(bar_positions + (i + 0.5) * bar_width, to_plot[i], yerr=error_bars[i], \
                  fmt=' ', color="black", capsize=1, linewidth=0.5)
         
-    ylim(0, 0.7)
+    #ylim(0, 0.7)
     ax.set_xticks(bar_positions + 2 * bar_width)
     ax.set_xticklabels(x_tick_marks)
     
-    filename_to_plot_name = {"StandardMetropolis_Banana_results_0_99.txt":"M", \
+    filename_to_plot_name = {"StandardMetropolis_Banana_results_0_99.txt":"SM", \
                            "AdaptiveMetropolis_Banana_results_0_99.txt":"AM-FS", \
                            "AdaptiveMetropolisLearnScale_Banana_results_0_99.txt":"AM-LS", \
                            "KameleonWindowLearnScale_Banana_results_0_99.txt":"KAMH-LS"}
