@@ -67,7 +67,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                           "not support it."
             
             # quantiles should be about average error rather than average quantile
-            quantiles=abs(quantiles-self.ref_quantiles)
+            quantiles[i,:]=abs(quantiles[i,:]-self.ref_quantiles)
             
             dim = self.experiments[i].mcmc_chain.mcmc_sampler.distribution.dimension
             norm_of_means[i] = norm(mean(burned_in, 0))
