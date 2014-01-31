@@ -168,7 +168,8 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean_errors.txt", \
                 running_errors*mean(times))
         
-        # quantile convergence of a single one
+        # dont produce quantile convergence plots here for now
+        """# quantile convergence of a single one
         desired_quantile=0.5
         running_quantiles=zeros(len(iterations))
         running_quantile_errors=zeros(len(iterations))
@@ -207,7 +208,7 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
                 running_quantile_errors*mean(times))
         savetxt(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_quantile_reference.txt", \
                 [desired_quantile*mean(times)])
-        
+        """
         # add latex table line
 #         latex_lines = []
 #         latex_lines.append("Sampler & Acceptance & ESS2 & Norm(mean) & ")
