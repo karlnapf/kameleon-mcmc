@@ -9,10 +9,6 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from matplotlib import use
-use('Agg')
-from main.experiments.ExperimentAggregator import ExperimentAggregator
-from main.kernel.GaussianKernel import GaussianKernel
-# from main.tools.RCodaTools import RCodaTools
 from matplotlib.pyplot import plot, fill_between, savefig, ylim, clf, title, \
     ioff, close, figure
 from numpy.lib.npyio import savetxt
@@ -20,6 +16,14 @@ from numpy.linalg.linalg import norm
 from numpy.ma.core import arange, zeros, mean, std, allclose, sqrt, asarray, \
     array
 from numpy.ma.extras import median
+from os.path import os
+import errno
+from main.experiments.ExperimentAggregator import ExperimentAggregator
+from main.kernel.GaussianKernel import GaussianKernel
+
+
+use('Agg')
+# from main.tools.RCodaTools import RCodaTools
 
 
 class SingleChainExperimentAggregator(ExperimentAggregator):
@@ -142,6 +146,14 @@ class SingleChainExperimentAggregator(ExperimentAggregator):
         plot(iterations, running_means*mean(times))
         fill_between(iterations, (running_means - running_errors)*mean(times), \
                      (running_means + running_errors)*mean(times), hold=True, color="gray")
+        
+        # make sure path to save exists
+        try:
+            os.makedirs(self.experiments[0].experiment_dir)
+        except OSError as exception:
+            if exception.errno != errno.EEXIST:
+                raise
+        
         savefig(self.experiments[0].experiment_dir + self.experiments[0].name + "_running_mean.png")
         close()
         
