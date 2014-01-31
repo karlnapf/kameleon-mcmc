@@ -36,8 +36,8 @@ if __name__ == '__main__':
     kernel = GaussianKernel(sigma=sigma)
     
     
-    burnin = 20000
-    num_iterations = 40000
+    burnin = 60000
+    num_iterations = 120000
     
     #mcmc_sampler = KameleonWindowLearnScale(distribution, kernel, stop_adapt=burnin)
     mean_est = zeros(distribution.dimension, dtype="float64")
