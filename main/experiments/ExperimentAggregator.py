@@ -22,7 +22,10 @@ class ExperimentAggregator(object):
         self.experiments = []
         
         # load first git version
-        assert(os.path.exists(folders[0]))
+        if not os.path.exists(folders[0]):
+            print folders[0]
+            assert(os.path.exists(folders[0]))
+
         f = open(folders[0] + Experiment.gitversion_filename)
         ref_githash = f.readline().strip()
         ref_gitbranch = f.readline().strip()
@@ -44,8 +47,13 @@ class ExperimentAggregator(object):
             f.close()
             
             # assert that all git hashs are equal
-            assert(githash == ref_githash)
-            assert(gitbranch == ref_gitbranch)
+            if not githash == ref_githash:
+                print "git hash", githash, "is not equal to reference git hash", ref_githash
+            if not gitbranch == ref_gitbranch:
+                print "git branch", gitbranch, "is not equal to reference git branch",
+            
+            #assert(githash == ref_githash)
+            #assert(gitbranch == ref_gitbranch)
             
             # this might be false if script was altered after experiment, comment out then
 #            if githash != GitTools.get_hash():
