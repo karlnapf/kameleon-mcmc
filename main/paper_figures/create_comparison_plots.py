@@ -47,8 +47,8 @@ if __name__ == '__main__':
     filenames = []
     for filename in sys.argv[3:]:
         filenames.append(filename)
-        f = open(folder + filename, "r")
         print folder + filename
+        f = open(folder + filename, "r")
         lines = [line.strip() for line in f.readlines()]
         f.close()
         
