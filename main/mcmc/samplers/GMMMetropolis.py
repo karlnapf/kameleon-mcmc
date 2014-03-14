@@ -14,12 +14,11 @@ class GMMMetropolis(StandardMetropolis):
     '''
     
     def __init__(self, distribution, num_components, num_sample_discard=1000,
-                 num_samples_gmm=1000, num_runs_em=1):
+                 num_runs_em=1):
         MCMCSampler.__init__(self, distribution)
         
         self.num_components = num_components
         self.num_sample_discard = num_sample_discard
-        self.num_samples_gmm = num_samples_gmm
         self.num_runs_em = num_runs_em
         
         # start with empty proposal, is changed to something in adapt method
@@ -29,7 +28,6 @@ class GMMMetropolis(StandardMetropolis):
         s = self.__class__.__name__ + "=["
         s += "num_components=" + str(self.num_components)
         s += ", num_sample_discard=" + str(self.num_sample_discard)
-        s += ", num_samples_gmm=" + str(self.num_samples_gmm)
         s += ", num_runs_em=" + str(self.num_runs_em)
         s += ", " + StandardMetropolis.__str__(self)
         s += "]"
