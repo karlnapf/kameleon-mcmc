@@ -8,15 +8,17 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from main.distribution.Distribution import Distribution, Sample
-from numpy.ma.core import cumsum, zeros
-from scipy.stats.distributions import rand
 import numpy
+from numpy.ma.core import cumsum, zeros
+from scipy import rand
+
+from main.distribution.Distribution import Distribution, Sample
+
 
 class Discrete(Distribution):
     def __init__(self, omega, support=None):
         Distribution.__init__(self, dimension=None)
-        assert(abs(sum(omega)-1)<1e-6)
+        assert(abs(sum(omega) - 1) < 1e-6)
         if support == None:
             support = range(len(omega))
         else:
@@ -27,11 +29,11 @@ class Discrete(Distribution):
         self.support = support
     
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "num_objects="+ str(self.num_objects)
-        s += ", omega="+ str(self.omega)
-        s += ", cdf="+ str(self.cdf)
-        s += ", support="+ str(self.support)
+        s = self.__class__.__name__ + "=["
+        s += "num_objects=" + str(self.num_objects)
+        s += ", omega=" + str(self.omega)
+        s += ", cdf=" + str(self.cdf)
+        s += ", support=" + str(self.support)
         s += ", " + Distribution.__str__(self)
         s += "]"
         return s
@@ -46,10 +48,10 @@ class Discrete(Distribution):
             rez[ii] = self.support[jj]
         return Sample(rez.astype(numpy.int32))
     
-    def log_pdf(self,X):
+    def log_pdf(self, X):
         return None
 
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #    d = Discrete([0.65, 0.1, 0.25])
 #    X = d.sample(50).samples
 #    print X
