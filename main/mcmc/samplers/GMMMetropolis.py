@@ -1,11 +1,12 @@
 from modshogun import GMM, RealFeatures
 from numpy import zeros
-
-from main.distribution import MixtureDistribution, Gaussian
-from main.mcmc.samplers.MCMCSampler import MCMCSampler
-from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
-from numpy.random import randint
 from numpy.ma.extras import unique
+from numpy.random import randint
+
+from main.distribution.Discrete import Discrete
+from main.distribution.Gaussian import Gaussian
+from main.distribution.MixtureDistribution import MixtureDistribution
+from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
 
 
 class GMMMetropolis(StandardMetropolis):
@@ -64,7 +65,8 @@ class GMMMetropolis(StandardMetropolis):
         Runs a couple of em instances on random starting points and returns
         internal GMM representation of best instance
         """
-        features = RealFeatures(samples)
+        features = RealFeatures(samples.T)
+        
         gmms = []
         log_likelihoods = zeros(self.num_runs_em)
         for i in range(self.num_runs_em):
@@ -86,9 +88,9 @@ class GMMMetropolis(StandardMetropolis):
             components.append(Gaussian(mu, Sigma))
             
         # construct a Gaussian mixture model based on the best EM run
-        mixing_proportion = gmms[max_idx].get_coeff()
+        pie = gmms[max_idx].get_coef()
         proposal = MixtureDistribution(components[0].dimension,
                                      self.num_components, components,
-                                     mixing_proportion)
+                                     Discrete(pie))
         
         return proposal
