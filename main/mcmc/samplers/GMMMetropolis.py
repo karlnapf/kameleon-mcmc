@@ -15,7 +15,7 @@ class GMMMetropolis(StandardMetropolis):
     
     def __init__(self, distribution, num_components, num_sample_discard=1000,
                  num_samples_gmm=1000, num_runs_em=1):
-        MCMCSampler.__init__(self, distribution)
+        StandardMetropolis.__init__(self, distribution)
         
         self.num_components = num_components
         self.num_sample_discard = num_sample_discard
