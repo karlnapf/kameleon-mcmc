@@ -33,8 +33,8 @@ if __name__ == '__main__':
     burnin = 40000
     num_iterations = 80000
     
-    mcmc_sampler = GMMMetropolis(distribution, num_components=10, num_sample_discard=500,
-                 num_samples_gmm=burnin, num_runs_em=1)
+    mcmc_sampler = GMMMetropolis(distribution, num_components=3, num_sample_discard=500,
+                 num_samples_gmm=1000, num_samples_when_to_switch=10000, num_runs_em=10)
     #mean_est = zeros(distribution.dimension, dtype="float64")
     #cov_est = 1.0 * eye(distribution.dimension)
     #cov_est[0, 0] = distribution.V

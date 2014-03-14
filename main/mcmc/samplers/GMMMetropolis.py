@@ -4,6 +4,8 @@ from numpy import zeros
 from main.distribution import MixtureDistribution, Gaussian
 from main.mcmc.samplers.MCMCSampler import MCMCSampler
 from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
+from numpy.random import randint
+from numpy.ma.extras import unique
 
 
 class GMMMetropolis(StandardMetropolis):
@@ -14,12 +16,13 @@ class GMMMetropolis(StandardMetropolis):
     '''
     
     def __init__(self, distribution, num_components, num_sample_discard=1000,
-                 num_samples_gmm=1000, num_runs_em=1):
+                 num_samples_gmm=1000, num_samples_when_to_switch=40000, num_runs_em=1):
         StandardMetropolis.__init__(self, distribution)
         
         self.num_components = num_components
         self.num_sample_discard = num_sample_discard
         self.num_samples_gmm = num_samples_gmm
+        self.num_samples_when_to_switch = num_samples_when_to_switch
         self.num_runs_em = num_runs_em
         
         # start with empty proposal, is changed to something in adapt method
@@ -36,13 +39,17 @@ class GMMMetropolis(StandardMetropolis):
         return s
     
     def adapt(self, mcmc_chain, step_output):
-        # only learn the proposal once, when there are enough samples
-        needed_idx = self.num_sample_discard + self.num_samples_gmm
-        if mcmc_chain.iteration == needed_idx:
-            idx_left = self.num_sample_discard
-            idx_right = self.num_sample_discard + self.num_samples_gmm
-            samples = mcmc_chain.samples[idx_left:idx_right]
-            self.proposal = self.fit_gmm(samples)
+        # only learn the proposal once, at a pre-specified iteration
+        if mcmc_chain.iteration == self.num_samples_when_to_switch:
+            iter_no = mcmc_chain.iteration
+            inds = randint(iter_no - self.num_sample_discard, size=self.num_samples_gmm) + self.num_sample_discard
+            unique_inds = unique(inds)
+            self.proposal = self.fit_gmm(mcmc_chain.samples[unique_inds])
+            
+            #idx_left = self.num_sample_discard
+            #idx_right = self.num_sample_discard + self.num_samples_gmm
+            #samples = mcmc_chain.samples[idx_left:idx_right]
+            #self.proposal = self.fit_gmm(samples)
     
     def construct_proposal(self, y):
         # fixed proposal exists from a certain iteration, return std MH otherwise
