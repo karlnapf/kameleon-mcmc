@@ -17,6 +17,7 @@ from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular
 from scipy.stats.distributions import chi2
+from numpy.linalg.linalg import LinAlgError
 
 class Gaussian(Distribution):
     def __init__(self, mu=array([0, 0]), Sigma=eye(2), is_cholesky=False, ell=None):
@@ -39,7 +40,11 @@ class Gaussian(Distribution):
                 self.L = self.L.T
                 assert(shape(self.L)[1] == ell)
             else:
-                self.L = cholesky(Sigma)
+                try:
+                    self.L = cholesky(Sigma)
+                except LinAlgError:
+                    # some really crude check for PSD (which only corrects for orunding errors
+                    self.L = cholesky(Sigma+eye(len(Sigma))*1e-5)
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
