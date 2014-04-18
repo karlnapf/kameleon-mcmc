@@ -37,7 +37,6 @@ from kameleon_mcmc.distribution.Distribution import Sample
 
 
 class BernoulliUnitTest(unittest.TestCase):
-
     def test_contructor_wrong_ps_type1(self):
         ps = 0
         self.assertRaises(TypeError, Bernoulli, ps)

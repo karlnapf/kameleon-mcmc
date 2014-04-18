@@ -28,8 +28,8 @@ either expressed or implied, of the author.
 """
 
 from numpy import asarray, int32
-import numpy
 from numpy import log
+import numpy
 from numpy.matlib import repmat
 from numpy.random import rand
 
