@@ -87,10 +87,15 @@ class BernoulliUnitTest(unittest.TestCase):
         b = Bernoulli(p)
         self.assertRaises(TypeError, b.sample, float(1.))
         
-    def test_sample_result_type(self):
+    def test_sample_type(self):
         p = asarray([0.5])
         b = Bernoulli(p)
         self.assertEqual(type(b.sample(1)), Sample)
+        
+    def test_sample_samples_dtype(self):
+        p = asarray([0.5])
+        b = Bernoulli(p)
+        self.assertEqual(b.sample(1).samples.dtype, numpy.bool)
         
     def test_sample_dim(self):
         n = 3
@@ -137,57 +142,50 @@ class BernoulliUnitTest(unittest.TestCase):
         b = Bernoulli(p)
         self.assertRaises(ValueError, b.log_pdf, zeros((1, 2)))
         
-    def test_log_pdf_wrong_range_minus_1(self):
-        p = asarray([0.5])
-        b = Bernoulli(p)
-        self.assertRaises(ValueError, b.log_pdf, asarray([[-1]]))
-        
-    def test_log_pdf_wrong_range_minus_2(self):
-        p = asarray([0.5])
-        b = Bernoulli(p)
-        self.assertRaises(ValueError, b.log_pdf, asarray([[2]]))
-    
     def test_log_pdf_type(self):
         p = asarray([0.3])
         b = Bernoulli(p)
-        self.assertEqual(type(b.log_pdf(asarray([[1]]))), numpy.ndarray)
+        self.assertEqual(type(b.log_pdf(asarray([[1]], dtype=numpy.bool8))), numpy.ndarray)
     
     def test_log_pdf_array_dimension(self):
         d = 3
         n = 2
         ps = asarray(rand(d))
         b = Bernoulli(ps)
-        X = randint(0, 2, (n, d))
+        X = randint(0, 2, (n, d)).astype(numpy.bool8)
         self.assertEqual(b.log_pdf(X).shape, (d,))
         
     def test_log_pdf_success_single(self):
         d = 1
         ps = asarray(rand(d))
         b = Bernoulli(ps)
-        X = asarray([[1]])
+        X = asarray([[1]], dtype=numpy.bool8)
         self.assertEqual(b.log_pdf(X), log(ps[0]))
         
     def test_log_pdf_failure_single(self):
         d = 1
         ps = asarray(rand(d))
         b = Bernoulli(ps)
-        X = asarray([[0]])
+        X = asarray([[0]], dtype=numpy.bool8)
         self.assertEqual(b.log_pdf(X), log(1 - ps[0]))
         
     def test_log_pdf_success_multiple(self):
         d = 4
         n = 3
-        ps = asarray(rand(d))
-        b = Bernoulli(ps)
-        X = randint(0, 2, (n, d))
+        num_runs = 100
         
-        # naive computation of log pdf
-        expected = zeros((n, d))
-        for i in range(n):
-            for j in range(d):
-                expected[i, j] = log(ps[j]) if X[i, j] == 1 else log(1 - ps[j])
-                
-        self.assertTrue(all(sum(expected, 0) == b.log_pdf(X)))
+        for _ in range(num_runs):
+            ps = rand(d)
+            b = Bernoulli(ps)
+            X = randint(0, 2, (n, d)).astype(numpy.bool8)
+            
+            # naive computation of log pdf
+            expected = zeros((n, d))
+            for i in range(n):
+                for j in range(d):
+                    expected[i, j] = log(ps[j]) if X[i, j] == 1 else log(1 - ps[j])
+                    
+            self.assertTrue(all(sum(expected, 0) == b.log_pdf(X)))
         
 if __name__ == "__main__":
     unittest.main()

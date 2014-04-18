@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import asarray, int32
+from numpy import asarray
 from numpy import log
 import numpy
 from numpy.matlib import repmat
@@ -48,13 +48,13 @@ class Bernoulli(Distribution):
         
         if not all(ps > 0) and all (ps < 1):
             raise ValueError("Probability vector must lie in (0,1)")
-        
             
         self.ps = ps
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
         s += "ps=" + str(self.ps)
+        s += ", " + Distribution.__str__(self)
         s += "]"
         return s
     
@@ -66,7 +66,7 @@ class Bernoulli(Distribution):
             raise ValueError("Number of samples (%d) needs to be positive", n)
         
         r = rand(n, self.dimension)
-        s = asarray(r <= self.ps, dtype=int32)
+        s = asarray(r <= self.ps, dtype=bool)
         return Sample(s)
     
     def log_pdf(self, X):
@@ -76,15 +76,16 @@ class Bernoulli(Distribution):
         if not len(X.shape) is 2:
             raise TypeError("X must be a 2D numpy array")
         
+        # this also enforce correct data ranges
+        if X.dtype != numpy.bool8:
+            raise ValueError("X must be a bool numpy array")
+        
         if not X.shape[1] == self.dimension:
             raise ValueError("Dimension of X does not match own dimension")
 
-        if any(X[X != 0] != 1) or any(X[X != 1] != 0):
-            raise ValueError("X must be zero or one")
+        result = repmat(self.ps, len(X), 1)
+        idx = X == 0
+        result[idx] = 1 - result[idx]
         
-        result=repmat(self.ps, len(X), 1)
-        idx=X==0
-        result[idx]=1-result[idx]
-        
-        return sum(log(result),0)
+        return sum(log(result), 0)
 
