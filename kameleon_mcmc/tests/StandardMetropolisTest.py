@@ -14,15 +14,15 @@ from numpy.core.numeric import zeros
 from pickle import dump
 import pstats
 
-from main.distribution.Banana import Banana
-from main.distribution.Gaussian import Gaussian
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.PlottingOutput import PlottingOutput
-from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
-from main.mcmc.samplers.AdaptiveMetropolisLearnScale import AdaptiveMetropolisLearnScale
-from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
+from kameleon_mcmc.distribution.Banana import Banana
+from kameleon_mcmc.distribution.Gaussian import Gaussian
+from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
+from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.PlottingOutput import PlottingOutput
+from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
+from kameleon_mcmc.mcmc.samplers.AdaptiveMetropolis import AdaptiveMetropolis
+from kameleon_mcmc.mcmc.samplers.AdaptiveMetropolisLearnScale import AdaptiveMetropolisLearnScale
+from kameleon_mcmc.mcmc.samplers.StandardMetropolis import StandardMetropolis
 
 
 def main():

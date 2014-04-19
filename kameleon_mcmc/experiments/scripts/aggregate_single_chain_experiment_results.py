@@ -8,7 +8,7 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from main.experiments.SingleChainExperimentAggregator import \
+from kameleon_mcmc.experiments.SingleChainExperimentAggregator import \
     SingleChainExperimentAggregator
 import os
 import sys

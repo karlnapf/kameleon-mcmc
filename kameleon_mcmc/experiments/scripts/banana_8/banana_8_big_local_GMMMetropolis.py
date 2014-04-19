@@ -13,14 +13,14 @@ from numpy.ma.core import zeros
 import os
 import sys
 
-from main.distribution.Banana import Banana
-from main.experiments.SingleChainExperiment import SingleChainExperiment
-from main.kernel.GaussianKernel import GaussianKernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.GMMMetropolis import GMMMetropolis
-from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
+from kameleon_mcmc.distribution.Banana import Banana
+from kameleon_mcmc.experiments.SingleChainExperiment import SingleChainExperiment
+from kameleon_mcmc.kernel.GaussianKernel import GaussianKernel
+from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
+from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
+from kameleon_mcmc.mcmc.samplers.GMMMetropolis import GMMMetropolis
+from kameleon_mcmc.mcmc.samplers.StandardMetropolis import StandardMetropolis
 
 
 if __name__ == '__main__':

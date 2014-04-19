@@ -8,9 +8,9 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from main.distribution.Banana import Banana
-from main.distribution.Flower import Flower
-from main.distribution.Ring import Ring
+from kameleon_mcmc.distribution.Banana import Banana
+from kameleon_mcmc.distribution.Flower import Flower
+from kameleon_mcmc.distribution.Ring import Ring
 def main():
     dist=Ring(dimension=50)
     X=dist.sample(10000).samples

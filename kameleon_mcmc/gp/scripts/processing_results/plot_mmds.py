@@ -7,7 +7,7 @@ from matplotlib.pyplot import figure, plot, show, legend, xlabel, ylabel,\
     savefig, fill, fill_between, errorbar, xlim
 from numpy.ma.core import mean, std, shape, sqrt
 from pickle import load
-from main.paper_figures import latex_plot_init
+from kameleon_mcmc.paper_figures import latex_plot_init
 import matplotlib as mpl
 from numpy.ma.extras import median
 mpl.rcParams['text.usetex']=True

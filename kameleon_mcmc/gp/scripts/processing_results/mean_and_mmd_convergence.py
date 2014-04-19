@@ -1,15 +1,15 @@
 from pickle import load, dump
-#from main.mcmc import *  # @UnusedWildImport
+#from kameleon_mcmc.mcmc import *  # @UnusedWildImport
 from numpy.oldnumeric.random_array import permutation
 from matplotlib.pyplot import title, plot, figure, show, draw, clf, contour,\
     xlim, ylim, imshow
 from numpy.ma.core import arange, mean, reshape, shape, sqrt, floor, zeros
-from main.kernel.PolynomialKernel import PolynomialKernel
+from kameleon_mcmc.kernel.PolynomialKernel import PolynomialKernel
 
 from numpy.linalg.linalg import norm
 from numpy.lib.npyio import loadtxt
 
-#from main.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
+#from kameleon_mcmc.mcmc.samplers.KameleonWindowLearnScale import KameleonWindowLearnScale
 
 plotting=False
 pkernel = PolynomialKernel(degree=3)

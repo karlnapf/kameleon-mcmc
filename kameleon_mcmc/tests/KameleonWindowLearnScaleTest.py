@@ -8,18 +8,18 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from main.distribution.Banana import Banana
-from main.distribution.Flower import Flower
-from main.kernel.GaussianKernel import GaussianKernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.PlottingOutput import PlottingOutput
-from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.Kameleon import Kameleon
-from main.mcmc.samplers.KameleonWindowLearnScale import \
+from kameleon_mcmc.distribution.Banana import Banana
+from kameleon_mcmc.distribution.Flower import Flower
+from kameleon_mcmc.kernel.GaussianKernel import GaussianKernel
+from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
+from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.PlottingOutput import PlottingOutput
+from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
+from kameleon_mcmc.mcmc.samplers.Kameleon import Kameleon
+from kameleon_mcmc.mcmc.samplers.KameleonWindowLearnScale import \
     KameleonWindowLearnScale
-from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
-from main.tools.Visualise import Visualise
+from kameleon_mcmc.mcmc.samplers.StandardMetropolis import StandardMetropolis
+from kameleon_mcmc.tools.Visualise import Visualise
 from matplotlib.pyplot import show
 from numpy.core.numeric import zeros, inf
 from numpy.lib.twodim_base import eye

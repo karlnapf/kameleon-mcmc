@@ -12,15 +12,15 @@ from numpy.random import permutation
 import os
 import sys
 
-from main.distribution.Gaussian import Gaussian
-from main.experiments.ClusterTools import ClusterTools
-from main.experiments.SingleChainExperiment import SingleChainExperiment
-from main.gp.GPData import GPData
-from main.gp.mcmc.PseudoMarginalHyperparameterDistributionDiffusion import PseudoMarginalHyperparameterDistributionDiffusion
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
+from kameleon_mcmc.distribution.Gaussian import Gaussian
+from kameleon_mcmc.experiments.ClusterTools import ClusterTools
+from kameleon_mcmc.experiments.SingleChainExperiment import SingleChainExperiment
+from kameleon_mcmc.gp.GPData import GPData
+from kameleon_mcmc.gp.mcmc.PseudoMarginalHyperparameterDistributionDiffusion import PseudoMarginalHyperparameterDistributionDiffusion
+from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
+from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
+from kameleon_mcmc.mcmc.samplers.StandardMetropolis import StandardMetropolis
 
 
 if __name__ == '__main__':

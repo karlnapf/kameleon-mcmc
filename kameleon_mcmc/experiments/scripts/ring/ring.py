@@ -1,16 +1,16 @@
-from main.distribution.Ring import Ring
-from main.experiments.ClusterTools import ClusterTools
-from main.experiments.SingleChainExperiment import SingleChainExperiment
-from main.kernel.GaussianKernel import GaussianKernel
-from main.mcmc.MCMCChain import MCMCChain
-from main.mcmc.MCMCParams import MCMCParams
-from main.mcmc.output.StatisticsOutput import StatisticsOutput
-from main.mcmc.samplers.AdaptiveMetropolisLearnScale import \
+from kameleon_mcmc.distribution.Ring import Ring
+from kameleon_mcmc.experiments.ClusterTools import ClusterTools
+from kameleon_mcmc.experiments.SingleChainExperiment import SingleChainExperiment
+from kameleon_mcmc.kernel.GaussianKernel import GaussianKernel
+from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
+from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
+from kameleon_mcmc.mcmc.samplers.AdaptiveMetropolisLearnScale import \
     AdaptiveMetropolisLearnScale
-from main.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
-from main.mcmc.samplers.KameleonWindowLearnScale import \
+from kameleon_mcmc.mcmc.samplers.AdaptiveMetropolisPCA import AdaptiveMetropolisPCA
+from kameleon_mcmc.mcmc.samplers.KameleonWindowLearnScale import \
     KameleonWindowLearnScale
-from main.mcmc.samplers.StandardMetropolis import StandardMetropolis
+from kameleon_mcmc.mcmc.samplers.StandardMetropolis import StandardMetropolis
 from numpy.lib.twodim_base import eye
 from numpy.ma.core import array
 import os

@@ -11,7 +11,7 @@ Written (W) 2013 Dino Sejdinovic
 import os
 import sys
 
-from main.experiments.GroundTruthSingleChainExperimentAggregator import GroundTruthSingleChainExperimentAggregator
+from kameleon_mcmc.experiments.GroundTruthSingleChainExperimentAggregator import GroundTruthSingleChainExperimentAggregator
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
