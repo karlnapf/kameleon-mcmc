@@ -48,11 +48,14 @@ class DiscreteKameleon(MCMCSampler):
         if not type(Z) is numpy.ndarray:
             raise TypeError("History must be a numpy array")
         
-        if not len(Z.shape)==2:
+        if not len(Z.shape) == 2:
             raise ValueError("History must be a 2D numpy array")
         
-        if not Z.shape[1]==distribution.dimension:
+        if not Z.shape[1] == distribution.dimension:
             raise ValueError("History dimension does not match target dimension")
+        
+        if not Z.shape[0] > 0:
+            raise ValueError("History must contain at least one point")
         
         MCMCSampler.__init__(self, distribution)
         
@@ -60,8 +63,8 @@ class DiscreteKameleon(MCMCSampler):
         self.Z = Z
     
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "kernel="+ str(self.kernel)
+        s = self.__class__.__name__ + "=["
+        s += "kernel=" + str(self.kernel)
         s += ", " + MCMCSampler.__str__(self)
         s += "]"
         return s
@@ -70,5 +73,7 @@ class DiscreteKameleon(MCMCSampler):
         pass
     
     def adapt(self, mcmc_chain, step_output):
+        """
+        Nothing for this one since it uses oracle samples
+        """
         pass
-        
