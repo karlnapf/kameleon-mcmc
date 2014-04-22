@@ -90,7 +90,7 @@ class BernoulliUnitTest(unittest.TestCase):
     def test_sample_type(self):
         p = asarray([0.5])
         b = Bernoulli(p)
-        self.assertEqual(type(b.sample(1)), Sample)
+        self.assertTrue(isinstance(b.sample(1), Sample))
         
     def test_sample_samples_dtype(self):
         p = asarray([0.5])
