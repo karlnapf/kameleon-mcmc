@@ -38,6 +38,7 @@ import unittest
 from kameleon_mcmc.distribution.Bernoulli import Bernoulli
 from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
 from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
+from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 
 
 class DiscreteKameleonUnitTest(unittest.TestCase):
@@ -47,7 +48,9 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
-        self.assertRaises(TypeError, DiscreteKameleon, None, kernel, Z)
+        threshold = 0.5
+        spread=0.5
+        self.assertRaises(TypeError, DiscreteKameleon, None, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_kernel_type(self):
         dimension = 3
@@ -55,7 +58,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         Z = zeros((2, distribution.dimension))
         threshold = 0.5
-        self.assertRaises(TypeError, DiscreteKameleon, distribution, None, Z, threshold)
+        spread=0.5
+        self.assertRaises(TypeError, DiscreteKameleon, distribution, None, Z, threshold, spread)
         
     def test_contructor_wrong_Z_type(self):
         dimension = 3
@@ -63,7 +67,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         kernel = HypercubeKernel(1.)
         threshold = 0.5
-        self.assertRaises(TypeError, DiscreteKameleon, distribution, kernel, None, threshold)
+        spread=0.5
+        self.assertRaises(TypeError, DiscreteKameleon, distribution, kernel, None, threshold, spread)
         
     def test_contructor_wrong_threshold_type(self):
         dimension = 3
@@ -71,7 +76,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
-        self.assertRaises(TypeError, DiscreteKameleon, distribution, kernel, Z, None)
+        spread=0.5
+        self.assertRaises(TypeError, DiscreteKameleon, distribution, kernel, Z, None, spread)
         
     def test_contructor_wrong_Z_array_dimension_too_small(self):
         dimension = 3
@@ -80,7 +86,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros(distribution.dimension)
         threshold = 0.5
-        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold)
+        spread=0.5
+        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_array_dimension_too_large(self):
         dimension = 3
@@ -89,7 +96,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension, 3))
         threshold = 0.5
-        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold)
+        spread=0.5
+        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_dimension_too_small(self):
         dimension = 3
@@ -98,7 +106,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension - 1))
         threshold = 0.5
-        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold)
+        spread=0.5
+        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_dimension_too_big(self):
         dimension = 3
@@ -107,7 +116,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension + 1))
         threshold = 0.5
-        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold)
+        spread=0.5
+        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_length(self):
         dimension = 3
@@ -116,7 +126,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((0, distribution.dimension + 1))
         threshold = 0.5
-        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold)
+        spread=0.5
+        self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor(self):
         dimension = 3
@@ -125,11 +136,13 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
         threshold = 0.5
-        sampler = DiscreteKameleon(distribution, kernel, Z, threshold)
+        spread=0.5
+        sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
         self.assertEqual(sampler.distribution, distribution)
         self.assertEqual(sampler.kernel, kernel)
         self.assertTrue(sampler.Z is Z)
         self.assertEqual(sampler.threshold, threshold)
+        self.assertEqual(sampler.spread, spread)
         
     def test_adapt_does_nothing(self):
         dimension = 3
@@ -138,7 +151,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
         threshold = 0.5
-        sampler = DiscreteKameleon(distribution, kernel, Z, threshold)
+        spread = .5
+        sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
         
         # serialise, call adapt, load, compare
         f = NamedTemporaryFile()
@@ -160,6 +174,8 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         self.assertEqual(sampler_copy.Z.shape, sampler.Z.shape)
         self.assertAlmostEqual(norm(sampler_copy.Z - sampler.Z), 0)
         
+        self.assertEqual(sampler_copy.spread, sampler.spread)
+
         # this is none, so just compare
         self.assertEqual(sampler.Q, sampler_copy.Q)
         
@@ -171,10 +187,14 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = randint(0, 2, (num_history, dimension)).astype(numpy.bool8)
         threshold = 0.5
-        sampler = DiscreteKameleon(distribution, kernel, Z, threshold)
+        spread=0.5
+        sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
         
-        y = zeros((1, dimension), dtype=numpy.bool8)
-        sampler.construct_proposal(y)
+        y = randint(0,2, (1, dimension)).astype(dtype=numpy.bool8)
+        p=sampler.construct_proposal(y)
+        
+        self.assertTrue(isinstance(p, DiscreteRandomWalkProposal))
+        self.assertEqual(p.spread, spread)
         
 if __name__ == "__main__":
     unittest.main()

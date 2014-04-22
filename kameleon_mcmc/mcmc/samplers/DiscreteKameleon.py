@@ -33,13 +33,14 @@ from numpy.random import randn
 from kameleon_mcmc.distribution.Distribution import Distribution
 from kameleon_mcmc.kernel.Kernel import Kernel
 from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
+from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 
 
 class DiscreteKameleon(MCMCSampler):
     """
     Kameleon MCMC on discrete domains
     """
-    def __init__(self, distribution, kernel, Z, threshold):
+    def __init__(self, distribution, kernel, Z, threshold, spread):
         if not isinstance(distribution, Distribution):
             raise TypeError("Target must be a Distribution object")
         
@@ -61,16 +62,24 @@ class DiscreteKameleon(MCMCSampler):
         if not type(threshold) is float:
             raise TypeError("Threshold must be a float")
         
+        if not type(spread) is float:
+            raise TypeError("Spread must be a float")
+        
+        if not (spread > 0. and spread < 1.):
+            raise ValueError("Spread must be a probability")
+        
         MCMCSampler.__init__(self, distribution)
         
         self.kernel = kernel
         self.Z = Z
-        self.threshold=threshold
+        self.threshold = threshold
+        self.spread = spread
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
         s += "kernel=" + str(self.kernel)
         s += "threshold=" + str(self.threshold)
+        s += "spread=" + str(self.spread)
         s += ", " + MCMCSampler.__str__(self)
         s += "]"
         return s
@@ -84,7 +93,7 @@ class DiscreteKameleon(MCMCSampler):
         xor = thresholded_sum != y
         
         # return distribution object that adds noise to the xor point
-        pass
+        return DiscreteRandomWalkProposal(xor[0], self.spread)
     
     def adapt(self, mcmc_chain, step_output):
         """
