@@ -64,7 +64,7 @@ class BernoulliUnitTest(unittest.TestCase):
         for _ in range(100):
             n = randint(1, 10)
             k = randint(0, n)
-            self.assertEqual(round(exp(HelperFunctions.log_bin_coeff(n, k))), binom(n, k))
+            self.assertEqual(round(exp(HelperFunctions.log_bin_coeff(n, k))), round(binom(n, k)))
     
 if __name__ == "__main__":
     unittest.main()
