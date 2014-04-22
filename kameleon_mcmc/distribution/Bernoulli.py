@@ -78,7 +78,7 @@ class Bernoulli(Distribution):
         
         # this also enforce correct data ranges
         if X.dtype != numpy.bool8:
-            raise ValueError("X must be a bool numpy array")
+            raise ValueError("X must be a bool8 numpy array")
         
         if not X.shape[1] == self.dimension:
             raise ValueError("Dimension of X does not match own dimension")
