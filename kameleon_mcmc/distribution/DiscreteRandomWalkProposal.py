@@ -27,13 +27,12 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import log, arange, where, array
+from numpy import arange, where
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand, randint, permutation
 
 from kameleon_mcmc.distribution.Distribution import Distribution, Sample
-from libxml2 import pos_id
 
 
 class DiscreteRandomWalkProposal(Distribution):
