@@ -28,6 +28,7 @@ either expressed or implied, of the author.
 """
 
 import numpy
+from numpy.random import randn
 
 from kameleon_mcmc.distribution.Distribution import Distribution
 from kameleon_mcmc.kernel.Kernel import Kernel
@@ -38,7 +39,7 @@ class DiscreteKameleon(MCMCSampler):
     """
     Kameleon MCMC on discrete domains
     """
-    def __init__(self, distribution, kernel, Z):
+    def __init__(self, distribution, kernel, Z, threshold):
         if not isinstance(distribution, Distribution):
             raise TypeError("Target must be a Distribution object")
         
@@ -57,19 +58,32 @@ class DiscreteKameleon(MCMCSampler):
         if not Z.shape[0] > 0:
             raise ValueError("History must contain at least one point")
         
+        if not type(threshold) is float:
+            raise TypeError("Threshold must be a float")
+        
         MCMCSampler.__init__(self, distribution)
         
         self.kernel = kernel
         self.Z = Z
+        self.threshold=threshold
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
         s += "kernel=" + str(self.kernel)
+        s += "threshold=" + str(self.threshold)
         s += ", " + MCMCSampler.__str__(self)
         s += "]"
         return s
     
     def construct_proposal(self, y):
+        k = self.kernel.kernel(y, self.Z)
+        diff = y - self.Z
+        beta = randn(len(self.Z))
+        weighted_sum = sum((k * beta).T * diff, 0)
+        thresholded_sum = weighted_sum > self.threshold
+        xor = thresholded_sum != y
+        
+        # return distribution object that adds noise to the xor point
         pass
     
     def adapt(self, mcmc_chain, step_output):
@@ -77,3 +91,4 @@ class DiscreteKameleon(MCMCSampler):
         Nothing for this one since it uses oracle samples
         """
         pass
+    
