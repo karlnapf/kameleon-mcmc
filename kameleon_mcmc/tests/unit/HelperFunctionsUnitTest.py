@@ -28,7 +28,7 @@ either expressed or implied, of the author.
 """
 from numpy import exp
 from numpy.random import randint
-from scipy.special._ufuncs import binom
+from scipy.special import binom
 import unittest
 
 from kameleon_mcmc.tools.HelperFunctions import HelperFunctions
