@@ -27,13 +27,10 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import asarray
-from numpy import log, exp, inner, logaddexp
-import numpy
-from numpy.matlib import repmat
-from numpy.random import rand
 
-from kameleon_mcmc.distribution.Distribution import Distribution, Sample
+from numpy import zeros, inner, logaddexp
+import numpy
+from kameleon_mcmc.distribution.Distribution import Distribution
 
 
 class InfluenceCombination(Distribution):
@@ -46,7 +43,9 @@ class InfluenceCombination(Distribution):
             raise TypeError("bias must be a numpy array")
         if not len(bias.shape) is 1:
             raise TypeError("bias must be a 1D numpy array")
-            
+        if not bias.shape[0]==W.shape[0]:
+            raise ValueError("W and bias must have same zeroth dimension (# of hidden units)")
+        
         Distribution.__init__(self, W.shape[1])        
            
         self.W = W
