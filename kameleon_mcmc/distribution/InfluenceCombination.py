@@ -31,18 +31,13 @@ either expressed or implied, of the author.
 from numpy import zeros, inner, logaddexp
 import numpy
 from kameleon_mcmc.distribution.Distribution import Distribution
+from kameleon_mcmc.tools.GenericTests import GenericTests
 
 
 class InfluenceCombination(Distribution):
     def __init__(self, W, bias):
-        if not type(W) is numpy.ndarray:
-            raise TypeError("W must be a numpy array")
-        if not len(W.shape) is 2:
-            raise TypeError("W must be a 2D numpy array")
-        if not type(bias) is numpy.ndarray:
-            raise TypeError("bias must be a numpy array")
-        if not len(bias.shape) is 1:
-            raise TypeError("bias must be a 1D numpy array")
+        GenericTests.check_type(W,'W',numpy.ndarray,2)
+        GenericTests.check_type(bias,'bias',numpy.ndarray,1)
         if not bias.shape[0]==W.shape[0]:
             raise ValueError("W and bias must have same zeroth dimension (# of hidden units)")
         
@@ -66,12 +61,7 @@ class InfluenceCombination(Distribution):
         raise NotImplementedError()	
     
     def log_pdf(self, X):
-        if not type(X) is numpy.ndarray:
-            raise TypeError("X must be a numpy array")
-            
-        if not len(X.shape) is 2:
-            raise TypeError("X must be a 2D numpy array")
-            
+        GenericTests.check_type(X,'X',numpy.ndarray,2)
         # this also enforce correct data ranges
         if X.dtype != numpy.bool8:
             raise ValueError("X must be a bool8 numpy array")
