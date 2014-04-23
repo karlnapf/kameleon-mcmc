@@ -28,7 +28,7 @@ either expressed or implied, of the author.
 """
 
 from numpy import asarray
-from numpy import log, exp, inner
+from numpy import log, exp, inner, logaddexp
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand
@@ -83,6 +83,6 @@ class InfluenceCombination(Distribution):
         result = zeros(len(X))
         for i in range(len(X)):
             x_psk = [1-2*xx for xx in X[i]]
-            result[i]= sum([log(1+exp(inner(self.W[j],x_psk)+self.bias[j])) for j in range(self.num_hidden_units)])
+            result[i]= sum([logaddexp(0,inner(self.W[j],x_psk)+self.bias[j]) for j in range(self.num_hidden_units)])
         return result
 
