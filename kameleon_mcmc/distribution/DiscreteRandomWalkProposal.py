@@ -27,12 +27,13 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import arange, where
+from numpy import arange, where, zeros, log
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand, randint, permutation
 
 from kameleon_mcmc.distribution.Distribution import Distribution, Sample
+from kameleon_mcmc.tools.HelperFunctions import HelperFunctions
 
 
 class DiscreteRandomWalkProposal(Distribution):
@@ -77,23 +78,28 @@ class DiscreteRandomWalkProposal(Distribution):
         # copy mean vector a couple of times
         samples = repmat(self.mu, n, 1)
         
-        for n in range(n):
+        for i in range(n):
+            num_active = sum(self.mu)
+
             # sample Bernoulli to get number of changes
-            num_changes = sum(rand(self.dimension) < self.spread)
+            # N-1 Bernoulli trials, then add one afterwards
+            max_possible_change = min(num_active, self.dimension - num_active)
+            num_changes = sum(rand(max(max_possible_change - 1, 0)) < self.spread) + 1
             
             # sample action (add=0,del=1,swap=2), has some advantages to represent
             # like this, see below
             action = randint(0, 3)
             
             # check that adding/deleting the desired number is possible,
-            # truncate otherwise
-            num_pos = sum(self.mu)
-            if action is 0 and (num_changes + num_pos) > len(self.mu):
-                num_changes = len(self.mu) - num_pos
-            elif action is 1 and (num_changes > num_pos):
-                num_changes = num_pos
-            elif action is 2 and num_changes > min(num_pos, self.dimension - num_pos):
-                num_changes = min(num_pos, self.dimension - num_pos)
+            # truncate otherwise, this is needed because if all elements are active
+            # then adding is not possible, but we always have at least one change
+            # this is a hack and we should email the authors about this
+            if action is 0 and (num_changes + num_active) > self.dimension:
+                num_changes = self.dimension - num_active
+            elif action is 1 and (num_changes > num_active):
+                num_changes = num_active
+            elif action is 2 and num_changes > max_possible_change:
+                num_changes = max_possible_change
                 
             # if no changes, directly return
             if num_changes == 0:
@@ -108,7 +114,7 @@ class DiscreteRandomWalkProposal(Distribution):
                 relevant_indices = where(self.mu == value_to_change)[0]
                 selected = permutation(arange(len(relevant_indices)))[:num_changes]
                 changes = relevant_indices[selected]
-                samples[n][changes] = 1
+                samples[i][changes] = 1
             elif action is 2:
                 # do action: swap
                 pos_indices = where(self.mu == 1)
@@ -117,8 +123,8 @@ class DiscreteRandomWalkProposal(Distribution):
                 selected_neg = permutation(arange(len(neg_indices)))[:num_changes]
                 changes_pos = pos_indices[selected_pos]
                 changes_neg = neg_indices[selected_neg]
-                samples[n][changes_pos] = 0
-                samples[n][changes_neg] = 1
+                samples[i][changes_pos] = 0
+                samples[i][changes_neg] = 1
             
         return Sample(samples)
     
@@ -129,12 +135,42 @@ class DiscreteRandomWalkProposal(Distribution):
         if not len(X.shape) is 2:
             raise TypeError("X must be a 2D numpy array")
         
-        # this also enforce correct data ranges
+        # this also enforces correct data ranges
         if X.dtype != numpy.bool8:
             raise ValueError("X must be a bool8 numpy array")
         
         if not X.shape[1] == self.dimension:
             raise ValueError("Dimension of X does not match own dimension")
 
-        return rand(len(X))
+        num_active_self = sum(self.mu)
+        num_active_X = sum(X, 0)
+        num_diff = abs(num_active_self - num_active_X)
+        max_possible_change = min(num_active_self, self.dimension - num_active_self)
+
+        # result vector
+        log_liks = zeros(len(X))
+        
+        # add shared term (same for all actions
+        shared_term = -log(3.) \
+                        + HelperFunctions.log_bin_coeff(max_possible_change - 1, num_diff - 1) \
+                        + (num_diff - 1) * log(self.spread) \
+                        + (max_possible_change - num_diff) * log(1 - self.spread)
+        log_liks += shared_term
+        
+        # compute action dependent log likelihood parts
+        for i in range(len(X)):
+            # find out which action was in between current and given point
+            if num_active_self == num_active_X[i]:
+                # swap
+                log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff) \
+                                - HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
+            else:
+                if num_active_self < num_active_X[i]:
+                    # add
+                    log_liks[i] -= HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
+                else:
+                    # del
+                    log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff)
+    
+        return log_liks
 
