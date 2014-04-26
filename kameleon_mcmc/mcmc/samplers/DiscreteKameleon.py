@@ -29,11 +29,12 @@ either expressed or implied, of the author.
 
 import numpy
 from numpy.random import randn
+from operator import xor
 
+from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 from kameleon_mcmc.distribution.Distribution import Distribution
 from kameleon_mcmc.kernel.Kernel import Kernel
 from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
-from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 
 
 class DiscreteKameleon(MCMCSampler):
@@ -84,16 +85,22 @@ class DiscreteKameleon(MCMCSampler):
         s += "]"
         return s
     
-    def construct_proposal(self, y):
+    def compute_xor_step(self, y):
         k = self.kernel.kernel(y, self.Z)
-        diff = y - self.Z
+        
+        # take care about bool8 overflows preventing larger values
+        diff = y.astype(numpy.int64)
+        diff = diff - self.Z
         beta = randn(len(self.Z))
         weighted_sum = sum((k * beta).T * diff, 0)
         thresholded_sum = weighted_sum > self.threshold
-        xor = thresholded_sum != y
+        return xor(thresholded_sum, y)[0]
+    
+    def construct_proposal(self, y):
+        xored = self.compute_xor_step(y)
         
         # return distribution object that adds noise to the xor point
-        return DiscreteRandomWalkProposal(xor[0], self.spread)
+        return DiscreteRandomWalkProposal(xored, self.spread)
     
     def adapt(self, mcmc_chain, step_output):
         """
