@@ -35,22 +35,32 @@ from kameleon_mcmc.tools.GenericTests import GenericTests
 
 
 class InfluenceCombination(Distribution):
-    def __init__(self, W, bias):
+    """
+    Defines a marginal distribution (up to proportionality)
+    of visible binary units x in a Restricted Boltzmann machine with
+    P(x,h)\propto exp(biasx'*x+biash'*x+h'*W*x)
+    """
+    def __init__(self, W, biasx, biash):
         GenericTests.check_type(W,'W',numpy.ndarray,2)
-        GenericTests.check_type(bias,'bias',numpy.ndarray,1)
-        if not bias.shape[0]==W.shape[0]:
-            raise ValueError("W and bias must have same zeroth dimension (# of hidden units)")
+        GenericTests.check_type(biasx,'biasx',numpy.ndarray,1)
+        GenericTests.check_type(biash,'biash',numpy.ndarray,1)
+        if not biash.shape[0]==W.shape[0]:
+            raise ValueError("dimensions of W and biash must agree along # of hidden units")
+        if not biasx.shape[0]==W.shape[1]:
+            raise ValueError("dimensions of W and biasx must agree along # of visible units")
         
-        Distribution.__init__(self, W.shape[1])        
-           
+        Distribution.__init__(self, W.shape[1])
+        
         self.W = W
-        self.bias = bias
+        self.biasx = biasx
+        self.biash = biash
         self.num_hidden_units = W.shape[0]
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
         s += "W=" + str(self.W)    
-        s += "bias=" + str(self.bias)
+        s += "biasx=" + str(self.biasx)
+        s += "biash=" + str(self.biash)
         s += ", " + Distribution.__str__(self)
         s += "]"
         return s
@@ -71,7 +81,6 @@ class InfluenceCombination(Distribution):
             
         result = zeros(len(X))
         for i in range(len(X)):
-            x_psk = [1-2*xx for xx in X[i]]
-            result[i]= sum([logaddexp(0,inner(self.W[j],x_psk)+self.bias[j]) for j in range(self.num_hidden_units)])
+            result[i]= inner(self.biasx,X[i])+ sum([logaddexp(0,inner(self.W[j],X[i])+self.biash[j]) for j in range(self.num_hidden_units)])
         return result
 

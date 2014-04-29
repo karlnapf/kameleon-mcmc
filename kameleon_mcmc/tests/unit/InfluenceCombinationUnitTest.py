@@ -39,42 +39,57 @@ from kameleon_mcmc.distribution.Distribution import Sample
 class InfluenceCombinationUnitTest(unittest.TestCase):
     def test_contructor_wrong_W_type_float(self):
         W = 0
-        bias = array([0, 0])
-        self.assertRaises(TypeError, InfluenceCombination, W, bias)
+        biasx = array([0, 0])
+        biash = array([0, 0])
+        self.assertRaises(TypeError, InfluenceCombination, W, biasx, biash)
         
     def test_contructor_wrong_W_type_none(self):
         W = None
-        bias = array([0, 0])
-        self.assertRaises(TypeError, InfluenceCombination, W, bias)
+        biasx = array([0, 0])
+        biash = array([0, 0])
+        self.assertRaises(TypeError, InfluenceCombination, W, biasx, biash)
         
-    def test_contructor_wrong_bias_type_float(self):
-        W = randn(3,10)
-        bias = 0
-        self.assertRaises(TypeError, InfluenceCombination, W, bias)
+    def test_contructor_wrong_biasx_type_float(self):
+        d = 10 #number of visible units
+        h = 3 #number of hidden units
+        W = randn(h,d)
+        biasx = 0
+        biash = randn(h)
+        self.assertRaises(TypeError, InfluenceCombination, W, biasx, biash)
         
-    def test_contructor_wrong_bias_type_none(self):
-        W = randn(3,10)
-        bias = None
-        self.assertRaises(TypeError, InfluenceCombination, W, bias)
+    def test_contructor_wrong_biasx_type_none(self):
+        d = 10 #number of visible units
+        h = 3 #number of hidden units
+        W = randn(h,d)
+        biasx = None
+        biash = randn(h)
+        self.assertRaises(TypeError, InfluenceCombination, W, biasx, biash)
         
-    def test_contructor_wrong_bias_dim(self):
-        W = randn(3,10)
-        bias = randn(3,1)
-        self.assertRaises(TypeError, InfluenceCombination, W, bias)
+    def test_contructor_wrong_biasx_dim(self):
+        d = 10 #number of visible units
+        h = 3 #number of hidden units
+        W = randn(h,d)
+        biasx = randn(d,1)
+        biash = randn(h)
+        self.assertRaises(TypeError, InfluenceCombination, W, biasx, biash)
         
-    def test_contructor_W_and_bias_dim_not_matching(self):
-        W = randn(3,10)
-        bias = randn(2)
-        self.assertRaises(ValueError, InfluenceCombination, W, bias)
+    def test_contructor_W_and_biasx_dim_not_matching(self):
+        d = 10 #number of visible units
+        h = 3 #number of hidden units
+        W = randn(h,d)
+        biasx = randn(d+1)
+        biash = randn(h)
+        self.assertRaises(ValueError, InfluenceCombination, W, biasx, biash)
         
     def test_log_pdf_many_no_checks(self):
-        d = 10
-        h = 3
-        n = 20
+        d = 10 #number of visible units
+        h = 3 #number of hidden units
         W = randn(h,d)
-        bias = randn(h)
+        biasx = randn(d)
+        biash = randn(h)
+        n = 20  #number of samples
         X = rand(n,d)<0.5
-        dist = InfluenceCombination(W,bias)
+        dist = InfluenceCombination(W,biasx,biash)
         log_probs = dist.log_pdf(X)
         #print log_probs
         
