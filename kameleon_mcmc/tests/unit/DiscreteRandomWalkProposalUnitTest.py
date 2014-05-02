@@ -29,6 +29,7 @@ either expressed or implied, of the author.
 
 from numpy import zeros, ones, asarray
 import numpy
+from numpy.linalg import norm
 from numpy.random import rand, randint
 import unittest
 
@@ -214,6 +215,43 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[1, 0], [0, 0]], dtype=numpy.bool8)
         self.assertEqual(dist.log_pdf(X).shape, (n,))
+        
+            
+    def test_log_pdf_1n_1d(self):
+        mu = asarray([0], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(1) + numpy.nan
+        self.assertAlmostEqual(norm(result - expected), 0)
+        #
+    def test_log_pdf_2n_1d(self):
+        mu = asarray([0], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1], [0]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(2) + numpy.nan
+        self.assertAlmostEqual(norm(result - expected), 0)
+        
+    def test_log_pdf_1n_2d(self):
+        mu = asarray([0, 1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1, 1]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(1) + numpy.nan
+        self.assertAlmostEqual(norm(result - expected), 0)
+        
+    def test_log_pdf_2n_2d(self):
+        mu = asarray([0, 1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1, 1], [0, 1]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(2) + numpy.nan
+        self.assertAlmostEqual(norm(result - expected), 0)
 
 if __name__ == "__main__":
     unittest.main()
