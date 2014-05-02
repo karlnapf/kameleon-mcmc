@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import arange, where, zeros, log
+from numpy import arange, where, zeros, log, sum
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand, randint, permutation
@@ -142,8 +142,10 @@ class DiscreteRandomWalkProposal(Distribution):
         if not X.shape[1] == self.dimension:
             raise ValueError("Dimension of X does not match own dimension")
 
+        # this is one per number of points in X
+        num_active_X = sum(X, 1)
+
         num_active_self = sum(self.mu)
-        num_active_X = sum(X, 0)
         num_diff = abs(num_active_self - num_active_X)
         max_possible_change = min(num_active_self, self.dimension - num_active_self)
 
@@ -151,26 +153,29 @@ class DiscreteRandomWalkProposal(Distribution):
         log_liks = zeros(len(X))
         
         # add shared term (same for all actions
-        shared_term = -log(3.) \
+        # TODO discuss the problem binomial positivity violation with Dino
+        shared_terms = -log(3.) \
                         + HelperFunctions.log_bin_coeff(max_possible_change - 1, num_diff - 1) \
                         + (num_diff - 1) * log(self.spread) \
-                        + (max_possible_change - num_diff) * log(1 - self.spread)
-        log_liks += shared_term
+                        + (max_possible_change - num_diff) * log(1 - self.spread) if max_possible_change > 0 \
+                        else zeros(len(X))
+                        
+        log_liks += shared_terms
         
         # compute action dependent log likelihood parts
         for i in range(len(X)):
             # find out which action was in between current and given point
             if num_active_self == num_active_X[i]:
                 # swap
-                log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff) \
-                                - HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
+                log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff[i]) \
+                                - HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff[i])
             else:
                 if num_active_self < num_active_X[i]:
                     # add
-                    log_liks[i] -= HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
+                    log_liks[i] -= HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff[i])
                 else:
                     # del
-                    log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff)
+                    log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff[i])
     
         return log_liks
 
