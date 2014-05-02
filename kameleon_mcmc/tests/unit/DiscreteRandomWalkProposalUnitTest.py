@@ -175,22 +175,45 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         spread = .5
         dist = DiscreteRandomWalkProposal(mu, spread)
         self.assertRaises(ValueError, dist.log_pdf, zeros((1, 3)))
-         
+          
     def test_log_pdf_type(self):
-        d = 2
-        mu = randint(0, 2, d).astype(numpy.bool8)
+        mu = asarray([0], dtype=numpy.bool8)
         spread = .5
         dist = DiscreteRandomWalkProposal(mu, spread)
-        self.assertEqual(type(dist.log_pdf(asarray([[1, 2]], dtype=numpy.bool8))), numpy.ndarray)
+        X = asarray([[0]], dtype=numpy.bool8)
+        self.assertEqual(type(dist.log_pdf(X)), numpy.ndarray)
      
-    def test_log_pdf_array_dimension(self):
-        d = 2
-        n = randint(1, 19)
-        mu = randint(0, 2, d).astype(numpy.bool8)
+    def test_log_pdf_returned_array_dimension_1d_X(self):
+        n = 1
+        mu = asarray([0], dtype=numpy.bool8)
         spread = .5
         dist = DiscreteRandomWalkProposal(mu, spread)
-        X = randint(0, 2, (n, d)).astype(numpy.bool8)
+        X = asarray([[0]], dtype=numpy.bool8)
         self.assertEqual(dist.log_pdf(X).shape, (n,))
-         
+        
+    def test_log_pdf_returned_array_dimension_2d_X(self):
+        n = 1
+        mu = asarray([0, 0], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[0, 1]], dtype=numpy.bool8)
+        self.assertEqual(dist.log_pdf(X).shape, (n,))
+        
+    def test_log_pdf_returned_array_dimension_multiple_X_1d(self):
+        n = 2
+        mu = asarray([0], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1], [0]], dtype=numpy.bool8)
+        self.assertEqual(dist.log_pdf(X).shape, (n,))
+        
+    def test_log_pdf_returned_array_dimension_multiple_X_2d(self):
+        n = 2
+        mu = asarray([0, 1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1, 0], [0, 0]], dtype=numpy.bool8)
+        self.assertEqual(dist.log_pdf(X).shape, (n,))
+
 if __name__ == "__main__":
     unittest.main()
