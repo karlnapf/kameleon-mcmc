@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros
+from numpy import zeros, mean
 import numpy
 from numpy.linalg.linalg import norm
 from numpy.random import rand, randint
@@ -36,9 +36,11 @@ from tempfile import NamedTemporaryFile
 import unittest
 
 from kameleon_mcmc.distribution.Bernoulli import Bernoulli
-from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
-from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
 from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
+from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
+from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
+from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
 
 
 class DiscreteKameleonUnitTest(unittest.TestCase):
@@ -49,7 +51,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(TypeError, DiscreteKameleon, None, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_kernel_type(self):
@@ -58,7 +60,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         Z = zeros((2, distribution.dimension))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(TypeError, DiscreteKameleon, distribution, None, Z, threshold, spread)
         
     def test_contructor_wrong_Z_type(self):
@@ -67,7 +69,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         kernel = HypercubeKernel(1.)
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(TypeError, DiscreteKameleon, distribution, kernel, None, threshold, spread)
         
     def test_contructor_wrong_threshold_type(self):
@@ -76,7 +78,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         distribution = Bernoulli(ps)
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
-        spread=0.5
+        spread = 0.5
         self.assertRaises(TypeError, DiscreteKameleon, distribution, kernel, Z, None, spread)
         
     def test_contructor_wrong_Z_array_dimension_too_small(self):
@@ -86,7 +88,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros(distribution.dimension)
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_array_dimension_too_large(self):
@@ -96,7 +98,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension, 3))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_dimension_too_small(self):
@@ -106,7 +108,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension - 1))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_dimension_too_big(self):
@@ -116,7 +118,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension + 1))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor_wrong_Z_length(self):
@@ -126,7 +128,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((0, distribution.dimension + 1))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         self.assertRaises(ValueError, DiscreteKameleon, distribution, kernel, Z, threshold, spread)
         
     def test_contructor(self):
@@ -136,7 +138,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = zeros((2, distribution.dimension))
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
         self.assertEqual(sampler.distribution, distribution)
         self.assertEqual(sampler.kernel, kernel)
@@ -187,14 +189,39 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         kernel = HypercubeKernel(1.)
         Z = randint(0, 2, (num_history, dimension)).astype(numpy.bool8)
         threshold = 0.5
-        spread=0.5
+        spread = 0.5
         sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
         
-        y = randint(0,2, dimension).astype(dtype=numpy.bool8)
-        p=sampler.construct_proposal(y)
+        y = randint(0, 2, dimension).astype(dtype=numpy.bool8)
+        p = sampler.construct_proposal(y)
         
         self.assertTrue(isinstance(p, DiscreteRandomWalkProposal))
         self.assertEqual(p.spread, spread)
+        
+    def test_chain_bernoulli(self):
+        # runs the sampler on a distribution of infdependent bernoulli variables
+        # and compares the mean
+        d = 5
+        ps = rand(d)
+        ps /= norm(ps)
+        distribution = Bernoulli(ps)
+        
+        num_history = 100
+        Z = distribution.sample(num_history).samples
+        threshold = 0.8
+        spread = 0.2
+        
+        gamma = 0.2
+        kernel = HypercubeKernel(gamma)
+        
+        mcmc_sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
+        
+        start = zeros(distribution.dimension, dtype=numpy.bool8)
+        mcmc_params = MCMCParams(start=start, num_iterations=1000)
+        chain = MCMCChain(mcmc_sampler, mcmc_params)
+    
+        chain.run()
+        self.assertAlmostEqual(norm(mean(chain.samples, 0) - ps), 0, delta=0.2)
         
 if __name__ == "__main__":
     unittest.main()
