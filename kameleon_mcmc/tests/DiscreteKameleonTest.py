@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros
+from numpy import zeros, mean
 import numpy
 from numpy.linalg import norm
 from numpy.random import rand
@@ -36,9 +36,9 @@ from kameleon_mcmc.distribution.Bernoulli import Bernoulli
 from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
 from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
 from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.DiscretePlottingOutput import DiscretePlottingOutput
 from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
 from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
-from kameleon_mcmc.mcmc.output.DiscretePlottingOutput import DiscretePlottingOutput
 
 
 def main():
@@ -58,11 +58,13 @@ def main():
     mcmc_sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
     
     start = zeros(distribution.dimension, dtype=numpy.bool8)
-    mcmc_params = MCMCParams(start=start, num_iterations=5000)
+    mcmc_params = MCMCParams(start=start, num_iterations=1000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True))
     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
     
     chain.run()
+    print "ps", ps
+    print "empirical", mean(chain.samples, 0)
 main()
