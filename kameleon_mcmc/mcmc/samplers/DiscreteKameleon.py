@@ -85,7 +85,7 @@ class DiscreteKameleon(MCMCSampler):
         s += "]"
         return s
     
-    def compute_xor_step(self, y):
+    def construct_proposal(self, y):
         k = self.kernel.kernel(y, self.Z)
         
         # take care about bool8 overflows preventing larger values
@@ -94,10 +94,7 @@ class DiscreteKameleon(MCMCSampler):
         beta = randn(len(self.Z))
         weighted_sum = sum((k * beta).T * diff, 0)
         thresholded_sum = weighted_sum > self.threshold
-        return xor(thresholded_sum, y)[0]
-    
-    def construct_proposal(self, y):
-        xored = self.compute_xor_step(y)
+        xored = xor(thresholded_sum, y)[0]
         
         # return distribution object that adds noise to the xor point
         return DiscreteRandomWalkProposal(xored, self.spread)

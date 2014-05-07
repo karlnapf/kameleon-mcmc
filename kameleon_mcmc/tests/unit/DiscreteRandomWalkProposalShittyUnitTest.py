@@ -27,99 +27,99 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros, ones, asarray, mean, log
+from numpy import zeros, ones, asarray
 import numpy
-from numpy.linalg.linalg import norm
+from numpy.linalg import norm
 from numpy.random import rand, randint
 import unittest
 
-from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
+from kameleon_mcmc.distribution.DiscreteRandomWalkProposalShitty import DiscreteRandomWalkProposalShitty
 from kameleon_mcmc.distribution.Distribution import Sample
 
 
-class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
+class DiscreteRandomWalkProposalShittyUnitTest(unittest.TestCase):
     def test_contructor_wrong_mu_type_float(self):
         mu = 0
         spread = 1.
-        self.assertRaises(TypeError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(TypeError, DiscreteRandomWalkProposalShitty, mu, spread)
         
     def test_contructor_wrong_mu_type_none(self):
         mu = None
         spread = 1.
-        self.assertRaises(TypeError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(TypeError, DiscreteRandomWalkProposalShitty, mu, spread)
 
     def test_contructor_wrong_mu_dim_too_large(self):
         mu = zeros((1, 2), dtype=numpy.bool8)
         spread = 1.
-        self.assertRaises(ValueError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(ValueError, DiscreteRandomWalkProposalShitty, mu, spread)
         
     def test_contructor_wrong_mu_dimension_0(self):
         mu = zeros(0, dtype=numpy.bool8)
         spread = 1.
-        self.assertRaises(ValueError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(ValueError, DiscreteRandomWalkProposalShitty, mu, spread)
         
     def test_contructor_wrong_spread_type_int(self):
         mu = zeros(2, dtype=numpy.bool8)
         spread = 1
-        self.assertRaises(TypeError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(TypeError, DiscreteRandomWalkProposalShitty, mu, spread)
                           
     def test_contructor_wrong_spread_type_none(self):
         mu = zeros(2, dtype=numpy.bool8)
         spread = None
-        self.assertRaises(TypeError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(TypeError, DiscreteRandomWalkProposalShitty, mu, spread)
         
     def test_contructor_wrong_spread_range_0(self):
         mu = ones(2, dtype=numpy.bool8)
         spread = 0.
-        self.assertRaises(ValueError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(ValueError, DiscreteRandomWalkProposalShitty, mu, spread)
         
     def test_contructor_wrong_spread_range_1(self):
         mu = ones(2, dtype=numpy.bool8)
         spread = 1.
-        self.assertRaises(ValueError, DiscreteRandomWalkProposal, mu, spread)
+        self.assertRaises(ValueError, DiscreteRandomWalkProposalShitty, mu, spread)
         
     def test_contructor_correct_mu(self):
         mu = ones(2, dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertTrue(mu is dist.mu)
         
     def test_contructor_correct_spread(self):
         mu = ones(2, dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertEqual(spread, dist.spread)
         
 #     
     def test_sample_wrong_n_sameller_zero(self):
         mu = randint(0, 2, 10).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(ValueError, dist.sample, -1)
      
     def test_sample_wrong_n_type_none(self):
         mu = randint(0, 2, 10).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(TypeError, dist.sample, None)
           
     def test_sample_wrong_n_type_float(self):
         mu = randint(0, 2, 10).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(TypeError, dist.sample, float(1.))
           
     def test_sample_type(self):
         mu = randint(0, 2, 10).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         s = dist.sample(1)
         self.assertTrue(isinstance(s, Sample))
           
     def test_sample_samples_dtype(self):
         mu = randint(0, 2, 10).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         s = dist.sample(1)
         self.assertEqual(s.samples.dtype, numpy.bool8)
           
@@ -128,7 +128,7 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         s = dist.sample(n)
         self.assertEqual(s.samples.shape, (n, d))
         
@@ -139,86 +139,48 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
             d = randint(1, 10)
             mu = randint(0, 2, d).astype(numpy.bool8)
             spread = rand()
-            dist = DiscreteRandomWalkProposal(mu, spread)
+            dist = DiscreteRandomWalkProposalShitty(mu, spread)
             dist.sample(n)
-            
-    def test_sample_many_no_spread(self):
-        n = 3
-        d = 5
-        mu = randint(0, 2, d).astype(numpy.bool8)
-        spread = 0.00000000001
-        dist = DiscreteRandomWalkProposal(mu, spread)
-        s = dist.sample(n).samples
-        
-        for i in range(n):
-            self.assertTrue(all(s[i] == mu))
-            
-    def test_sample_many_full_spread(self):
-        n = 3
-        d = 5
-        mu = randint(0, 2, d).astype(numpy.bool8)
-        spread = 0.99999999999
-        dist = DiscreteRandomWalkProposal(mu, spread)
-        s = dist.sample(n).samples
-        
-        for i in range(n):
-            self.assertTrue(all(s[i] != mu))
-            
-    def test_sample_many_half_spread(self):
-        n = 1000
-        d = 5
-        
-        for _ in range(100):
-            mu = randint(0, 2, d).astype(numpy.bool8)
-            spread = rand()
-            dist = DiscreteRandomWalkProposal(mu, spread)
-            s = dist.sample(n).samples
-            m = mean(s, 0)
-            for i in range(d):
-                # mean is either for positive of negative flip
-                # direction of flip is covered by other tests
-                diff = min(abs(m[i] - spread), abs(m[i] - 1 + spread))
-                self.assertAlmostEqual(diff, 0, delta=0.07) 
-        
+#                 
     def test_log_pdf_wrong_type_none(self):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(TypeError, dist.log_pdf, None)
          
     def test_log_pdf_wrong_type_float(self):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(TypeError, dist.log_pdf, float(1.))
          
     def test_log_pdf_wrong_array_dimension_1(self):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(TypeError, dist.log_pdf, zeros(1))
          
     def test_log_pdf_wrong_array_dimension_3(self):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(TypeError, dist.log_pdf, zeros(3))
          
     def test_log_pdf_wrong_dimension(self):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         self.assertRaises(ValueError, dist.log_pdf, zeros((1, 3)))
           
     def test_log_pdf_type(self):
         mu = asarray([0], dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[0]], dtype=numpy.bool8)
         self.assertEqual(type(dist.log_pdf(X)), numpy.ndarray)
      
@@ -226,7 +188,7 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         n = 1
         mu = asarray([0], dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[0]], dtype=numpy.bool8)
         self.assertEqual(dist.log_pdf(X).shape, (n,))
         
@@ -234,7 +196,7 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         n = 1
         mu = asarray([0, 0], dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[0, 1]], dtype=numpy.bool8)
         self.assertEqual(dist.log_pdf(X).shape, (n,))
         
@@ -242,7 +204,7 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         n = 2
         mu = asarray([0], dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[1], [0]], dtype=numpy.bool8)
         self.assertEqual(dist.log_pdf(X).shape, (n,))
         
@@ -250,39 +212,64 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         n = 2
         mu = asarray([0, 1], dtype=numpy.bool8)
         spread = .5
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[1, 0], [0, 0]], dtype=numpy.bool8)
         self.assertEqual(dist.log_pdf(X).shape, (n,))
-    
-    def test_log_pdf_no_change(self):
-        mu = asarray([0], dtype=numpy.bool8)
-        spread = rand()
-        dist = DiscreteRandomWalkProposal(mu, spread)
-        X = asarray([[0]], dtype=numpy.bool8)
-        self.assertAlmostEqual(dist.log_pdf(X), log(1 - spread))
         
-    def test_log_pdf_1d_1n_change(self):
+            
+    def test_log_pdf_1n_1d_add(self):
         mu = asarray([0], dtype=numpy.bool8)
-        spread = rand()
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        spread = .5
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[1]], dtype=numpy.bool8)
-        self.assertAlmostEqual(dist.log_pdf(X), log(spread))
+        result = dist.log_pdf(X)
+        expected = zeros(1) + numpy.nan
+#         self.assertAlmostEqual(norm(result - expected), 0)
         
-    def test_log_pdf_2d_1n_change(self):
-        mu = asarray([0, 0], dtype=numpy.bool8)
-        spread = rand()
-        dist = DiscreteRandomWalkProposal(mu, spread)
-        X = asarray([[1, 1]], dtype=numpy.bool8)
-        self.assertAlmostEqual(dist.log_pdf(X), 2 * log(spread))
+    def test_log_pdf_1n_1d_swap(self):
+        mu = asarray([1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
+        X = asarray([[1]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(1) + numpy.nan
+#         self.assertAlmostEqual(norm(result - expected), 0)
+
+    def test_log_pdf_1n_1d_del(self):
+        mu = asarray([1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
+        X = asarray([[0]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(1) + numpy.nan
+#         self.assertAlmostEqual(norm(result - expected), 0)
         
-    def test_log_pdf_1d_2n(self):
+    def test_log_pdf_2n_1d_add(self):
         mu = asarray([0], dtype=numpy.bool8)
-        spread = rand()
-        dist = DiscreteRandomWalkProposal(mu, spread)
+        spread = .5
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
         X = asarray([[1], [0]], dtype=numpy.bool8)
-        log_liks = dist.log_pdf(X)
-        expected = asarray([log(spread), log(1 - spread)])
-        self.assertAlmostEqual(norm(log_liks - expected), 0)
+        result = dist.log_pdf(X)
+        expected = zeros(2) + numpy.nan
+#         self.assertAlmostEqual(norm(result - expected), 0)
         
+    def test_log_pdf_1n_2d(self):
+        mu = asarray([0, 1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
+        X = asarray([[1, 1]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(1) + numpy.nan
+#         self.assertAlmostEqual(norm(result - expected), 0)
+        
+    def test_log_pdf_2n_2d(self):
+        mu = asarray([0, 1], dtype=numpy.bool8)
+        spread = .5
+        dist = DiscreteRandomWalkProposalShitty(mu, spread)
+        X = asarray([[1, 1], [0, 1]], dtype=numpy.bool8)
+        result = dist.log_pdf(X)
+        expected = zeros(2) + numpy.nan
+#         self.assertAlmostEqual(norm(result - expected), 0)
+
 if __name__ == "__main__":
     unittest.main()

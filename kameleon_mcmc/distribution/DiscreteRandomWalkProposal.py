@@ -27,13 +27,12 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import arange, where, zeros, log, sum
+from numpy import mod, log
 import numpy
 from numpy.matlib import repmat
-from numpy.random import rand, randint, permutation
+from numpy.random import rand
 
 from kameleon_mcmc.distribution.Distribution import Distribution, Sample
-from kameleon_mcmc.tools.HelperFunctions import HelperFunctions
 
 
 class DiscreteRandomWalkProposal(Distribution):
@@ -78,54 +77,12 @@ class DiscreteRandomWalkProposal(Distribution):
         # copy mean vector a couple of times
         samples = repmat(self.mu, n, 1)
         
-        for i in range(n):
-            num_active = sum(self.mu)
-
-            # sample Bernoulli to get number of changes
-            # N-1 Bernoulli trials, then add one afterwards
-            max_possible_change = min(num_active, self.dimension - num_active)
-            num_changes = sum(rand(max(max_possible_change - 1, 0)) < self.spread) + 1
-            
-            # sample action (add=0,del=1,swap=2), has some advantages to represent
-            # like this, see below
-            action = randint(0, 3)
-            
-            # check that adding/deleting the desired number is possible,
-            # truncate otherwise, this is needed because if all elements are active
-            # then adding is not possible, but we always have at least one change
-            # this is a hack and we should email the authors about this
-            if action is 0 and (num_changes + num_active) > self.dimension:
-                num_changes = self.dimension - num_active
-            elif action is 1 and (num_changes > num_active):
-                num_changes = num_active
-            elif action is 2 and num_changes > max_possible_change:
-                num_changes = max_possible_change
-                
-            # if no changes, directly return
-            if num_changes == 0:
-                return Sample(samples)
-            
-            # do action, since we chacked the number of changes above, no checks here
-            if action is 0 or action is 1:
-                # do action: add/delete
-                # add or delete is almost the same, below changes only the value in
-                # the mean vector to look for
-                value_to_change = (action == 1)
-                relevant_indices = where(self.mu == value_to_change)[0]
-                selected = permutation(arange(len(relevant_indices)))[:num_changes]
-                changes = relevant_indices[selected]
-                samples[i][changes] = 1
-            elif action is 2:
-                # do action: swap
-                pos_indices = where(self.mu == 1)
-                neg_indices = where(self.mu == 0)
-                selected_pos = permutation(arange(len(pos_indices)))[:num_changes]
-                selected_neg = permutation(arange(len(neg_indices)))[:num_changes]
-                changes_pos = pos_indices[selected_pos]
-                changes_neg = neg_indices[selected_neg]
-                samples[i][changes_pos] = 0
-                samples[i][changes_neg] = 1
-            
+        # indices to flip, evenly distributed and the change probability is Bernoulli
+        change_inds = rand(n, self.dimension) < self.spread
+        
+        # flip all chosen indices
+        samples[change_inds] = mod(samples[change_inds] + 1, 2)
+        
         return Sample(samples)
     
     def log_pdf(self, X):
@@ -142,40 +99,9 @@ class DiscreteRandomWalkProposal(Distribution):
         if not X.shape[1] == self.dimension:
             raise ValueError("Dimension of X does not match own dimension")
 
-        # this is one per number of points in X
-        num_active_X = sum(X, 1)
+        # hamming distance for all elements in X
+        d = sum(X != self.mu, 1)
 
-        num_active_self = sum(self.mu)
-        num_diff = abs(num_active_self - num_active_X)
-        max_possible_change = min(num_active_self, self.dimension - num_active_self)
-
-        # result vector
-        log_liks = zeros(len(X))
-        
-        # add shared term (same for all actions
-        # TODO discuss the problem binomial positivity violation with Dino
-        shared_terms = -log(3.) \
-                        + HelperFunctions.log_bin_coeff(max_possible_change - 1, num_diff - 1) \
-                        + (num_diff - 1) * log(self.spread) \
-                        + (max_possible_change - num_diff) * log(1 - self.spread) if max_possible_change > 0 \
-                        else zeros(len(X))
-                        
-        log_liks += shared_terms
-        
-        # compute action dependent log likelihood parts
-        for i in range(len(X)):
-            # find out which action was in between current and given point
-            if num_active_self == num_active_X[i]:
-                # swap
-                log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff[i]) \
-                                - HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff[i])
-            else:
-                if num_active_self < num_active_X[i]:
-                    # add
-                    log_liks[i] -= HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff[i])
-                else:
-                    # del
-                    log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff[i])
-    
-        return log_liks
+        # simple binomial probability, where the normaliser cancel
+        return d * log(self.spread) + (self.dimension - d) * log(1 - self.spread)
 
