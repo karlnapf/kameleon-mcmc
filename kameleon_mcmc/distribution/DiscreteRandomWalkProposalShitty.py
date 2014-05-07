@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import arange, where, zeros, log, sum, bool8
+from numpy import arange, where, zeros, log, sum
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand, randint, permutation
