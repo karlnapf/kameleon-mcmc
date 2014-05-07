@@ -27,42 +27,42 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros
-import numpy
-from numpy.linalg import norm
-from numpy.random import rand
+from matplotlib.pyplot import subplot, plot,title, show, \
+    draw, clf, figure, suptitle, ion, ylim
+from numpy.ma.core import sqrt
 
-from kameleon_mcmc.distribution.Bernoulli import Bernoulli
-from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
-from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
-from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
-from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
-from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
-from kameleon_mcmc.mcmc.output.DiscretePlottingOutput import DiscretePlottingOutput
+from kameleon_mcmc.mcmc.output.Output import Output
 
 
-def main():
-    d = 5
-    ps = rand(d)
-    ps /= norm(ps)
-    distribution = Bernoulli(ps)
+class DiscretePlottingOutput(Output):
+    def __init__(self, plot_from=0, lag=1):
+        ion()
+        self.plot_from = plot_from
+        self.lag = lag
     
-    num_history = 100
-    Z = distribution.sample(num_history).samples
-    threshold = 0.8
-    spread = 0.2
+    def update(self, mcmc_chain, step_output):
+        if mcmc_chain.iteration > self.plot_from and mcmc_chain.iteration % self.lag == 0:
+            
+            # plot "traces"
+            num_plots = mcmc_chain.mcmc_sampler.distribution.dimension
+            samples = mcmc_chain.samples[0:mcmc_chain.iteration]
+            likelihoods = mcmc_chain.log_liks[0:mcmc_chain.iteration]
+            num_y = round(sqrt(num_plots))
+            num_x = num_plots / num_y + 1
+            for i in range(num_plots):
+                subplot(num_y, num_x, i + 1)
+                plot(samples[:, i], 'b.')
+                ylim([-0.2, 1.2])
+                title("Trace $x_" + str(i) + "$")
+                
+            subplot(num_y, num_x, num_plots + 1)
+            plot(likelihoods)
+            title("Log-Likelihood")
+                
+            suptitle(mcmc_chain.mcmc_sampler.__class__.__name__)
+            show()
+            draw()
+            clf()
     
-    gamma = 0.2
-    kernel = HypercubeKernel(gamma)
-    
-    mcmc_sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
-    
-    start = zeros(distribution.dimension, dtype=numpy.bool8)
-    mcmc_params = MCMCParams(start=start, num_iterations=5000)
-    chain = MCMCChain(mcmc_sampler, mcmc_params)
-    
-    chain.append_mcmc_output(StatisticsOutput(plot_times=True))
-    chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
-    
-    chain.run()
-main()
+    def prepare(self):
+        figure(figsize=(18, 10))
