@@ -190,7 +190,7 @@ class DiscreteKameleonUnitTest(unittest.TestCase):
         spread=0.5
         sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
         
-        y = randint(0,2, (1, dimension)).astype(dtype=numpy.bool8)
+        y = randint(0,2, dimension).astype(dtype=numpy.bool8)
         p=sampler.construct_proposal(y)
         
         self.assertTrue(isinstance(p, DiscreteRandomWalkProposal))

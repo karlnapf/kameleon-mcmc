@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import mod, log
+from numpy import mod, log, sum
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand
@@ -100,8 +100,8 @@ class DiscreteRandomWalkProposal(Distribution):
             raise ValueError("Dimension of X does not match own dimension")
 
         # hamming distance for all elements in X
-        d = sum(X != self.mu, 1)
+        k = sum(X != self.mu, 1)
 
         # simple binomial probability, where the normaliser cancel
-        return d * log(self.spread) + (self.dimension - d) * log(1 - self.spread)
+        return k * log(self.spread) + (self.dimension - k) * log(1 - self.spread)
 

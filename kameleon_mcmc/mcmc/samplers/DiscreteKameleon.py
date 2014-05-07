@@ -27,9 +27,9 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
+from numpy import logical_xor, sum
 import numpy
 from numpy.random import randn
-from operator import xor
 
 from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 from kameleon_mcmc.distribution.Distribution import Distribution
@@ -86,7 +86,7 @@ class DiscreteKameleon(MCMCSampler):
         return s
     
     def construct_proposal(self, y):
-        k = self.kernel.kernel(y, self.Z)
+        k = self.kernel.kernel(y.reshape(1,len(y)), self.Z)
         
         # take care about bool8 overflows preventing larger values
         diff = y.astype(numpy.int64)
@@ -94,7 +94,7 @@ class DiscreteKameleon(MCMCSampler):
         beta = randn(len(self.Z))
         weighted_sum = sum((k * beta).T * diff, 0)
         thresholded_sum = weighted_sum > self.threshold
-        xored = xor(thresholded_sum, y)[0]
+        xored = logical_xor(thresholded_sum, y)
         
         # return distribution object that adds noise to the xor point
         return DiscreteRandomWalkProposal(xored, self.spread)

@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros, ones, asarray, mean, log
+from numpy import zeros, ones, asarray, mean, log, sum
 import numpy
 from numpy.random import rand, randint
 import unittest
@@ -153,7 +153,7 @@ class BernoulliUnitTest(unittest.TestCase):
         ps = asarray(rand(d))
         b = Bernoulli(ps)
         X = randint(0, 2, (n, d)).astype(numpy.bool8)
-        self.assertEqual(b.log_pdf(X).shape, (d,))
+        self.assertEqual(b.log_pdf(X).shape, (n,))
         
     def test_log_pdf_success_single(self):
         d = 1
@@ -185,7 +185,7 @@ class BernoulliUnitTest(unittest.TestCase):
                 for j in range(d):
                     expected[i, j] = log(ps[j]) if X[i, j] == 1 else log(1 - ps[j])
                     
-            self.assertTrue(all(sum(expected, 0) == b.log_pdf(X)))
+            self.assertTrue(all(sum(expected, 1) == b.log_pdf(X)))
         
 if __name__ == "__main__":
     unittest.main()

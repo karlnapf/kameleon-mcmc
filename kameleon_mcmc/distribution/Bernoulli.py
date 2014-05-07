@@ -27,8 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import asarray
-from numpy import log
+from numpy import asarray, log, sum
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand
@@ -87,5 +86,5 @@ class Bernoulli(Distribution):
         idx = X == 0
         result[idx] = 1 - result[idx]
         
-        return sum(log(result), 0)
+        return sum(log(result), 1)
 

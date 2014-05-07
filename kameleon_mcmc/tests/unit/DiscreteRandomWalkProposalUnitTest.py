@@ -266,14 +266,15 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         spread = rand()
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[1]], dtype=numpy.bool8)
-        self.assertAlmostEqual(dist.log_pdf(X), log(spread))
+        expected = log(spread)
+        self.assertAlmostEqual(dist.log_pdf(X), expected)
         
     def test_log_pdf_2d_1n_change(self):
         mu = asarray([0, 0], dtype=numpy.bool8)
         spread = rand()
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[1, 1]], dtype=numpy.bool8)
-        self.assertAlmostEqual(dist.log_pdf(X), 2 * log(spread))
+        self.assertTrue(all(dist.log_pdf(X) == 2 * log(spread)))
         
     def test_log_pdf_1d_2n(self):
         mu = asarray([0], dtype=numpy.bool8)
