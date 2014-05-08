@@ -29,6 +29,7 @@ either expressed or implied, of the author.
 
 from matplotlib.pyplot import subplot, plot,title, show, \
     draw, clf, figure, suptitle, ion, ylim
+from numpy import mean
 from numpy.ma.core import sqrt
 
 from kameleon_mcmc.mcmc.output.Output import Output
@@ -53,7 +54,7 @@ class DiscretePlottingOutput(Output):
                 subplot(num_y, num_x, i + 1)
                 plot(samples[:, i], 'b.')
                 ylim([-0.2, 1.2])
-                title("Trace $x_" + str(i) + "$")
+                title("Trace $x_" + str(i) + "$. Mean: %f" % mean(samples[:, i]))
                 
             subplot(num_y, num_x, num_plots + 1)
             plot(likelihoods)
