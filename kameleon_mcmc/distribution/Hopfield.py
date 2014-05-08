@@ -28,8 +28,9 @@ either expressed or implied, of the author.
 """
 
 
-from numpy import zeros, inner, diag
+from numpy import zeros, inner, diag, allclose
 import numpy
+
 from kameleon_mcmc.distribution.Distribution import Distribution
 from kameleon_mcmc.tools.GenericTests import GenericTests
 
@@ -40,16 +41,21 @@ class Hopfield(Distribution):
     (unrestricted Boltzmann machine) with P(x)\propto exp(x'*bias + x'*W*x)
     """
     def __init__(self, W, bias):
-        GenericTests.check_type(W,'W',numpy.ndarray,2)
-        GenericTests.check_type(bias,'bias',numpy.ndarray,1)
-        if not W.shape[0]==W.shape[1]:
+        GenericTests.check_type(W, 'W', numpy.ndarray, 2)
+        GenericTests.check_type(bias, 'bias', numpy.ndarray, 1)
+        
+        if not W.shape[0] == W.shape[1]:
             raise ValueError("W must be square")
-        if not bias.shape[0]==W.shape[0]:
+        
+        if not bias.shape[0] == W.shape[0]:
             raise ValueError("dimensions of W and bias must agree")
-        if not all(diag(W)==0):
+        
+        if not all(diag(W) == 0):
             raise ValueError("W must have zeros along the diagonal")
-        if not all(W==W.T):
+        
+        if not allclose(W, W.T):
             raise ValueError("W must be symmetric")
+        
         Distribution.__init__(self, W.shape[0])
         
         self.W = W
@@ -69,7 +75,7 @@ class Hopfield(Distribution):
         raise NotImplementedError()	
     
     def log_pdf(self, X):
-        GenericTests.check_type(X,'X',numpy.ndarray,2)
+        GenericTests.check_type(X, 'X', numpy.ndarray, 2)
         # this also enforces correct data ranges
         if X.dtype != numpy.bool8:
             raise ValueError("X must be a bool8 numpy array")
@@ -79,6 +85,6 @@ class Hopfield(Distribution):
             
         result = zeros(len(X))
         for i in range(len(X)):
-            result[i]= inner(X[i],self.bias + self.W.dot(X[i]))
+            result[i] = inner(X[i], self.bias + self.W.dot(X[i]))
         return result
 
