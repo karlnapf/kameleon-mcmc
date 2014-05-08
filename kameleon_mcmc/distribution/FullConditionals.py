@@ -109,12 +109,18 @@ class FullConditionals(Distribution):
         return self.sample_conditional(self.index_block[self.current_idx])
     
     def log_pdf(self, X):
-        # for embedding this in the MH sampler, we always return 1 here to accept
-        # all samples
+        """
+        For embedding this in the MH sampler, we always return 1 here to accept
+        all samples.
+        """
         return ones(len(X))
     
     @abstractmethod
     def sample_conditional(self, index):
+        """
+        The concrete full conditional distributions (and sampling from them)
+        is implemented in sub-classes.
+        """
         if index < 0 or index >= self.dimension:
             raise ValueError("Conditional index out of bounds")
         
