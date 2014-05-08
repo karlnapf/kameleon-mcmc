@@ -49,16 +49,23 @@ class FullConditionals(Distribution):
     """
     schedules = ["in_turns", "random_permutation", "random_repetition"]
     
-    def __init__(self, dimension, schedule, index_block=None):
+    def __init__(self, current_state, schedule, index_block=None):
         """
-        schedule - Schedule for variables
-        index_block - If schedule is "in_turns", this can specify the order.
-                      If not specified, arange(dimension) is used
+        current_state - Current point of the Gibbs sampler
+        schedule      - Schedule for variables
+        index_block   - If schedule is "in_turns", this can specify the order.
+                        If not specified, arange(dimension) is used
         """
-        Distribution.__init__(self, dimension)
+        if not type(current_state) is numpy.ndarray:
+            raise TypeError("Current state must by numpy array")
+        
+        if not len(current_state.shape) is 1:
+            raise ValueError("Current state must by 1D numpy array")
+        
+        Distribution.__init__(self, len(current_state))
         
         if index_block is None:
-            index_block = arange(dimension)
+            index_block = arange(self.dimension)
         
         if not type(schedule) is type(""):
             raise TypeError("Schedule must be a string") 
@@ -75,9 +82,10 @@ class FullConditionals(Distribution):
         if not index_block.dtype is numpy.int:
             raise ValueError("Index block must by int numpy array")
         
-        if not len(index_block) is dimension:
+        if not len(index_block) is self.dimension:
             raise ValueError("Index block must be of same dimension as distribution")
         
+        self.current_state = current_state
         self.schedule = schedule
         self.index_block = index_block
         
@@ -86,7 +94,8 @@ class FullConditionals(Distribution):
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "schedule=" + str(self.schedule)
+        s += "current_state=" + str(self.current_state)
+        s += ", schedule=" + str(self.schedule)
         s += ", index_block=" + str(self.index_block)
         s += ", current_idx=" + str(self.current_idx)
         s += ", " + Distribution.__str__(self)
@@ -104,9 +113,14 @@ class FullConditionals(Distribution):
             elif self.schedule == "random_repetition":
                 self.index_block = randint(0, self.dimension, self.dimension)
             
-        # return conditional a
+        # update current index
         self.current_idx = mod(self.current_idx + 1, self.dimension)
-        return self.sample_conditional(self.index_block[self.current_idx])
+        idx = self.index_block[self.current_idx]
+
+        # update current state at scheduled index and return a copy
+        self.current_state[idx] = self.sample_conditional(idx)
+        
+        return self.current_state.copy()
     
     def log_pdf(self, X):
         """
@@ -120,6 +134,8 @@ class FullConditionals(Distribution):
         """
         The concrete full conditional distributions (and sampling from them)
         is implemented in sub-classes.
+        
+        index - Index to sample the full conditional of given all the others
         """
         if index < 0 or index >= self.dimension:
             raise ValueError("Conditional index out of bounds")
