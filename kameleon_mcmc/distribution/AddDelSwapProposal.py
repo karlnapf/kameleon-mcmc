@@ -34,36 +34,33 @@ from numpy.random import rand, randint, permutation
 
 from kameleon_mcmc.distribution.Distribution import Distribution, Sample
 from kameleon_mcmc.tools.HelperFunctions import HelperFunctions
+from kameleon_mcmc.tools.GenericTests import GenericTests
 
 
-class DiscreteRandomWalkProposalShitty(Distribution):
-    def __init__(self, mu, spread):
-        if not type(mu) is numpy.ndarray:
-            raise TypeError("Mean vector must be a numpy array")
-        
-        if not len(mu.shape) == 1:
-            raise ValueError("Mean vector must be a 1D numpy array")
-        
-        if not len(mu) > 0:
-            raise ValueError("Mean vector dimension must be positive")
+class AddDelSwapProposal(Distribution):
+    def __init__(self, mu, spread, N):
+        GenericTests.check_type(mu, 'mu', numpy.ndarray, 1)
+        GenericTests.check_type(spread, 'spread', float)
+        GenericTests.check_type(N, 'N', int)
         
         if mu.dtype != numpy.bool8:
             raise ValueError("Mean must be a bool8 numpy array")
         
         Distribution.__init__(self, len(mu))
-
-        if not type(spread) is float:
-            raise TypeError("Spread must be a float")
+        
         
         if not (spread > 0. and spread < 1.):
             raise ValueError("Spread must be a probability")
         
         self.mu = mu
         self.spread = spread
+        self.N = N
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "spread=" + str(self.ps)
+        s += "mu=" + str(self.mu)
+        s += "spread=" + str(self.spread)
+        s += "N=" + str(self.N)
         s += ", " + Distribution.__str__(self)
         s += "]"
         return s
@@ -83,28 +80,34 @@ class DiscreteRandomWalkProposalShitty(Distribution):
 
             # sample Bernoulli to get number of changes
             # N-1 Bernoulli trials, then add one afterwards
-            max_possible_change = min(num_active, self.dimension - num_active)
-            num_changes = sum(rand(max(max_possible_change - 1, 0)) < self.spread) + 1
+            
+            num_changes = sum(rand(self.N-1) < self.spread) + 1
             
             # sample action (add=0,del=1,swap=2), has some advantages to represent
             # like this, see below
-            action = randint(0, 3)
+            # if less active states than changes, always add
+            if num_changes > num_active:
+                action = 0
+            # if less non-active states than changes, always delete
+            elif num_changes > self.dimension - num_active:
+                action = 1
+            else:
+                action = randint(0, 3)
             
             # check that adding/deleting the desired number is possible,
             # truncate otherwise, this is needed because if all elements are active
             # then adding is not possible, but we always have at least one change
             # this is a hack and we should email the authors about this
-            if action is 0 and (num_changes + num_active) > self.dimension:
-                num_changes = 0
-            elif action is 1 and (num_changes > num_active):
-                num_changes = 0
-            elif action is 2 and num_changes > max_possible_change:
-                num_changes = 0
-                
+            #if action is 0 and (num_changes + num_active) > self.dimension:
+            #    num_changes = 0
+            #elif action is 1 and (num_changes > num_active):
+            #    num_changes = 0
+            #elif action is 2 and num_changes > max_possible_change:
+            #    num_changes = 0
+            #
             # if no changes, directly return
-            if num_changes == 0:
-                return Sample(samples)
-            
+            #if num_changes == 0:
+            #    return Sample(samples)
             # do action, since we chacked the number of changes above, no checks here
             if action is 0 or action is 1:
                 # do action: add/delete
