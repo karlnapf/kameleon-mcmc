@@ -137,12 +137,11 @@ class AddDelSwapProposalUnitTest(unittest.TestCase):
             n = randint(1, 10)
             d = 10
             mu = randint(0, 2, d).astype(numpy.bool8)
-            print 'mu='
-            print mu
+            #print 'mu='
+            #print mu
             spread = rand()
             dist = AddDelSwapProposal(mu, spread)
-            print 'samples='
-            print dist.sample(n).samples
+            sample = dist.sample(n)
 #                 
     def test_log_pdf_wrong_type_none(self):
         d = 2

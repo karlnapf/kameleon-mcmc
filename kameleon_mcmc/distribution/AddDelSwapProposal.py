@@ -93,7 +93,10 @@ class AddDelSwapProposal(Distribution):
                 action = 1
             else:
                 action = randint(0, 3)
-            
+            #print 'action:'
+            #print action
+            #print 'num_changes:'
+            #print num_changes
             # check that adding/deleting the desired number is possible,
             # truncate otherwise, this is needed because if all elements are active
             # then adding is not possible, but we always have at least one change
@@ -119,15 +122,15 @@ class AddDelSwapProposal(Distribution):
                 samples[i][changes] = (action == 0)
             elif action is 2:
                 # do action: swap
-                pos_indices = where(self.mu == 1)
-                neg_indices = where(self.mu == 0)
+                pos_indices = where(self.mu == 1)[0]
+                neg_indices = where(self.mu == 0)[0]
                 selected_pos = permutation(arange(len(pos_indices)))[:num_changes]
                 selected_neg = permutation(arange(len(neg_indices)))[:num_changes]
                 changes_pos = pos_indices[selected_pos]
                 changes_neg = neg_indices[selected_neg]
                 samples[i][changes_pos] = 0
                 samples[i][changes_neg] = 1
-            
+            #print samples[i]
         return Sample(samples)
     
     def log_pdf(self, X):
