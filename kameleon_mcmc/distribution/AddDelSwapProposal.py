@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import arange, where, zeros, log, sum
+from numpy import arange, where, zeros, log, sum, inf
 import numpy
 from numpy.matlib import repmat
 from numpy.random import rand, randint, permutation
@@ -38,7 +38,7 @@ from kameleon_mcmc.tools.GenericTests import GenericTests
 
 
 class AddDelSwapProposal(Distribution):
-    def __init__(self, mu, spread, N):
+    def __init__(self, mu, spread, N=3):
         GenericTests.check_type(mu, 'mu', numpy.ndarray, 1)
         GenericTests.check_type(spread, 'spread', float)
         GenericTests.check_type(N, 'N', int)
@@ -145,7 +145,7 @@ class AddDelSwapProposal(Distribution):
             raise ValueError("Dimension of X does not match own dimension")
 
         num_active_self = sum(self.mu)
-        max_possible_change = min(num_active_self, self.dimension - num_active_self)
+        #max_possible_change = min(num_active_self, self.dimension - num_active_self)
         
         # result vector
         log_liks = zeros(len(X))
@@ -161,33 +161,37 @@ class AddDelSwapProposal(Distribution):
             num_diff = sum(self.mu != x)
             if num_active_self == num_active_x:
                 num_diff / 2
-            
-            # only implement cases that CAN be produce by the sample method
-            # ignore others (which would be -inf)
-            # two border cases: nothing changed - 2/3
-            #                   all zeros or ones and one change - 1/(3d)
-            if max_possible_change > 0:
-                log_liks[i] = -log(3.) \
-                            + HelperFunctions.log_bin_coeff(max_possible_change - 1, num_diff - 1) \
-                            + (num_diff - 1) * log(self.spread) \
-                            + (max_possible_change - num_diff) * log(1 - self.spread)
-                            
-                # non-shared terms
-                if num_active_self == num_active_x:
-                    # swap
-                    log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff) \
-                                 - HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
-                else:
-                    if num_active_self < num_active_x:
-                        # add
-                        log_liks[i] -= HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
-                    else:
-                        # del
-                        log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff)
-            elif num_diff == 0:
-                log_liks[i] = log(2.) - log(3.)
+                
+            if num_diff > self.N:
+                log_liks[i]=-inf
+                continue
+                
+            if num_active_self != num_active_x:
+                action = num_active_x < num_active_self
+                if not all(x[self.mu==action]==action):
+                    log_liks[i]=-inf
+                    continue
             else:
-                log_liks[i] = -log(3.) -log(self.dimension)
+                action = 2
+            
+            #shared-terms
+            log_liks[i] = HelperFunctions.log_bin_coeff(self.N - 1, num_diff - 1) \
+                            + (num_diff - 1) * log(self.spread) \
+                            + (self.N - num_diff) * log(1 - self.spread)
+            # if there was a freedom of action, use factor 1/3
+            if num_diff <= min(num_active_self,self.dimension-num_active_self):
+                log_liks[i] -= log(3)
+            # action-specific terms
+            if action == 0:
+                # add
+                log_liks[i] -= HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
+            elif action == 1:
+                # del
+                log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff)
+            elif action == 2:
+                # swap
+                log_liks[i] -= HelperFunctions.log_bin_coeff(num_active_self, num_diff) \
+                                 - HelperFunctions.log_bin_coeff(self.dimension - num_active_self, num_diff)
             
         return log_liks
 
