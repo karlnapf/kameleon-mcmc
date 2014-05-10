@@ -29,7 +29,7 @@ either expressed or implied, of the author.
 
 
 from kameleon_mcmc.kernel.Kernel import Kernel
-from numpy.ma.core import exp, shape, sqrt
+from numpy.ma.core import exp, shape, sqrt, reshape
 from scipy.spatial.distance import squareform, pdist, cdist
 from matplotlib.pyplot import show, imshow
 from kameleon_mcmc.distribution.Banana import Banana
@@ -40,7 +40,7 @@ from kameleon_mcmc.tools.GenericTests import GenericTests
 class MaternKernel(Kernel):
     def __init__(self, rho, nu=1.5, sigma=1.0):
         Kernel.__init__(self)
-        GenericTests.check_type(rho,'rho',float)
+        #GenericTests.check_type(rho,'rho',float)
         GenericTests.check_type(nu,'nu',float)
         GenericTests.check_type(sigma,'sigma',float)
         
@@ -79,13 +79,28 @@ class MaternKernel(Kernel):
         return K
     
     def gradient(self, x, Y):
-        raise NotImplementedError()
+        assert(len(shape(x))==1)
+        assert(len(shape(Y))==2)
+        assert(len(x)==shape(Y)[1])
+        
+        if self.nu==1.5 or self.nu==2.5:
+            x_2d=reshape(x, (1, len(x)))
+            lower_order_rho = self.rho * sqrt(2*(self.nu-1)) / sqrt(2*self.nu)
+            lower_order_kernel = MaternKernel(lower_order_rho,self.nu-1,self.sigma)
+            k = lower_order_kernel.kernel(x_2d, Y)
+            differences = Y - x
+            G = ( 1.0 / lower_order_rho ** 2 ) * (k.T * differences)
+            return G
+        else:
+            raise NotImplementedError()
     
 if __name__ == '__main__':
     distribution = Banana()
     Z = distribution.sample(50).samples
     Z2 = distribution.sample(50).samples
-    kernel = MaternKernel(5.0,nu=0.5, sigma=9.0)
+    kernel = MaternKernel(5.0, nu=1.5, sigma=2.0)
     K = kernel.kernel(Z, Z2)
     imshow(K, interpolation="nearest")
+    #G = kernel.gradient(Z[0],Z2)
+    #print G
     show()
