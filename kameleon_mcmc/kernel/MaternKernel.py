@@ -67,7 +67,10 @@ class MaternKernel(Kernel):
             GenericTests.check_type(Y,'Y',numpy.ndarray,2)
             assert(shape(X)[1]==shape(Y)[1])
             dists = cdist(X, Y, 'euclidean')
-        if self.nu==1.5:
+        if self.nu==0.5:
+            #for nu=1/2, Matern class corresponds to Ornstein-Uhlenbeck Process
+            K = (self.sigma**2.) * exp( -dists / self.rho )                 
+        elif self.nu==1.5:
             K = (self.sigma**2.) * (1+ sqrt(3.)*dists / self.rho) * exp( -sqrt(3.)*dists / self.rho )
         elif self.nu==2.5:
             K = (self.sigma**2.) * (1+ sqrt(5.)*dists / self.rho + 5.0*(dists**2.) / (3.0*self.rho**2.) ) * exp( -sqrt(5.)*dists / self.rho )
@@ -82,7 +85,7 @@ if __name__ == '__main__':
     distribution = Banana()
     Z = distribution.sample(50).samples
     Z2 = distribution.sample(50).samples
-    kernel = MaternKernel(5.0,nu=2.5, sigma=9.0)
+    kernel = MaternKernel(5.0,nu=0.5, sigma=9.0)
     K = kernel.kernel(Z, Z2)
     imshow(K, interpolation="nearest")
     show()
