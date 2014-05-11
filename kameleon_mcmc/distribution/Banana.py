@@ -13,7 +13,7 @@ from kameleon_mcmc.distribution.Gaussian import Gaussian
 from numpy.core.function_base import linspace
 from numpy.core.shape_base import hstack
 from numpy.lib.twodim_base import eye
-from numpy.ma.core import sqrt, arange, zeros, shape, array
+from numpy import sqrt, arange, zeros, shape, array
 from numpy.random import randn
 
 class Banana(Distribution):
