@@ -8,21 +8,20 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
+from matplotlib.pyplot import hold, quiver, draw
+from numpy import reshape, array, shape, meshgrid, zeros, linspace
+
 from kameleon_mcmc.distribution.Gaussian import Gaussian
 from kameleon_mcmc.kernel.GaussianKernel import GaussianKernel
 from kameleon_mcmc.kernel.Kernel import Kernel
 from kameleon_mcmc.mcmc.samplers.Kameleon import Kameleon
 from kameleon_mcmc.tools.Visualise import Visualise
-from matplotlib.pyplot import hold, quiver, draw
-from numpy.core.function_base import linspace
-from numpy.core.numeric import zeros
-from numpy.lib.function_base import meshgrid
-from numpy.ma.core import reshape, array, shape
+
 
 class GFunction(object):
-    def __init__(self, distribution, n=200, gaussian_width=3, nu2=0.1, \
+    def __init__(self, distribution, n=200, kernel=GaussianKernel(3), nu2=0.1, \
                  gamma=0.1, ell=15, nXs=100, nYs=100):
-        self.kernel = GaussianKernel(gaussian_width)
+        self.kernel = kernel
         self.distribution = distribution
         self.nu2 = nu2
         self.gamma = gamma

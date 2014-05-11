@@ -10,7 +10,7 @@ Written (W) 2013 Dino Sejdinovic
 
 from matplotlib.pyplot import bar, legend, figure, savefig, show, errorbar, ylim
 from numpy import asarray
-from numpy.ma.core import arange, zeros
+from numpy import arange, zeros
 import os
 import sys
 
