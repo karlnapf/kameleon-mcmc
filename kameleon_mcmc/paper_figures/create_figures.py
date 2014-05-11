@@ -50,8 +50,8 @@ def plot_g_functions():
                 legend(["Samples $\{z_i\}_{i=1}^{" + str(num_samples[i]) + "}$", "Current position $y$"], \
                        numpoints=1, loc="upper center")
             
-            filename_base = "plots/g_gunction_" + distributions[i].__class__.__name__ + str(j) +\
-                            + g_functions[i].kernel.__class__.__name__
+            filename_base = "plots/g_gunction_" + distributions[i].__class__.__name__ + str(j) + "_" + \
+                            g_functions[i].kernel.__class__.__name__
             savefig(filename_base + ".eps", bbox_inches='tight')
             savefig(filename_base + ".png", bbox_inches='tight')
         
