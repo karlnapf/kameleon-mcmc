@@ -76,7 +76,7 @@ if __name__ == '__main__':
         pass
     
     print "generating g-function plots"
-#     plot_g_functions()
+    plot_g_functions()
     
     print "generating proposal plots"
     plot_proposals()
