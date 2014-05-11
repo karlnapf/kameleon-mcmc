@@ -39,7 +39,8 @@ from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
 
 class DiscreteKameleon(MCMCSampler):
     """
-    Kameleon MCMC on discrete domains
+    Kameleon MCMC on discrete domains, non-adaptive version that takes a set of
+    oracle samples.
     """
     def __init__(self, distribution, kernel, Z, threshold, spread):
         if not isinstance(distribution, Distribution):
