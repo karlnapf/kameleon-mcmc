@@ -28,12 +28,13 @@ either expressed or implied, of the author.
 """
 
 
-from kameleon_mcmc.kernel.Kernel import Kernel
-from numpy.ma.core import exp, shape, sqrt, reshape
-from scipy.spatial.distance import squareform, pdist, cdist
 from matplotlib.pyplot import show, imshow
-from kameleon_mcmc.distribution.Banana import Banana
+from numpy import exp, shape, sqrt, reshape
 import numpy
+from scipy.spatial.distance import squareform, pdist, cdist
+
+from kameleon_mcmc.distribution.Banana import Banana
+from kameleon_mcmc.kernel.Kernel import Kernel
 from kameleon_mcmc.tools.GenericTests import GenericTests
 
 

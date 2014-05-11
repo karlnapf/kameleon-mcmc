@@ -9,8 +9,7 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from kameleon_mcmc.kernel.Kernel import Kernel
-from numpy.ma.core import exp, shape, reshape, sqrt
-from numpy.ma.extras import median
+from numpy import exp, shape, reshape, sqrt, median
 from scipy.spatial.distance import squareform, pdist, cdist
 
 class GaussianKernel(Kernel):

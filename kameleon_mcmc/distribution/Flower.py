@@ -10,12 +10,12 @@ Written (W) 2013 Dino Sejdinovic
 
 from kameleon_mcmc.distribution.Distribution import Distribution, Sample
 from kameleon_mcmc.distribution.Gaussian import Gaussian
-from numpy.core.function_base import linspace
-from numpy.core.numeric import array, zeros
-from numpy.core.shape_base import hstack
+from numpy import linspace
+from numpy import array, zeros
+from numpy import hstack
 from numpy.lib.twodim_base import eye
 from numpy.linalg import norm
-from numpy.ma.core import sqrt, cos, sin, arctan2, arange, shape
+from numpy import sqrt, cos, sin, arctan2, arange, shape
 from numpy.random import rand, randn
 from scipy.constants.constants import pi
 

@@ -12,7 +12,7 @@ from kameleon_mcmc.distribution.Distribution import Distribution, Sample
 from kameleon_mcmc.tools.MatrixTools import MatrixTools
 from numpy.lib.twodim_base import eye, diag
 from numpy.linalg import cholesky, norm, eig
-from numpy.ma.core import array, shape, log, zeros, arange, mean
+from numpy import array, shape, log, zeros, arange, mean
 from numpy.random import randn
 from scipy.constants.constants import pi
 from scipy.linalg.basic import solve_triangular

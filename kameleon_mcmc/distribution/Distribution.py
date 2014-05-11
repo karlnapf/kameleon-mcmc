@@ -9,7 +9,7 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from abc import abstractmethod, ABCMeta
-from numpy.ma.core import ceil, arange, shape
+from numpy import ceil, arange, shape
 
 class Distribution(object):
     __metaclass__ = ABCMeta

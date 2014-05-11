@@ -10,7 +10,7 @@ Written (W) 2013 Dino Sejdinovic
 
 from numpy.lib.twodim_base import diag, eye
 from numpy.linalg import svd, cholesky
-from numpy.ma.core import zeros, cos, sin, sqrt, shape
+from numpy import zeros, cos, sin, sqrt, shape
 from numpy.random import randn
 
 class MatrixTools(object):

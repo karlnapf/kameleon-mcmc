@@ -11,9 +11,9 @@ Written (W) 2013 Dino Sejdinovic
 from kameleon_mcmc.distribution.Gaussian import Gaussian
 from matplotlib.patches import Ellipse
 from matplotlib.pyplot import imshow, ylim, xlim, contour, plot, hold, gca
-from numpy.core.function_base import linspace
+from numpy import linspace
 from numpy.linalg.linalg import eigh
-from numpy.ma.core import zeros, array, exp, arctan2, sqrt
+from numpy import zeros, array, exp, arctan2, sqrt
 import numpy
 
 class Visualise(object):

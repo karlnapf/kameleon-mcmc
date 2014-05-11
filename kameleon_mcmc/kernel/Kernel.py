@@ -10,7 +10,7 @@ Written (W) 2013 Dino Sejdinovic
 
 from abc import abstractmethod
 from numpy import eye
-from numpy.ma.core import shape, mean, sqrt
+from numpy import shape, mean, sqrt
 from numpy.lib.index_tricks import fill_diagonal
 
 class Kernel(object):

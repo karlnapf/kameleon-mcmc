@@ -10,7 +10,7 @@ Written (W) 2013 Dino Sejdinovic
 
 from kameleon_mcmc.distribution.Distribution import Distribution
 from kameleon_mcmc.distribution.Flower import Flower
-from numpy.ma.core import sqrt
+from numpy import sqrt
 
 class Ring(Flower):
     def __init__(self, variance=0.05, radius=3.5, dimension=2):
