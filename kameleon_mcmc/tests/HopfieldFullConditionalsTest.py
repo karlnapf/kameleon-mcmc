@@ -8,29 +8,45 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from numpy.random import randn
-from numpy import zeros, fill_diagonal, asarray, arange, reshape
+from numpy.random import rand, randn
+from numpy import zeros, fill_diagonal, asarray, arange, reshape, mean
+from matplotlib.pyplot import show, plot, hist
 from kameleon_mcmc.distribution.Hopfield import Hopfield
 from kameleon_mcmc.distribution.HopfieldFullConditionals import HopfieldFullConditionals
 
+
 def main():
-    d=10
+    d=20
     b=randn(d)
     V=randn(d,d)
     W=V+V.T
     fill_diagonal(W,zeros(d))
     full_hopfield=Hopfield(W,b)
     schedule="in_turns"
-    current_state=asarray(zeros(d), dtype=bool)
-    conditionals=HopfieldFullConditionals(full_hopfield, \
-                                          current_state, \
+    current_stateA=rand(d)<0.5
+    current_stateB=rand(d)<0.5
+    conditionalsA=HopfieldFullConditionals(full_hopfield, \
+                                          current_stateA, \
                                           schedule, \
                                           index_block=arange(d) )
-    for ii in arange(50):
-        print conditionals.current_idx
-        X=conditionals.sample(1)
-        print X
-        print full_hopfield.log_pdf(reshape(X,(1,d)))
+    conditionalsB=HopfieldFullConditionals(full_hopfield, \
+                                          current_stateB, \
+                                          schedule, \
+                                          index_block=arange(d) )
+    n=500000
+    burnin=1000
+    thin=100
+    X=reshape(zeros(n*d)==1,(n,d))
+    Y=reshape(zeros(n*d)==1,(n,d))
+    for ii in arange(n):
+        #print 'now sampling index: ' + str(conditionals.current_idx)
+        X[ii]=conditionalsA.sample(1)
+        Y[ii]=conditionalsB.sample(1)
+        #print X[ii]
+    hist(full_hopfield.log_pdf(X[arange(burnin,n,thin)]))
+    print mean(X[arange(burnin,n,thin)],0)
+    print mean(Y[arange(burnin,n,thin)],0)
+    show()
     
     
     
