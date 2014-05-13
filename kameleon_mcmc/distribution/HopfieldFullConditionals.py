@@ -55,7 +55,7 @@ class HopfieldFullConditionals(FullConditionals):
         s += "]"
         return s
     
-    def sample_conditional(self, index, current):
+    def sample_conditional(self, index):
         if index < 0 or index >= self.dimension:
             raise ValueError("Conditional index out of bounds")
         
@@ -63,5 +63,5 @@ class HopfieldFullConditionals(FullConditionals):
         cond_inds = hstack((arange(0, index), arange(index + 1, self.dimension)))
         
         cond_prob = 1.0 / ( 1+exp(-self.full_hopfield.bias[index]- \
-                       2*inner( self.full_hopfield.W[index,cond_inds],current[cond_inds] ) ) )
+                       2*inner( self.full_hopfield.W[index,cond_inds],self.current_state[cond_inds] ) ) )
         return rand(1,)<cond_prob
