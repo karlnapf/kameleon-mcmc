@@ -27,11 +27,11 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 from abc import abstractmethod
-from numpy import ones, mod, arange
+from numpy import ones, mod, arange, asarray, int64
 import numpy
 from numpy.random import permutation, randint
 
-from kameleon_mcmc.distribution.Distribution import Distribution
+from kameleon_mcmc.distribution.Distribution import Distribution, Sample
 
 
 class FullConditionals(Distribution):
@@ -49,23 +49,21 @@ class FullConditionals(Distribution):
     """
     schedules = ["in_turns", "random_permutation", "random_repetition"]
     
-    def __init__(self, current_state, schedule, index_block=None):
+    def __init__(self, current_state, schedule="in_turns", index_block=None):
         """
-        current_state - Current point of the Gibbs sampler
+        current_state - Current point of the Gibbs sampler, represented as a
+                        list of arbritary objects.
         schedule      - Schedule for variables
         index_block   - If schedule is "in_turns", this can specify the order.
                         If not specified, arange(dimension) is used
         """
-        if not type(current_state) is numpy.ndarray:
-            raise TypeError("Current state must by numpy array")
-        
-        if not len(current_state.shape) is 1:
-            raise ValueError("Current state must by 1D numpy array")
+        if not type(current_state) is type([]):
+            raise TypeError("Current state must be a list")
         
         Distribution.__init__(self, len(current_state))
         
         if index_block is None:
-            index_block = arange(self.dimension)
+            index_block = arange(self.dimension, dtype=numpy.int64)
         
         if not type(schedule) is type(""):
             raise TypeError("Schedule must be a string") 
@@ -74,21 +72,23 @@ class FullConditionals(Distribution):
             raise ValueError("Unknown schedule") 
         
         if not type(index_block) is numpy.ndarray:
-            raise TypeError("Index block must by numpy array")
+            raise TypeError("Index block must be numpy array")
         
         if not len(index_block.shape) is 1:
-            raise ValueError("Index block must by 1D numpy array")
-        
-        if not index_block.dtype is numpy.int:
-            raise ValueError("Index block must by int numpy array")
+            raise TypeError("Index block must be 1D numpy array")
         
         if not len(index_block) is self.dimension:
-            raise ValueError("Index block must be of same dimension as distribution")
+            raise ValueError("Index block dimension does not match number of \
+                                Gibbs blocks")
+        
+        if not index_block.dtype == numpy.int:
+            raise ValueError("Index block must be integer numpy array")
         
         self.current_state = current_state
         self.schedule = schedule
         self.index_block = index_block
         
+        # this is the current index of the Gibbs block
         # initialise with last, to cause the first sample come from the first
         self.current_idx = self.dimension
     
@@ -120,7 +120,15 @@ class FullConditionals(Distribution):
         # update current state at scheduled index and return a copy
         self.current_state[idx] = self.sample_conditional(idx)
         
-        return self.current_state.copy()
+        # hack: transform list of current state to array
+        # this might be changed later when we allow sampling from domains where
+        # the vector elements are scalars, like matrices
+        sample=[]
+        for x in self.current_state:
+            sample.append(x)
+        sample = asarray(sample)
+        
+        return Sample(sample)
     
     def log_pdf(self, X):
         """
