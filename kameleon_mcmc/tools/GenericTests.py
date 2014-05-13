@@ -36,5 +36,5 @@ class GenericTests():
                             ". Given is " + str(type(varvalue)))
         if not required_shapelen is None:
             if not len(varvalue.shape) is required_shapelen:
-                raise TypeError("Variable " + varname + " must be " + str(required_shapelen) + "-dimensional")
+                raise ValueError("Variable " + varname + " must be " + str(required_shapelen) + "-dimensional")
         return 0
