@@ -29,8 +29,8 @@ either expressed or implied, of the author.
 
 from numpy import hstack, arange, sqrt
 from numpy.linalg.linalg import cholesky
+from numpy.random import randn
 from scipy.linalg import solve_triangular
-from scipy.stats.distributions import norm
 
 from kameleon_mcmc.distribution.FullConditionals import FullConditionals
 from kameleon_mcmc.distribution.Gaussian import Gaussian
@@ -41,7 +41,7 @@ class GaussianFullConditionals(FullConditionals):
     Implements the full conditional distributions for a multivariate Gaussian.
     Takes an instance of a Gaussian and computes the full conditionals.
     """
-    def __init__(self, full_gaussian, current_state, schedule, index_block=None):
+    def __init__(self, full_gaussian, current_state, schedule="in_turns", index_block=None):
         if not isinstance(full_gaussian, Gaussian):
             raise TypeError("Given full Gaussian is not a Gaussian")
         
@@ -54,7 +54,7 @@ class GaussianFullConditionals(FullConditionals):
         
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "full_gaussian=" + str(self.gaussian)
+        s += "full_gaussian=" + str(self.full_gaussian)
         s += ", " + FullConditionals.__str__(self)
         s += "]"
         return s
@@ -88,4 +88,4 @@ class GaussianFullConditionals(FullConditionals):
         Sigma = Sigma_xx - Sigma
         
         # return sample from x|y
-        return norm.rvs(mu, sqrt(Sigma))
+        return randn(1,) * sqrt(Sigma) + mu
