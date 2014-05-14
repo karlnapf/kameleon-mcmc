@@ -27,6 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
+import numpy
 from numpy.random import rand
 
 from kameleon_mcmc.distribution.Bernoulli import Bernoulli
@@ -58,3 +59,5 @@ class BernoulliFullConditionals(FullConditionals):
         # since all components are independent, just sample from Bernoulli with given index
         return rand(1,) < self.full_target.ps[index]
 
+    def get_current_state_array(self):
+        return FullConditionals.get_current_state_array(self).astype(numpy.bool8)
