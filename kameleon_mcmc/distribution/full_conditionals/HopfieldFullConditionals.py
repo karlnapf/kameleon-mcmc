@@ -56,7 +56,7 @@ class HopfieldFullConditionals(FullConditionals):
         
         # conditioning indices: all indices but the current
         cond_inds = hstack((arange(0, index), arange(index + 1, self.dimension)))
-        cond_vec = asarray([self.current_state[i] for i in cond_inds]).reshape(1, len(cond_inds))
+        cond_vec = self.get_current_state_array()[0, cond_inds]
         cond_prob = 1.0 / (1 + exp(-self.full_target.bias[index] - \
                        2 * inner(self.full_target.W[index, cond_inds], cond_vec)))
         return rand(1,) < cond_prob
