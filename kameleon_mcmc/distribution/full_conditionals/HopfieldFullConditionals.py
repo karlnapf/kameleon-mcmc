@@ -59,7 +59,7 @@ class HopfieldFullConditionals(FullConditionals):
         cond_vec = self.get_current_state_array()[0, cond_inds]
         cond_prob = 1.0 / (1 + exp(-self.full_target.bias[index] - \
                        2 * inner(self.full_target.W[index, cond_inds], cond_vec)))
-        return rand(1,) < cond_prob
+        return rand(1) < cond_prob
     
     def get_current_state_array(self):
         return asarray(self.current_state).reshape(1, self.dimension)
