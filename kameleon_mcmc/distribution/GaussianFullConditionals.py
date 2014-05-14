@@ -27,13 +27,13 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import hstack, arange, sqrt
+from numpy import hstack, arange, sqrt, ceil
 from numpy.linalg.linalg import cholesky
 from numpy.random import randn
-from scipy.linalg import solve_triangular
 
 from kameleon_mcmc.distribution.FullConditionals import FullConditionals
 from kameleon_mcmc.distribution.Gaussian import Gaussian
+from kameleon_mcmc.tools.MatrixTools import MatrixTools
 
 
 class GaussianFullConditionals(FullConditionals):
@@ -50,7 +50,7 @@ class GaussianFullConditionals(FullConditionals):
         self.full_gaussian = full_gaussian
         
         # precompute full covariance matrix for slicing later
-        self.full_Sigma = full_gaussian.L.dot(full_gaussian.L)
+        self.full_Sigma = full_gaussian.L.dot(full_gaussian.L.T)
         
     def __str__(self):
         s = self.__class__.__name__ + "=["
@@ -59,33 +59,39 @@ class GaussianFullConditionals(FullConditionals):
         s += "]"
         return s
     
-    def sample_conditional(self, index, current):
+    def sample_conditional(self, index):
         if index < 0 or index >= self.dimension:
             raise ValueError("Conditional index out of bounds")
         
         # all indices but the current
         cond_inds = hstack((arange(0, index), arange(index + 1, self.dimension)))
+#         print "conditioning on index %d" % index
+#         print "other indices:", cond_inds
         
         # partition the Gaussian x|y, precompute matrix inversion
         mu_x = self.full_gaussian.mu[index]
         Sigma_xx = self.full_Sigma[index, index]
         mu_y = self.full_gaussian.mu[cond_inds]
-        Sigma_yy = self.full_Sigma[cond_inds, cond_inds]
+        Sigma_yy = self.full_Sigma[cond_inds, cond_inds].reshape(len(cond_inds), len(cond_inds))
         L_yy = cholesky(Sigma_yy)
         Sigma_xy = self.full_Sigma[index, cond_inds]
-        y = self.current_state[index]
+        Sigma_yx = self.full_Sigma[cond_inds, index]
         
-        # solve mu=mu_x+Sigma_yy^(-1)(y-mu_y) = mu_x+L_yy^(-T)_yy^(-1)(y-mu_y)
-        mu = y - mu_y
-        mu = solve_triangular(L_yy, mu.T, lower=True)
-        mu = solve_triangular(L_yy.T, mu, lower=False)
-        mu += mu_x
+        y = self.current_state[cond_inds]
         
-        # solve Sigma=Sigma_xy-Sigma_yy^-1 Sigma_yx=Sigma_xy-L_yy^(-T)_yy^(-1) Sigma_yx
-        Sigma = Sigma_xy
-        Sigma = solve_triangular(L_yy, Sigma.T, lower=True)
-        Sigma = solve_triangular(L_yy.T, Sigma, lower=False)
-        Sigma = Sigma_xx - Sigma
+        # mu=mu_x+Sigma_xy Sigma_yy^(-1)(y-mu_y)
+        mu = mu_x+ Sigma_xy.dot(MatrixTools.cholesky_solve(L_yy, y - mu_y))
+        
+        # solve Sigma=Sigma_xx-Sigma_yy^-1 Sigma_yx=Sigma_xy-Sigma_xy L_yy^(-T)_yy^(-1) Sigma_yx
+        Sigma = Sigma_xx - Sigma_xy.dot(MatrixTools.cholesky_solve(L_yy, Sigma_yx))
         
         # return sample from x|y
-        return randn(1,) * sqrt(Sigma) + mu
+        conditional_sample = randn(1,) * sqrt(Sigma) + mu
+        return conditional_sample
+    
+    def get_plotting_bounds(self):
+        Z = self.full_gaussian.sample(1000).samples
+        return zip(ceil(Z.min(0)), ceil(Z.max(0)))
+
+    def log_pdf_full(self):
+        return self.full_gaussian.log_pdf(self.get_current_state_array())
