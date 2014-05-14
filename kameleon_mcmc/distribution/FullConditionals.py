@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 from abc import abstractmethod
-from numpy import ones, mod, arange, asarray, int64
+from numpy import ones, mod, arange, asarray
 import numpy
 from numpy.random import permutation, randint
 
@@ -120,15 +120,17 @@ class FullConditionals(Distribution):
         # update current state at scheduled index and return a copy
         self.current_state[idx] = self.sample_conditional(idx)
         
+        return Sample(self.get_current_state_array())
+    
+    def get_current_state_array(self):
         # hack: transform list of current state to array
         # this might be changed later when we allow sampling from domains where
         # the vector elements are scalars, like matrices
-        sample=[]
+        sample = []
         for x in self.current_state:
             sample.append(x)
-        sample = asarray(sample)
-        
-        return Sample(sample)
+        sample = asarray(sample).reshape(1, len(sample))
+        return sample
     
     def log_pdf(self, X):
         """
@@ -136,6 +138,15 @@ class FullConditionals(Distribution):
         all samples.
         """
         return ones(len(X))
+    
+    @abstractmethod
+    def log_pdf_full(self):
+        """
+        Returns the log-likelihood of the current state, used for plotting the
+        likelihood of the Gibbs updates within a MH-framework where all proposals
+        are accepted.
+        """
+        raise NotImplementedError()
     
     @abstractmethod
     def sample_conditional(self, index):
