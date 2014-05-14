@@ -29,7 +29,7 @@ either expressed or implied, of the author.
 from numpy import zeros, eye, pi
 
 from kameleon_mcmc.distribution.Gaussian import Gaussian
-from kameleon_mcmc.distribution.GaussianFullConditionals import GaussianFullConditionals
+from kameleon_mcmc.distribution.full_conditionals.GaussianFullConditionals import GaussianFullConditionals
 from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
 from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
 from kameleon_mcmc.mcmc.output.PlottingOutput import PlottingOutput
@@ -57,9 +57,9 @@ def main():
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=100))
-    chain.append_mcmc_output(PlottingOutput(distribution=gaussian, plot_from=1,
-                                            colour_by_likelihood=False,
-                                            num_samples_plot=0, lag=100))
+    #chain.append_mcmc_output(PlottingOutput(distribution=gaussian, plot_from=1,
+    #                                        colour_by_likelihood=False,
+    #                                        num_samples_plot=0, lag=100))
     chain.run()
 
 main()

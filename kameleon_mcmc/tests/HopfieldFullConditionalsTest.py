@@ -12,7 +12,7 @@ from numpy.random import rand, randn
 from numpy import zeros, fill_diagonal, asarray, arange, reshape, mean
 from matplotlib.pyplot import show, plot, hist
 from kameleon_mcmc.distribution.Hopfield import Hopfield
-from kameleon_mcmc.distribution.HopfieldFullConditionals import HopfieldFullConditionals
+from kameleon_mcmc.distribution.full_conditionals.HopfieldFullConditionals import HopfieldFullConditionals
 
 
 def main():
@@ -23,8 +23,8 @@ def main():
     fill_diagonal(W,zeros(d))
     full_hopfield=Hopfield(W,b)
     schedule="in_turns"
-    current_stateA=rand(d)<0.5
-    current_stateB=rand(d)<0.5
+    current_stateA=list(rand(d)<0.5)
+    current_stateB=list(rand(d)<0.5)
     conditionalsA=HopfieldFullConditionals(full_hopfield, \
                                           current_stateA, \
                                           schedule, \

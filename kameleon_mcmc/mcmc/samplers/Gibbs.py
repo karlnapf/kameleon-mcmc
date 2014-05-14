@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
-from kameleon_mcmc.distribution.FullConditionals import FullConditionals
+from kameleon_mcmc.distribution.full_conditionals.FullConditionals import FullConditionals
 
 class Gibbs(MCMCSampler):
     """
