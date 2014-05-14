@@ -26,8 +26,9 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
 from kameleon_mcmc.distribution.full_conditionals.FullConditionals import FullConditionals
+from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
+
 
 class Gibbs(MCMCSampler):
     """
