@@ -26,9 +26,7 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-from matplotlib.pyplot import show
-from numpy import array, zeros, eye, pi, cos, sin, sqrt, asarray
-from numpy.linalg.linalg import inv, cholesky, eig
+from numpy import zeros, eye, pi
 
 from kameleon_mcmc.distribution.Gaussian import Gaussian
 from kameleon_mcmc.distribution.GaussianFullConditionals import GaussianFullConditionals
@@ -38,10 +36,10 @@ from kameleon_mcmc.mcmc.output.PlottingOutput import PlottingOutput
 from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
 from kameleon_mcmc.mcmc.samplers.Gibbs import Gibbs
 from kameleon_mcmc.tools.MatrixTools import MatrixTools
-from kameleon_mcmc.tools.Visualise import Visualise
 
 
 def main():
+    # covariance has stretched Eigenvalues, and rotated basis
     Sigma = eye(2)
     Sigma[0, 0] = 30
     Sigma[1, 1] = 1
@@ -50,8 +48,6 @@ def main():
     Sigma = U.T.dot(Sigma).dot(U)
     
     gaussian = Gaussian(Sigma=Sigma)
-    Visualise.visualise_distribution(gaussian)
-    show()
     distribution = GaussianFullConditionals(gaussian, [0., 0.])
     
     mcmc_sampler = Gibbs(distribution)
