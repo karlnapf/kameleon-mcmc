@@ -3,6 +3,7 @@ from numpy.ma.core import log, shape, reshape
 from numpy.random import rand
 
 from kameleon_mcmc.distribution.Distribution import Sample
+from kameleon_mcmc.distribution.full_conditionals.FullConditionals import FullConditionals
 
 
 class MCMCSampler(object):
@@ -66,16 +67,12 @@ class MCMCSampler(object):
         current_2d = reshape(self.current_sample_object.samples, (1, dim))
         
         # First find out whether this sampler is gibbs (which has a full target)
-        # or a MH (otherwise). This isn't really necessary since log-pdf of Gibbs
-        # could just return 1 always, but it avoids such unnecessary method calls
-        # (at the cost of code readability)
-        try:
-            # if this is possible, it means this is a gibbs sampler, so accept
-            full_target = self.distribution.full_target
-            self.log_lik_current = full_target.log_pdf(self.distribution.get_current_state_array())
+        # or a MH (otherwise).
+        if isinstance(self.distribution, FullConditionals):
+            log_lik_proposal = self.distribution.full_target.log_pdf(self.distribution.get_current_state_array())
             accepted = True
             log_ratio = log(1)
-        except AttributeError:
+        else:
             # do normal MH-step, compute acceptance ratio
         
             # evaluate both Q
@@ -95,10 +92,8 @@ class MCMCSampler(object):
         
             accepted = log_ratio > log(rand(1))
             
-            if accepted:
-                self.log_lik_current = log_lik_proposal
-        
         if accepted:
+            self.log_lik_current = log_lik_proposal
             sample_object = proposal_object
             self.Q = Q_new
         else:

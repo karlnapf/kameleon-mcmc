@@ -28,7 +28,8 @@ either expressed or implied, of the author.
 """
 
 
-from numpy import zeros, mean
+from numpy import zeros, mean, asarray
+import numpy
 from numpy.linalg.linalg import norm
 from numpy.random import rand
 
@@ -52,8 +53,7 @@ def main():
     
     mcmc_sampler = Gibbs(distribution)
     
-    start = zeros(distribution.dimension)
-    mcmc_params = MCMCParams(start=start, num_iterations=10000)
+    mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=1000))

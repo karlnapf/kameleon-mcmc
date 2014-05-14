@@ -57,9 +57,9 @@ def main():
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=100))
-    #chain.append_mcmc_output(PlottingOutput(distribution=gaussian, plot_from=1,
-    #                                        colour_by_likelihood=False,
-    #                                        num_samples_plot=0, lag=100))
+    chain.append_mcmc_output(PlottingOutput(distribution=gaussian, plot_from=1,
+                                            colour_by_likelihood=False,
+                                            num_samples_plot=0, lag=100))
     chain.run()
 
 main()

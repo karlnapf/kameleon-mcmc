@@ -135,18 +135,9 @@ class FullConditionals(Distribution):
     
     def log_pdf(self, X):
         """
-        For embedding this in the MH sampler, we always return 1 here to accept
-        all samples.
+        Return log-pdf of the joint distribution
         """
-        return ones(len(X))
-    
-    def log_pdf_full(self):
-        """
-        Returns the log-likelihood of the current state, used for plotting the
-        likelihood of the Gibbs updates within a MH-framework where all proposals
-        are accepted.
-        """
-        return self.full_target.log_pdf(self.get_current_state_array())
+        return self.full_target.log_pdf(X)
     
     @abstractmethod
     def sample_conditional(self, index):

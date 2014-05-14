@@ -8,7 +8,8 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from numpy import zeros, fill_diagonal
+from numpy import zeros, fill_diagonal, asarray
+import numpy
 from numpy.random import rand, randn
 
 from kameleon_mcmc.distribution.Hopfield import Hopfield
@@ -33,8 +34,7 @@ def main():
     
     mcmc_sampler = Gibbs(distribution)
     
-    start = zeros(distribution.dimension)
-    mcmc_params = MCMCParams(start=start, num_iterations=10000)
+    mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=100))
