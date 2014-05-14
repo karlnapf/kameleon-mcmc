@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import hstack, arange, exp, inner
+from numpy import hstack, arange, exp, inner, asarray
 from numpy.random import rand
 
 from kameleon_mcmc.distribution.Hopfield import Hopfield
@@ -38,7 +38,7 @@ class HopfieldFullConditionals(FullConditionals):
     """
     Implements the full conditional distributions for Hopfield network
     """
-    def __init__(self, full_target, current_state, schedule, index_block=None):
+    def __init__(self, full_target, current_state, schedule="in_turns", index_block=None):
         if not isinstance(full_target, Hopfield):
             raise TypeError("Given full Hopfield is not a Hopfield")
         
@@ -56,7 +56,10 @@ class HopfieldFullConditionals(FullConditionals):
         
         # conditioning indices: all indices but the current
         cond_inds = hstack((arange(0, index), arange(index + 1, self.dimension)))
-        
+        cond_vec = asarray([self.current_state[i] for i in cond_inds]).reshape(1, len(cond_inds))
         cond_prob = 1.0 / (1 + exp(-self.full_target.bias[index] - \
-                       2 * inner(self.full_target.W[index, cond_inds], self.current_state[cond_inds])))
+                       2 * inner(self.full_target.W[index, cond_inds], cond_vec)))
         return rand(1,) < cond_prob
+    
+    def get_current_state_array(self):
+        return asarray(self.current_state).reshape(1, self.dimension)
