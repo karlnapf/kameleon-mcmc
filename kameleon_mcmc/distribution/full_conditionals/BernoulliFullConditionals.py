@@ -27,6 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
+from numpy import asarray
 import numpy
 from numpy.random import rand
 
@@ -60,4 +61,5 @@ class BernoulliFullConditionals(FullConditionals):
         return rand(1,) < self.full_target.ps[index]
 
     def get_current_state_array(self):
-        return FullConditionals.get_current_state_array(self).astype(numpy.bool8)
+        return asarray(self.current_state, dtype=numpy.bool8).reshape(1, self.dimension)
+    

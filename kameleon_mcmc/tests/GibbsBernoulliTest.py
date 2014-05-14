@@ -60,7 +60,7 @@ def main():
     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=1000))
     chain.run()
     
-    print "ps", ps
-    print "estimated", mean(chain.samples, 0)
+    print "marginals:", ps
+    print "estimated:", mean(chain.samples, 0)
 
 main()

@@ -129,11 +129,9 @@ class FullConditionals(Distribution):
         return Sample(self.get_current_state_array())
     
     def get_current_state_array(self):
-        # hack: transform list of current state to array
-        # this might be changed later when we allow sampling from domains where
-        # the vector elements are scalars, like matrices
-        sample = asarray(self.current_state).reshape(1, self.dimension)
-        return sample
+        # this should be done in subclasses as only they know what the 
+        # sample_conditional method returns
+        raise NotImplementedError()
     
     def log_pdf(self, X):
         """

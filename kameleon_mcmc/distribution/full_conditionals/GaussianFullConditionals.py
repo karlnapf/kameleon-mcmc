@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import hstack, arange, sqrt
+from numpy import hstack, arange, sqrt, asarray
 from numpy.linalg.linalg import cholesky
 from numpy.random import randn
 
@@ -84,5 +84,10 @@ class GaussianFullConditionals(FullConditionals):
         Sigma = Sigma_xx - Sigma_xy.dot(MatrixTools.cholesky_solve(L_yy, Sigma_yx))
         
         # return sample from x|y
-        conditional_sample = randn(1,) * sqrt(Sigma) + mu
+        conditional_sample = randn() * sqrt(Sigma) + mu
         return conditional_sample
+    
+    def get_current_state_array(self):
+        # this means that this gaussian conditional can only work on single
+        # index conditionals, but not on blocks, which is fine for testing
+        return asarray(self.current_state).reshape(1, self.dimension)
