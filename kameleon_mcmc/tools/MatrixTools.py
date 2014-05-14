@@ -8,10 +8,11 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
-from numpy.lib.twodim_base import diag, eye
-from numpy.linalg import svd, cholesky
-from numpy import zeros, cos, sin, sqrt, shape
-from numpy.random import randn
+from numpy import zeros, cos, sin, sqrt
+from numpy.lib.twodim_base import diag
+from numpy.linalg import svd
+from scipy.linalg.basic import solve_triangular
+
 
 class MatrixTools(object):
     @staticmethod
@@ -55,10 +56,12 @@ class MatrixTools(object):
         # LL^T \approx K
         return (L, s, V)
     
-if __name__ == '__main__':
-    x = randn(30, 1)
-    K = x.T.dot(x) + eye(30)
-    L = cholesky(K)
-    A = MatrixTools.low_rank_approx(K, 10)
-    print shape(A)
-    print shape(L)
+    @staticmethod
+    def cholesky_solve(L, x):
+        """
+        Solves X^-1  x = (LL^T) ^-1 x = L^-T  L ^-1 * x for a given Cholesky
+        X=LL^T
+        """
+        x = solve_triangular(L, x.T, lower=True)
+        x = solve_triangular(L.T, x, lower=False)
+        return x
