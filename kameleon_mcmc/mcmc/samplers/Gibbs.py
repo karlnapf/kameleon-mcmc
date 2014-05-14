@@ -65,12 +65,3 @@ class Gibbs(MCMCSampler):
         Nothing for this one since conditionals are fixed
         """
         pass
-        
-    @abstractmethod
-    def log_pdf_all_conditionals(self):
-        """
-        Nothing for this one since conditionals are fixed
-        """
-        raise NotImplementedError("Full log-pdf has to be implemented in any \
-                                    Gibbs sampler subclass.")
-        
