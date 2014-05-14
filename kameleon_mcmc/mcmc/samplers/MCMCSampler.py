@@ -9,7 +9,7 @@ class MCMCSampler(object):
     def __init__(self, distribution):
         self.distribution = distribution
         self.Q = None
-        self.is_symmetric=False
+        self.is_symmetric = False
         
     def init(self, start):
         assert(len(shape(start)) == 1)
@@ -19,9 +19,9 @@ class MCMCSampler(object):
         self.log_lik_current = self.distribution.log_pdf(start_2d)
     
     def __str__(self):
-        s=self.__class__.__name__+ "=["
-        s += "distribution="+ str(self.distribution)
-        s += ", is_symmetric="+ str(self.is_symmetric)
+        s = self.__class__.__name__ + "=["
+        s += "distribution=" + str(self.distribution)
+        s += ", is_symmetric=" + str(self.is_symmetric)
         s += "]"
         return s
     
@@ -53,11 +53,11 @@ class MCMCSampler(object):
         # create proposal around current_sample_object point in first step only
         dim = self.distribution.dimension
         if self.Q is None:
-            current_1d=reshape(self.current_sample_object.samples, (dim,))
+            current_1d = reshape(self.current_sample_object.samples, (dim,))
             self.Q = self.construct_proposal(current_1d)
         
         # propose sample_object and construct new Q centred at proposal_2d
-        proposal_object=self.Q.sample(1)
+        proposal_object = self.Q.sample(1)
         proposal_2d = proposal_object.samples
         proposal_1d = reshape(proposal_2d, (dim,))
         Q_new = self.construct_proposal(proposal_1d)
@@ -65,36 +65,44 @@ class MCMCSampler(object):
         # 2d view for current_sample_object point
         current_2d = reshape(self.current_sample_object.samples, (1, dim))
         
-        # evaluate both Q
-        if not self.is_symmetric:
-            log_Q_proposal_given_current = self.Q.log_pdf(proposal_2d)
-            log_Q_current_given_proposal = Q_new.log_pdf(current_2d)
-        else:
-            log_Q_proposal_given_current = 0
-            log_Q_current_given_proposal = 0
+        # First find out whether this sampler is gibbs (which has a full target)
+        # or a MH (otherwise). This isn't really necessary since log-pdf of Gibbs
+        # could just return 1 always, but it avoids such unnecessary method calls
+        # (at the cost of code readability)
+        try:
+            # if this is possible, it means this is a gibbs sampler, so accept
+            full_target = self.distribution.full_target
+            self.log_lik_current = full_target.log_pdf(self.distribution.get_current_state_array())
+            accepted = True
+            log_ratio = log(1)
+        except AttributeError:
+            # do normal MH-step, compute acceptance ratio
+        
+            # evaluate both Q
+            if not self.is_symmetric:
+                log_Q_proposal_given_current = self.Q.log_pdf(proposal_2d)
+                log_Q_current_given_proposal = Q_new.log_pdf(current_2d)
+            else:
+                log_Q_proposal_given_current = 0
+                log_Q_current_given_proposal = 0
+                
+            log_lik_proposal = self.distribution.log_pdf(proposal_2d)
             
-        log_lik_proposal = self.distribution.log_pdf(proposal_2d)
+            log_ratio = log_lik_proposal - self.log_lik_current \
+                        + log_Q_current_given_proposal - log_Q_proposal_given_current
+            
+            log_ratio = min(log(1), log_ratio)
         
-        log_ratio = log_lik_proposal - self.log_lik_current \
-                    + log_Q_current_given_proposal - log_Q_proposal_given_current
-        
-        log_ratio = min(log(1), log_ratio)
-        
-        accepted = log_ratio > log(rand(1))
+            accepted = log_ratio > log(rand(1))
+            
+            if accepted:
+                self.log_lik_current = log_lik_proposal
         
         if accepted:
             sample_object = proposal_object
-            self.log_lik_current = log_lik_proposal
             self.Q = Q_new
         else:
             sample_object = self.current_sample_object
-            
-        # for Gibbs samplers, compute likelihood of current state
-        # (for monitoring how likelihood evolves)
-        try:
-            self.log_lik_current = self.distribution.log_pdf_full()
-        except AttributeError:
-            pass
             
         # adapt state: position and proposal_2d
         self.current_sample_object = sample_object

@@ -26,6 +26,8 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
+from abc import abstractmethod
+
 from kameleon_mcmc.distribution.full_conditionals.FullConditionals import FullConditionals
 from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
 
@@ -63,4 +65,12 @@ class Gibbs(MCMCSampler):
         Nothing for this one since conditionals are fixed
         """
         pass
+        
+    @abstractmethod
+    def log_pdf_all_conditionals(self):
+        """
+        Nothing for this one since conditionals are fixed
+        """
+        raise NotImplementedError("Full log-pdf has to be implemented in any \
+                                    Gibbs sampler subclass.")
         
