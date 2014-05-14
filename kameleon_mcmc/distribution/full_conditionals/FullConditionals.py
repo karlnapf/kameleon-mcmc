@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 from abc import abstractmethod
-from numpy import ones, mod, arange, asarray
+from numpy import ones, mod, arange, asarray, ceil
 import numpy
 from numpy.random import permutation, randint
 
@@ -99,7 +99,8 @@ class FullConditionals(Distribution):
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "current_state=" + str(self.current_state)
+        s += "full_target=" + str(self.full_target)
+        s += ", current_state=" + str(self.current_state)
         s += ", schedule=" + str(self.schedule)
         s += ", index_block=" + str(self.index_block)
         s += ", current_idx=" + str(self.current_idx)
@@ -131,10 +132,7 @@ class FullConditionals(Distribution):
         # hack: transform list of current state to array
         # this might be changed later when we allow sampling from domains where
         # the vector elements are scalars, like matrices
-        sample = []
-        for x in self.current_state:
-            sample.append(x)
-        sample = asarray(sample).reshape(1, len(sample))
+        sample = asarray(self.current_state).reshape(1, self.dimension)
         return sample
     
     def log_pdf(self, X):
@@ -164,4 +162,8 @@ class FullConditionals(Distribution):
             raise ValueError("Conditional index out of bounds")
         
         raise NotImplementedError()
-    
+        
+    def get_plotting_bounds(self):
+        Z = self.full_target.sample(1000).samples
+        return zip(ceil(Z.min(0)), ceil(Z.max(0)))
+

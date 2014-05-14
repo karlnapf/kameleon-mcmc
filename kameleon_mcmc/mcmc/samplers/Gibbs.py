@@ -37,9 +37,6 @@ class Gibbs(MCMCSampler):
         if not isinstance(full_conditionals, FullConditionals):
             raise TypeError("Gibbs require full conditional distribution instance")
         
-        self.is_gibbs = True
-        
-        
         MCMCSampler.__init__(self, full_conditionals)
         
         # pdf is constant, and therefore symmetric
@@ -47,8 +44,7 @@ class Gibbs(MCMCSampler):
         
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "s_gibbs=" + str(self.is_gibbs)
-        s += ", " + MCMCSampler.__str__(self)
+        s += MCMCSampler.__str__(self)
         s += "]"
         return s
     

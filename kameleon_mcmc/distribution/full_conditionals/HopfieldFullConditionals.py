@@ -30,28 +30,23 @@ either expressed or implied, of the author.
 from numpy import hstack, arange, exp, inner
 from numpy.random import rand
 
-
-from kameleon_mcmc.distribution.FullConditionals import FullConditionals
 from kameleon_mcmc.distribution.Hopfield import Hopfield
+from kameleon_mcmc.distribution.full_conditionals.FullConditionals import FullConditionals
 
 
 class HopfieldFullConditionals(FullConditionals):
     """
     Implements the full conditional distributions for Hopfield network
     """
-    def __init__(self, full_hopfield, current_state, schedule, index_block=None):
-        if not isinstance(full_hopfield, Hopfield):
+    def __init__(self, full_target, current_state, schedule, index_block=None):
+        if not isinstance(full_target, Hopfield):
             raise TypeError("Given full Hopfield is not a Hopfield")
         
-        FullConditionals.__init__(self, current_state, schedule, index_block)
-        
-        self.full_hopfield = full_hopfield
-        
+        FullConditionals.__init__(self, full_target, current_state, schedule, index_block)
         
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "full_hopfield=" + str(self.full_hopfield)
-        s += ", " + FullConditionals.__str__(self)
+        s += FullConditionals.__str__(self)
         s += "]"
         return s
     
@@ -62,6 +57,6 @@ class HopfieldFullConditionals(FullConditionals):
         # conditioning indices: all indices but the current
         cond_inds = hstack((arange(0, index), arange(index + 1, self.dimension)))
         
-        cond_prob = 1.0 / ( 1+exp(-self.full_hopfield.bias[index]- \
-                       2*inner( self.full_hopfield.W[index,cond_inds],self.current_state[cond_inds] ) ) )
-        return rand(1,)<cond_prob
+        cond_prob = 1.0 / (1 + exp(-self.full_target.bias[index] - \
+                       2 * inner(self.full_hopfield.W[index, cond_inds], self.current_state[cond_inds])))
+        return rand(1,) < cond_prob

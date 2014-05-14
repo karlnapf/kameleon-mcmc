@@ -27,33 +27,27 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import hstack, arange, sqrt
-from numpy.linalg.linalg import cholesky
-from numpy.random import randn
+from numpy.random import rand
 
-from kameleon_mcmc.distribution.Gaussian import Gaussian
+from kameleon_mcmc.distribution.Bernoulli import Bernoulli
 from kameleon_mcmc.distribution.full_conditionals.FullConditionals import FullConditionals
-from kameleon_mcmc.tools.MatrixTools import MatrixTools
 
 
-class GaussianFullConditionals(FullConditionals):
+class BernoulliFullConditionals(FullConditionals):
     """
-    Implements the full conditional distributions for a multivariate Gaussian.
-    Takes an instance of a Gaussian and computes the full conditionals.
+    Implements the full conditional distributions for a multivariate Bernoulli.
+    Takes an instance of a Bernoulli and computes the full conditionals.
     """
     def __init__(self, full_target, current_state, schedule="in_turns", index_block=None):
-        if not isinstance(full_target, Gaussian):
-            raise TypeError("Given full Gaussian is not a Gaussian")
+        if not isinstance(full_target, Bernoulli):
+            raise TypeError("Given full Bernoulli is not a Bernoulli")
         
         FullConditionals.__init__(self, full_target, current_state, schedule, index_block)
         
-        # precompute full covariance matrix for slicing later
-        self.full_Sigma = full_target.L.dot(full_target.L.T)
         
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "full_Sigma=" + str(self.full_Sigma)
-        s += ", " + FullConditionals.__str__(self)
+        s += FullConditionals.__str__(self)
         s += "]"
         return s
     
@@ -61,28 +55,6 @@ class GaussianFullConditionals(FullConditionals):
         if index < 0 or index >= self.dimension:
             raise ValueError("Conditional index out of bounds")
         
-        # all indices but the current
-        cond_inds = hstack((arange(0, index), arange(index + 1, self.dimension)))
-#         print "conditioning on index %d" % index
-#         print "other indices:", cond_inds
-        
-        # partition the Gaussian x|y, precompute matrix inversion
-        mu_x = self.full_target.mu[index]
-        Sigma_xx = self.full_Sigma[index, index]
-        mu_y = self.full_target.mu[cond_inds]
-        Sigma_yy = self.full_Sigma[cond_inds, cond_inds].reshape(len(cond_inds), len(cond_inds))
-        L_yy = cholesky(Sigma_yy)
-        Sigma_xy = self.full_Sigma[index, cond_inds]
-        Sigma_yx = self.full_Sigma[cond_inds, index]
-        
-        y = self.current_state[cond_inds]
-        
-        # mu=mu_x+Sigma_xy Sigma_yy^(-1)(y-mu_y)
-        mu = mu_x + Sigma_xy.dot(MatrixTools.cholesky_solve(L_yy, y - mu_y))
-        
-        # solve Sigma=Sigma_xx-Sigma_yy^-1 Sigma_yx=Sigma_xy-Sigma_xy L_yy^(-T)_yy^(-1) Sigma_yx
-        Sigma = Sigma_xx - Sigma_xy.dot(MatrixTools.cholesky_solve(L_yy, Sigma_yx))
-        
-        # return sample from x|y
-        conditional_sample = randn(1,) * sqrt(Sigma) + mu
-        return conditional_sample
+        # since all components are independent, just sample from Bernoulli with given index
+        return rand(1,) < self.full_target.ps[index]
+
