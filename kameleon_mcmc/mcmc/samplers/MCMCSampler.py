@@ -1,13 +1,16 @@
 from abc import abstractmethod
-from kameleon_mcmc.distribution.Distribution import Sample
 from numpy.ma.core import log, shape, reshape
 from numpy.random import rand
 
+from kameleon_mcmc.distribution.Distribution import Sample
+
+
 class MCMCSampler(object):
-    is_symmetric=False
     def __init__(self, distribution):
         self.distribution = distribution
         self.Q = None
+        self.is_symmetric=False
+        
     def init(self, start):
         assert(len(shape(start)) == 1)
         
@@ -18,6 +21,7 @@ class MCMCSampler(object):
     def __str__(self):
         s=self.__class__.__name__+ "=["
         s += "distribution="+ str(self.distribution)
+        s += ", is_symmetric="+ str(self.is_symmetric)
         s += "]"
         return s
     
@@ -58,7 +62,6 @@ class MCMCSampler(object):
         proposal_1d = reshape(proposal_2d, (dim,))
         Q_new = self.construct_proposal(proposal_1d)
         
-
         # 2d view for current_sample_object point
         current_2d = reshape(self.current_sample_object.samples, (1, dim))
         
@@ -85,6 +88,13 @@ class MCMCSampler(object):
             self.Q = Q_new
         else:
             sample_object = self.current_sample_object
+            
+        # for Gibbs samplers, compute likelihood of current state
+        # (for monitoring how likelihood evolves)
+        try:
+            self.log_lik_current = self.distribution.log_pdf_full()
+        except AttributeError:
+            pass
             
         # adapt state: position and proposal_2d
         self.current_sample_object = sample_object
