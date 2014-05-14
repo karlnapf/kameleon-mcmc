@@ -49,8 +49,9 @@ class FullConditionals(Distribution):
     """
     schedules = ["in_turns", "random_permutation", "random_repetition"]
     
-    def __init__(self, current_state, schedule="in_turns", index_block=None):
+    def __init__(self, full_target, current_state, schedule="in_turns", index_block=None):
         """
+        full_target   - Distribution instance on which Gibbs sampling is performed
         current_state - Current point of the Gibbs sampler, represented as a
                         list of arbritary objects.
         schedule      - Schedule for variables
@@ -61,6 +62,9 @@ class FullConditionals(Distribution):
             raise TypeError("Current state must be a list")
         
         Distribution.__init__(self, len(current_state))
+        
+        if not isinstance(full_target, Distribution):
+            raise TypeError("Given full target is not a Distribution")
         
         if index_block is None:
             index_block = arange(self.dimension, dtype=numpy.int64)
@@ -84,6 +88,7 @@ class FullConditionals(Distribution):
         if not index_block.dtype == numpy.int:
             raise ValueError("Index block must be integer numpy array")
         
+        self.full_target = full_target
         self.current_state = current_state
         self.schedule = schedule
         self.index_block = index_block
@@ -139,14 +144,13 @@ class FullConditionals(Distribution):
         """
         return ones(len(X))
     
-    @abstractmethod
     def log_pdf_full(self):
         """
         Returns the log-likelihood of the current state, used for plotting the
         likelihood of the Gibbs updates within a MH-framework where all proposals
         are accepted.
         """
-        raise NotImplementedError()
+        return self.full_target.log_pdf(self.get_current_state_array())
     
     @abstractmethod
     def sample_conditional(self, index):

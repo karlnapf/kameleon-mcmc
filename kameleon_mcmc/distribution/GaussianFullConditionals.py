@@ -45,16 +45,14 @@ class GaussianFullConditionals(FullConditionals):
         if not isinstance(full_gaussian, Gaussian):
             raise TypeError("Given full Gaussian is not a Gaussian")
         
-        FullConditionals.__init__(self, current_state, schedule, index_block)
-        
-        self.full_gaussian = full_gaussian
+        FullConditionals.__init__(self, full_gaussian, current_state, schedule, index_block)
         
         # precompute full covariance matrix for slicing later
         self.full_Sigma = full_gaussian.L.dot(full_gaussian.L.T)
         
     def __str__(self):
         s = self.__class__.__name__ + "=["
-        s += "full_gaussian=" + str(self.full_gaussian)
+        s += "full_target=" + str(self.full_target)
         s += ", " + FullConditionals.__str__(self)
         s += "]"
         return s
@@ -69,9 +67,9 @@ class GaussianFullConditionals(FullConditionals):
 #         print "other indices:", cond_inds
         
         # partition the Gaussian x|y, precompute matrix inversion
-        mu_x = self.full_gaussian.mu[index]
+        mu_x = self.full_target.mu[index]
         Sigma_xx = self.full_Sigma[index, index]
-        mu_y = self.full_gaussian.mu[cond_inds]
+        mu_y = self.full_target.mu[cond_inds]
         Sigma_yy = self.full_Sigma[cond_inds, cond_inds].reshape(len(cond_inds), len(cond_inds))
         L_yy = cholesky(Sigma_yy)
         Sigma_xy = self.full_Sigma[index, cond_inds]
@@ -90,8 +88,5 @@ class GaussianFullConditionals(FullConditionals):
         return conditional_sample
     
     def get_plotting_bounds(self):
-        Z = self.full_gaussian.sample(1000).samples
+        Z = self.full_target.sample(1000).samples
         return zip(ceil(Z.min(0)), ceil(Z.max(0)))
-
-    def log_pdf_full(self):
-        return self.full_gaussian.log_pdf(self.get_current_state_array())
