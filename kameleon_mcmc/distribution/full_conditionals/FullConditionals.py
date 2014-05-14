@@ -27,7 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 from abc import abstractmethod
-from numpy import ones, mod, arange, asarray, ceil
+from numpy import ones, mod, arange, ceil
 import numpy
 from numpy.random import permutation, randint
 
