@@ -1,5 +1,5 @@
 """
-Copyright (c) 2013-2014 Heiko Strathmann
+Copyright (c) 2013-2014 Heiko Strathmann, Dino Sejdinovic
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
