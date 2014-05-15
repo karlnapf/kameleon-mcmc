@@ -31,8 +31,8 @@ from numpy import logical_xor, sum
 import numpy
 from numpy.random import randn
 
-from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 from kameleon_mcmc.distribution.Distribution import Distribution
+from kameleon_mcmc.distribution.proposals.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 from kameleon_mcmc.kernel.Kernel import Kernel
 from kameleon_mcmc.mcmc.samplers.MCMCSampler import MCMCSampler
 
