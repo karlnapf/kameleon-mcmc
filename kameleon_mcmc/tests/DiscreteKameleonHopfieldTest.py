@@ -29,7 +29,7 @@ either expressed or implied, of the author.
 
 from numpy import zeros, fill_diagonal, asarray
 import numpy
-from numpy.random import rand, randn
+from numpy.random import rand, randn, permutation
 
 from kameleon_mcmc.distribution.Hopfield import Hopfield
 from kameleon_mcmc.distribution.full_conditionals.HopfieldFullConditionals import HopfieldFullConditionals
@@ -42,7 +42,7 @@ from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
 from kameleon_mcmc.mcmc.samplers.Gibbs import Gibbs
 
 
-def produce_chain_history(distribution, num_samples=1000):
+def sample_gibbs(distribution, num_samples=1000):
     mcmc_sampler = Gibbs(distribution)
     current_state = [rand() < 0.5 for _ in range(distribution.dimension)]
     mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_samples)
@@ -61,9 +61,11 @@ def main():
     distribution = HopfieldFullConditionals(full_target=hopfield,
                                             current_state=current_state)
     
-    print "Running Gibbs to produce chain history"
-    Z = produce_chain_history(distribution).astype(numpy.bool8)
-    print "done"
+    print("Running Gibbs to produce chain history")
+    Z = sample_gibbs(distribution, num_samples=20000)[2000:].astype(numpy.bool8)
+    inds = permutation(len(Z))
+    Z = Z[inds[:1000]]
+    print("done")
     
     threshold = 0.8
     spread = 0.2
@@ -74,11 +76,11 @@ def main():
     mcmc_sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
     
     start = zeros(distribution.dimension, dtype=numpy.bool8)
-    mcmc_params = MCMCParams(start=start, num_iterations=1000)
+    mcmc_params = MCMCParams(start=start, num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True))
-    chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
+    chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=1))
     
     chain.run()
 main()
