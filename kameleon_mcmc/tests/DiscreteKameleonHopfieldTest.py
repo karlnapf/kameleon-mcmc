@@ -62,9 +62,9 @@ def main():
                                             current_state=current_state)
     
     print("Running Gibbs to produce chain history")
-    Z = sample_gibbs(distribution, num_samples=20000)[2000:].astype(numpy.bool8)
+    Z = sample_gibbs(distribution, num_samples=2000)[1500:].astype(numpy.bool8)
     inds = permutation(len(Z))
-    Z = Z[inds[:1000]]
+    Z = Z[inds[:500]]
     print("done")
     
     threshold = 0.8
@@ -73,14 +73,15 @@ def main():
     gamma = 0.2
     kernel = HypercubeKernel(gamma)
     
-    mcmc_sampler = DiscreteKameleon(distribution, kernel, Z, threshold, spread)
+    mcmc_sampler = DiscreteKameleon(hopfield, kernel, Z, threshold, spread)
     
     start = zeros(distribution.dimension, dtype=numpy.bool8)
     mcmc_params = MCMCParams(start=start, num_iterations=10000)
     chain = MCMCChain(mcmc_sampler, mcmc_params)
     
     chain.append_mcmc_output(StatisticsOutput(plot_times=True))
-    chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=1))
+    chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=500))
     
     chain.run()
+
 main()
