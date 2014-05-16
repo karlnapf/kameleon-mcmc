@@ -26,8 +26,10 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-from numpy import log
+from numpy import log, zeros, sqrt
+from numpy.random import randn
 from scipy.special import betaln
+
 
 
 class HelperFunctions():
@@ -38,3 +40,14 @@ class HelperFunctions():
         to draw k from n
         """
         return -betaln(1 + n - k, 1 + k) - log(n + 1)
+    
+    @staticmethod
+    def generateOU(n=50,alpha=0.95):
+        """
+        Generate a draw from the Ornstein-Uhlenbeck process
+        """
+        w=zeros(n)
+        w[0]=randn(1)
+        for i in range(n-1):
+            w[i+1]=alpha*w[i]+sqrt(1-alpha**2)*randn(1)
+        return w
