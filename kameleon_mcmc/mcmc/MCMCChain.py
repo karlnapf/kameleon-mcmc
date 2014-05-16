@@ -70,6 +70,9 @@ class MCMCChain(object):
     def append_mcmc_output(self, output):
         self.mcmc_outputs.append(output)
     
+    def get_samples_after_burnin(self):
+        return self.samples[self.mcmc_params.burnin:]
+    
     def run(self):
         if not self.is_initialised:
             self.init()
