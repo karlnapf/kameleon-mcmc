@@ -9,8 +9,8 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from abc import abstractmethod
-from numpy import eye
-from numpy import shape, mean, sqrt
+from numpy import eye, concatenate, zeros, shape, mean
+from numpy.random import permutation
 from numpy.lib.index_tricks import fill_diagonal
 
 class Kernel(object):
@@ -64,6 +64,23 @@ class Kernel(object):
             fill_diagonal(K22,0.0)
             n=float(shape(K11)[0])
             m=float(shape(K22)[0])
-            return sqrt( sum(sum(K11))/(pow(n,2)-n) + sum(sum(K22))/(pow(m,2)-m) - 2*mean(K12[:]) )
+            return sum(sum(K11))/(pow(n,2)-n) + sum(sum(K22))/(pow(m,2)-m) - 2*mean(K12[:])
         else:
-            return sqrt( mean(K11[:])+mean(K22[:])-2*mean(K12[:]) )
+            return mean(K11[:])+mean(K22[:])-2*mean(K12[:])
+        
+    @abstractmethod
+    def TwoSampleTest(self,sample1,sample2,numShuffles=10000):
+        """
+        Compute the p-value associated to the MMD between two samples
+        """
+        mmd = self.estimateMMD(sample1,sample2)
+        n1=shape(sample1)[0]
+        merged = concatenate( [sample1, sample2], axis=0 )
+        null_samples = zeros(numShuffles)
+        for i in range(numShuffles):
+            shuffle = permutation(shape(merged)[0])
+            mergedsh = merged[shuffle]
+            sample1sh = mergedsh[:n1]
+            sample2sh = mergedsh[n1:]
+            null_samples[i] = self.estimateMMD(sample1sh,sample2sh)
+        return sum(mmd<null_samples)/float(numShuffles)
