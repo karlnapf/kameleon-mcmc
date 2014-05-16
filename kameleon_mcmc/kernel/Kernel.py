@@ -9,10 +9,12 @@ Written (W) 2013 Dino Sejdinovic
 """
 
 from abc import abstractmethod
-from numpy import eye, concatenate, zeros, shape, mean
-from numpy.random import permutation
+from numpy import eye, concatenate, zeros, shape, mean, reshape, arange, exp, outer
+from numpy.random import permutation,shuffle
 from numpy.lib.index_tricks import fill_diagonal
 from matplotlib.pyplot import imshow,show
+from kameleon_mcmc.tools.HelperFunctions import HelperFunctions
+
 
 class Kernel(object):
     def __init__(self):
@@ -76,18 +78,42 @@ class Kernel(object):
             return mean(K11[:])+mean(K22[:])-2*mean(K12[:])
         
     @abstractmethod
-    def TwoSampleTest(self,sample1,sample2,numShuffles=5000):
+    def TwoSampleTest(self,sample1,sample2,numShuffles=5000,method='vanilla',blockSize=None):
         """
         Compute the p-value associated to the MMD between two samples
         """
-        mmd = self.estimateMMD(sample1,sample2)
         n1=shape(sample1)[0]
         merged = concatenate( [sample1, sample2], axis=0 )
+        merged_len=shape(merged)[0]
+        if blockSize is None:
+            blockSize = 20
+        numBlocks = merged_len/blockSize
+        K=self.kernel(merged)
+        mmd = mean(K[:n1,:n1])+mean(K[n1:,n1:])-2*mean(K[n1:,:n1])
         null_samples = zeros(numShuffles)
-        for i in range(numShuffles):
-            shuffle = permutation(shape(merged)[0])
-            mergedsh = merged[shuffle]
-            sample1sh = mergedsh[:n1]
-            sample2sh = mergedsh[n1:]
-            null_samples[i] = self.estimateMMD(sample1sh,sample2sh)
+        
+        if method=='vanilla':
+            for i in range(numShuffles):
+                pp = permutation(merged_len)
+                Kpp = K[pp,:][:,pp]
+                null_samples[i] = mean(Kpp[:n1,:n1])+mean(Kpp[n1:,n1:])-2*mean(Kpp[n1:,:n1])
+                
+        elif method=='block':
+            blocks=reshape(arange(merged_len),(numBlocks,blockSize))
+            for i in range(numShuffles):
+                pb = permutation(numBlocks)
+                pp = reshape(blocks[pb],(merged_len))
+                Kpp = K[pp,:][:,pp]
+                null_samples[i] = mean(Kpp[:n1,:n1])+mean(Kpp[n1:,n1:])-2*mean(Kpp[n1:,:n1])
+                
+        elif method=='wild':
+            assert(shape(sample1)[0]==shape(sample2)[0])
+            alpha = exp(-1/blockSize)
+            coreK = K[:n1,:n1]+K[n1:,n1:]-K[n1:,:n1]-K[:n1,n1:]
+            for i in range(numShuffles):
+                w = HelperFunctions.generateOU(n=n1,alpha=alpha)
+                null_samples[i]=mean(outer(w,w)*coreK)
+                
+        else:
+            raise ValueError("Unknown null approximation method")
         return sum(mmd<null_samples)/float(numShuffles)
