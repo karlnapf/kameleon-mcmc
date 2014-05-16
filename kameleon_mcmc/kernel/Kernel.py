@@ -12,6 +12,7 @@ from abc import abstractmethod
 from numpy import eye, concatenate, zeros, shape, mean
 from numpy.random import permutation
 from numpy.lib.index_tricks import fill_diagonal
+from matplotlib.pyplot import imshow,show
 
 class Kernel(object):
     def __init__(self):
@@ -52,6 +53,12 @@ class Kernel(object):
         return  1.0 / n * H.dot(K.dot(H))
     
     @abstractmethod
+    def show_kernel_matrix(self,X,Y=None):
+        K=self.kernel(X,Y)
+        imshow(K, interpolation="nearest")
+        show()
+    
+    @abstractmethod
     def estimateMMD(self,sample1,sample2,unbiased=False):
         """
         Compute the MMD between two samples
@@ -69,7 +76,7 @@ class Kernel(object):
             return mean(K11[:])+mean(K22[:])-2*mean(K12[:])
         
     @abstractmethod
-    def TwoSampleTest(self,sample1,sample2,numShuffles=10000):
+    def TwoSampleTest(self,sample1,sample2,numShuffles=5000):
         """
         Compute the p-value associated to the MMD between two samples
         """
