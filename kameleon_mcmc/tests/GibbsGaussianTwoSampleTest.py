@@ -99,7 +99,7 @@ def main():
     
     gaussian1 = Gaussian(Sigma=Sigma1)
     gaussian2 = Gaussian(mu=array([1., 0.]), Sigma=Sigma1)
-    numTrials=4
+    numTrials=500
     vanillap=empty((numTrials,2,2))
     blockp=empty((numTrials,2,2))
     wildp=empty((numTrials,2,2))
@@ -111,7 +111,8 @@ def main():
     #     f.close()
     #     
     for i in range(numTrials):
-        vanillap[i],blockp[i],wildp[i]=all_tests(gaussian1,gaussian2,n=20)
+        print 'trial', i
+        vanillap[i],blockp[i],wildp[i]=all_tests(gaussian1,gaussian2,n=200)
     f = open("/nfs/home2/dino/git/test_results.dat", "w")
     vanillarej=sum(vanillap<0.05,0)/numTrials
     blockrej=sum(blockp<0.05,0)/numTrials
