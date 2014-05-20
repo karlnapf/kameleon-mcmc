@@ -29,6 +29,7 @@ either expressed or implied, of the author.
 from numpy import log, zeros, sqrt
 from numpy.random import randn
 from scipy.special import betaln
+from scipy.io import savemat
 
 
 
@@ -51,3 +52,8 @@ class HelperFunctions():
         for i in range(n-1):
             w[i+1]=alpha*w[i]+sqrt(1-alpha**2)*randn(1)
         return w
+    
+    @staticmethod
+    def export_to_matlab(samples, location):
+        savemat(location,mdict={'samples': samples})
+        return None
