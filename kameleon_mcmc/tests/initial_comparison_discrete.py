@@ -27,57 +27,195 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros, fill_diagonal, asarray, mean
+from cPickle import dump, load
+from matplotlib.pyplot import plot, show, legend
+from numpy import zeros, fill_diagonal, asarray, mean, arange, sqrt, linspace
 import numpy
-from numpy.random import rand, randn, permutation
+from numpy.random import rand, randn, randint
+import time
 
 from kameleon_mcmc.distribution.Hopfield import Hopfield
 from kameleon_mcmc.distribution.full_conditionals.HopfieldFullConditionals import HopfieldFullConditionals
 from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
 from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
 from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
+from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
 from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
 from kameleon_mcmc.mcmc.samplers.Gibbs import Gibbs
+from kameleon_mcmc.mcmc.samplers.StandardMetropolisDiscrete import StandardMetropolisDiscrete
 
 
-def main():
-    d = 5
-    b = randn(d)
-    V = randn(d, d)
-    W = V + V.T
-    fill_diagonal(W, zeros(d))
-    hopfield = Hopfield(W, b)
-    current_state = [rand() < 0.5 for _ in range(d)]
-    distribution = HopfieldFullConditionals(full_target=hopfield,
-                                            current_state=current_state)
+def create_ground_truth():
+    filename_Z = "Z.bin"
+    filename_hopfield = "hopfield.bin"
     
-    num_iterations=5000
+    try:
+        f = open(filename_Z, "r")
+        Z = load(f)
+        f.close()
+        
+        f = open(filename_hopfield, "r")
+        hopfield = load(f)
+        f.close()
+        print("Loaded existing ground truth samples.")
+    except IOError:
+        print("No existing ground truth samples. Creating.")
+        
+        # the network to sample from
+        d = 5
+        b = randn(d)
+        V = randn(d, d)
+        W = V + V.T
+        fill_diagonal(W, zeros(d))
+        hopfield = Hopfield(W, b)
+        
+        # run a Gibbs
+        num_iterations = 1000000
+        
+        current_state = [rand() < 0.5 for _ in range(d)]
+#         distribution = HopfieldFullConditionals(full_target=hopfield,
+#                                                 current_state=current_state)
+#         mcmc_sampler = Gibbs(distribution)
+        mcmc_sampler = StandardMetropolisDiscrete(hopfield, .3)
+        mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations)
+        chain = MCMCChain(mcmc_sampler, mcmc_params)
+        
+        chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+    #     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
+        chain.run()
+        
+        # warmup and thin
+        warm_up = 10000
+        thin = 100
+        Z = chain.samples[(warm_up * d):]
+        Z = Z[arange(len(Z), step=thin * d)]
+        Z = Z.astype(numpy.bool8)
+        
+        # dump hopfield network and ground truth samples from it
+        f = open(filename_hopfield, "w")
+        dump(hopfield, f)
+        f.close()
     
-    print("Running Gibbs for %d iterations" % (num_iterations*d))
-    gibbs = Gibbs(distribution)
-    current_state = [rand() < 0.5 for _ in range(distribution.dimension)]
-    gibbs_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations*d)
-    gibbs_chain = MCMCChain(gibbs, gibbs_params)
-    gibbs_chain.run()
+        f = open(filename_Z, "w")
+        dump(Z, f)
+        f.close()
     
-    print("Using thinned Gibbs chain as history for Kameleon")
-    Z = gibbs_chain.samples[1000:].astype(numpy.bool8)
-    inds = permutation(len(Z))
-    Z = Z[inds[:1000]]
-    
-    print("Running Discrete Kameleon for %d iterations" % num_iterations)
+    return Z, hopfield
+
+def run_kameleon_chain(Z, hopfield, start, num_iterations):
     threshold = 0.8
     spread = 0.2
     gamma = 0.2
     kernel = HypercubeKernel(gamma)
-    kameleon = DiscreteKameleon(hopfield, kernel, Z, threshold, spread)
-    start = zeros(hopfield.dimension, dtype=numpy.bool8)
-    kameleon_params = MCMCParams(start=start, num_iterations=num_iterations)
-    kameleon_chain = MCMCChain(kameleon, kameleon_params)
-    kameleon_chain.run()
+    sampler = DiscreteKameleon(hopfield, kernel, Z, threshold, spread)
+    params = MCMCParams(start=start, num_iterations=num_iterations)
+    chain = MCMCChain(sampler, params)
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+    chain.run()
     
-    print "Statistics"
-    print mean(gibbs_chain.samples, 0)
-    print mean(kameleon_chain.samples, 0)
+    return chain
+
+def run_gibbs_chain(hopfield, start, num_iterations):
+    d = hopfield.dimension
+    current_state = [x for x in start]
+    distribution = HopfieldFullConditionals(full_target=hopfield,
+                                            current_state=current_state)
+    sampler = Gibbs(distribution)
+    params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations * d)
+    chain = MCMCChain(sampler, params)
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+    chain.run()
+    
+    return chain
+
+def run_sm_chain(hopfield, start, num_iterations):
+    d = hopfield.dimension
+    current_state = [x for x in start]
+    sampler = StandardMetropolisDiscrete(hopfield, .3)
+    params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations * d)
+    chain = MCMCChain(sampler, params)
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+    chain.run()
+    
+    return chain
+
+def main():
+    Z, hopfield = create_ground_truth()
+    d = hopfield.dimension
+    
+    print("Number of ground truth samples: %d" % len(Z))
+    
+    num_iterations = 5000
+    warm_up = 100
+    
+    start = randint(0, 2, d).astype(numpy.bool8)
+    timestring = time.strftime("%Y-%m-%d_%H:%M:%S")
+
+    print("Running SM for %d iterations" % num_iterations)
+    sm_chain = run_sm_chain(hopfield, start, num_iterations)
+    try:
+        fname = "temp_sm_result_" + timestring + ".bin"
+        f = open(fname, "w")
+        dump(sm_chain, f)
+        f.close()
+    except IOError:
+        print("Could not save this SM chain")
+
+    print("Running Gibbs for %d iterations" % (num_iterations * d))
+    gibbs_chain = run_gibbs_chain(hopfield, start, num_iterations)
+    try:
+        fname = "temp_gibbs_result_" + timestring + ".bin"
+        f = open(fname, "w")
+        dump(gibbs_chain, f)
+        f.close()
+    except IOError:
+        print("Could not save this Gibbs chain")
+    
+    print("Running Discrete Kameleon for %d iterations" % num_iterations)
+    kameleon_chain = run_kameleon_chain(Z, hopfield, start, num_iterations)
+    try:
+        fname = "temp_kameleon_result_" + timestring + ".bin"
+        f = open(fname, "w")
+        dump(kameleon_chain, f)
+        f.close()
+    except IOError:
+        print("Could not save this Kameleon chain")
+    
+    
+    # remove warm up and thin
+    print("Removing warm up and thinning")
+    thin = 100
+    S_g = gibbs_chain.samples[warm_up:]
+    S_g = S_g[arange(len(S_g), step=thin * d)].astype(numpy.bool8)
+    S_k = kameleon_chain.samples[warm_up:]
+    S_k = S_k[arange(len(S_k), step=thin)].astype(numpy.bool8)
+    S_sm = sm_chain.samples[warm_up:]
+    S_sm = S_sm[arange(len(S_sm), step=thin)].astype(numpy.bool8)
+    print("Gibbs samples: %d" % len(S_g))
+    print("Kameleon samples: %d" % len(S_k))
+    print("SM samples: %d" % len(S_sm))
+    
+    
+    print("MMDs:")
+    kernel = HypercubeKernel(0.2)
+    
+    num_evaluations = 10
+    inds_g = linspace(0, len(S_g), num_evaluations).astype(numpy.int)
+    inds_k = linspace(0, len(S_k), num_evaluations).astype(numpy.int)
+    inds_sm = linspace(0, len(S_sm), num_evaluations).astype(numpy.int)
+    mmds = zeros((3, num_evaluations - 1))
+    for i in arange(num_evaluations - 1):
+        mmds[0, i - 1] = sqrt(mean(kernel.kernel(S_g[:inds_g[i + 1]], Z)))
+        mmds[1, i - 1] = sqrt(mean(kernel.kernel(S_k[:inds_k[i + 1]], Z)))
+        mmds[2, i - 1] = sqrt(mean(kernel.kernel(S_sm[:inds_sm[i + 1]], Z)))
+        
+    
+    print(mmds)
+    plot(inds_g[1:], mmds[0, :])
+    plot(inds_k[1:], mmds[1, :])
+    plot(inds_sm[1:], mmds[1, :])
+    legend(["Gibbs", "Kameleon", "SM"])
+    show()
+    
     
 main()
