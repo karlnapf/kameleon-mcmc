@@ -204,15 +204,15 @@ def main():
     inds_sm = linspace(0, len(S_sm), num_evaluations).astype(numpy.int)
     mmds = zeros((3, num_evaluations - 1))
     for i in arange(num_evaluations - 1):
-        mmds[0, i - 1] = sqrt(mean(kernel.kernel(S_g[:inds_g[i + 1]], Z)))
-        mmds[1, i - 1] = sqrt(mean(kernel.kernel(S_k[:inds_k[i + 1]], Z)))
-        mmds[2, i - 1] = sqrt(mean(kernel.kernel(S_sm[:inds_sm[i + 1]], Z)))
+        mmds[0, i - 1] = sqrt(kernel.estimateMMD(S_g[:inds_g[i + 1]], Z))
+        mmds[1, i - 1] = sqrt(kernel.estimateMMD(S_k[:inds_k[i + 1]], Z))
+        mmds[2, i - 1] = sqrt(kernel.estimateMMD(S_sm[:inds_sm[i + 1]], Z))
         
     
     print(mmds)
     plot(inds_g[1:], mmds[0, :])
     plot(inds_k[1:], mmds[1, :])
-    plot(inds_sm[1:], mmds[1, :])
+    plot(inds_sm[1:], mmds[2, :])
     legend(["Gibbs", "Kameleon", "SM"])
     show()
     
