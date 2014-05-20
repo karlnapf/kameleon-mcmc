@@ -129,10 +129,9 @@ def run_gibbs_chain(hopfield, start, num_iterations):
     return chain
 
 def run_sm_chain(hopfield, start, num_iterations):
-    d = hopfield.dimension
     current_state = [x for x in start]
     sampler = StandardMetropolisDiscrete(hopfield, .3)
-    params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations * d)
+    params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations)
     chain = MCMCChain(sampler, params)
     chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
     chain.run()
@@ -145,8 +144,8 @@ def main():
     
     print("Number of ground truth samples: %d" % len(Z))
     
-    num_iterations = 5000
-    warm_up = 100
+    num_iterations = 500000
+    warm_up = 1000
     
     start = randint(0, 2, d).astype(numpy.bool8)
     timestring = time.strftime("%Y-%m-%d_%H:%M:%S")
