@@ -80,8 +80,8 @@ class DiscreteKameleon(MCMCSampler):
     def __str__(self):
         s = self.__class__.__name__ + "=["
         s += "kernel=" + str(self.kernel)
-        s += "threshold=" + str(self.threshold)
-        s += "spread=" + str(self.spread)
+        s += ", threshold=" + str(self.threshold)
+        s += ", spread=" + str(self.spread)
         s += ", " + MCMCSampler.__str__(self)
         s += "]"
         return s
