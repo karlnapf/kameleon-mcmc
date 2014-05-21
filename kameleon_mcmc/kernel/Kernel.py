@@ -78,15 +78,18 @@ class Kernel(object):
             return mean(K11[:])+mean(K22[:])-2*mean(K12[:])
         
     @abstractmethod
-    def TwoSampleTest(self,sample1,sample2,numShuffles=5000,method='vanilla',blockSize=None):
+    def TwoSampleTest(self,sample1,sample2,numShuffles=1000,method='vanilla',blockSize=10):
         """
         Compute the p-value associated to the MMD between two samples
+        method determines the null approximation procedure:
+        ----'vanilla': standard permutation test
+        ----'block': block permutation test
+        ----'wild': wild bootstrap
+        ----'wild-center': wild bootstrap with empirical degeneration
         """
         n1=shape(sample1)[0]
         merged = concatenate( [sample1, sample2], axis=0 )
         merged_len=shape(merged)[0]
-        if blockSize is None:
-            blockSize = 20
         numBlocks = merged_len/blockSize
         K=self.kernel(merged)
         mmd = mean(K[:n1,:n1])+mean(K[n1:,n1:])-2*mean(K[n1:,:n1])
@@ -106,14 +109,22 @@ class Kernel(object):
                 Kpp = K[pp,:][:,pp]
                 null_samples[i] = mean(Kpp[:n1,:n1])+mean(Kpp[n1:,n1:])-2*mean(Kpp[n1:,:n1])
                 
-        elif method=='wild':
-            assert(shape(sample1)[0]==shape(sample2)[0])
+        elif method=='wild' or method=='wild-center':
+            if shape(sample1)[0]!=shape(sample2)[0]:
+                raise ValueError("Wild bootstrap MMD available only on the same sample sizes")
             alpha = exp(-1/blockSize)
             coreK = K[:n1,:n1]+K[n1:,n1:]-K[n1:,:n1]-K[:n1,n1:]
             for i in range(numShuffles):
+                """
+                w is a draw from the Ornstein-Uhlenbeck process
+                """
                 w = HelperFunctions.generateOU(n=n1,alpha=alpha)
+                if method=='wild-center':
+                    """
+                    empirical degeneration (V_{n,2} in Leucht & Neumann)
+                    """
+                    w = w - mean(w)
                 null_samples[i]=mean(outer(w,w)*coreK)
-                
         else:
             raise ValueError("Unknown null approximation method")
         return sum(mmd<null_samples)/float(numShuffles)
