@@ -46,6 +46,7 @@ from kameleon_mcmc.mcmc.samplers.StandardMetropolisDiscrete import StandardMetro
 
 
 def create_ground_truth():
+    filename_chain = "chain.bin"
     filename_Z = "Z.bin"
     filename_hopfield = "hopfield.bin"
     
@@ -69,8 +70,15 @@ def create_ground_truth():
         fill_diagonal(W, zeros(d))
         hopfield = Hopfield(W, b)
         
-        # run a Gibbs
+        # dump hopfield network
+        f = open(filename_hopfield, "w")
+        dump(hopfield, f)
+        f.close()
+        
+        # iterations
         num_iterations = 10000000
+        warm_up = 100000
+        thin = 1000
         
         current_state = [rand() < 0.5 for _ in range(d)]
 #         distribution = HopfieldFullConditionals(full_target=hopfield,
@@ -85,18 +93,17 @@ def create_ground_truth():
     #     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
         chain.run()
         
+        # dump chain
+        f = open(filename_chain, "w")
+        dump(chain, f)
+        f.close()
+        
         # warmup and thin
-        warm_up = 100000
-        thin = 1000
         Z = chain.samples[(warm_up * d):]
         Z = Z[arange(len(Z), step=thin * d)]
         Z = Z.astype(numpy.bool8)
         
-        # dump hopfield network and ground truth samples from it
-        f = open(filename_hopfield, "w")
-        dump(hopfield, f)
-        f.close()
-    
+        # dump ground truth samples
         f = open(filename_Z, "w")
         dump(Z, f)
         f.close()
