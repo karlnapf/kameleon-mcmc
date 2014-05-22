@@ -117,7 +117,7 @@ class DiscreteRandomWalkProposal(Distribution):
         result = k * log(self.spread) + (self.dimension - 1 - k) * log(1 - self.spread)
         
         # cases with k=0 have zero probability, return -inf
-        result[k<0]=-inf
+        result[k < 0] = -inf
 
         return result
 
