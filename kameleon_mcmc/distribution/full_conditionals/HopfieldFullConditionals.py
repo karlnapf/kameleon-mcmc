@@ -28,6 +28,7 @@ either expressed or implied, of the author.
 """
 
 from numpy import hstack, arange, exp, inner, asarray
+import numpy
 from numpy.random import rand
 
 from kameleon_mcmc.distribution.Hopfield import Hopfield
@@ -62,4 +63,4 @@ class HopfieldFullConditionals(FullConditionals):
         return rand(1) < cond_prob
     
     def get_current_state_array(self):
-        return asarray(self.current_state).reshape(1, self.dimension)
+        return asarray(self.current_state).reshape(1, self.dimension).astype(numpy.bool8)
