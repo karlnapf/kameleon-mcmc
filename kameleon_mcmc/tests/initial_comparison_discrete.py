@@ -77,9 +77,9 @@ def create_ground_truth():
         f.close()
         
         # iterations
-        num_iterations = 1000000
+        num_iterations = 5000000
         warm_up = 100000
-        thin = 100
+        thin = 1000
         
         current_state = [rand() < 0.5 for _ in range(d)]
 #         distribution = HopfieldFullConditionals(full_target=hopfield,
@@ -91,7 +91,7 @@ def create_ground_truth():
         chain = MCMCChain(mcmc_sampler, mcmc_params)
         
         chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
-        chain.append_mcmc_output(StoreChainOutput(".", lag=100000))
+        #chain.append_mcmc_output(StoreChainOutput(".", lag=100000))
         
     #     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
         chain.run()
