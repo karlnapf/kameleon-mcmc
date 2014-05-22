@@ -83,20 +83,22 @@ def create_ground_truth():
         f.close()
         
         # iterations
-        num_iterations = 5000000
+        num_iterations = 10000000
         warm_up = 100000
-        thin = 1000
+        thin = 2000
         
         current_state = [rand() < 0.5 for _ in range(d)]
-#         distribution = HopfieldFullConditionals(full_target=hopfield,
-#                                                 current_state=current_state)
-#         mcmc_sampler = Gibbs(distribution)
-        spread = .03
-        mcmc_sampler = StandardMetropolisDiscrete(hopfield, spread)
+        distribution = HopfieldFullConditionals(full_target=hopfield,
+                                                current_state=current_state,
+                                                schedule="random_permutation")
+        mcmc_sampler = Gibbs(distribution)
+#         spread = .0001
+#         mcmc_sampler = StandardMetropolisDiscrete(hopfield, spread)
+        
         mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations)
         chain = MCMCChain(mcmc_sampler, mcmc_params)
         
-        chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+        chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=1000))
         # chain.append_mcmc_output(StoreChainOutput(".", lag=100000))
         
     #     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
