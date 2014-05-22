@@ -77,8 +77,8 @@ def create_ground_truth():
         f.close()
         
         # iterations
-        num_iterations = 10000000
-        warm_up = 100000
+        num_iterations = 5000000
+        warm_up = 1000000
         thin = 1000
         
         current_state = [rand() < 0.5 for _ in range(d)]
