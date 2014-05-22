@@ -40,6 +40,7 @@ from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
 from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
 from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
 from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
+from kameleon_mcmc.mcmc.output.StoreChainOutput import StoreChainOutput
 from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
 from kameleon_mcmc.mcmc.samplers.Gibbs import Gibbs
 from kameleon_mcmc.mcmc.samplers.StandardMetropolisDiscrete import StandardMetropolisDiscrete
@@ -90,13 +91,18 @@ def create_ground_truth():
         chain = MCMCChain(mcmc_sampler, mcmc_params)
         
         chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+        chain.append_mcmc_output(StoreChainOutput(".", lag=100000))
+        
     #     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
         chain.run()
         
         # dump chain
-        f = open(filename_chain, "w")
-        dump(chain, f)
-        f.close()
+        try:
+            f = open(filename_chain, "w")
+            dump(chain, f)
+            f.close()
+        except IOError:
+            print("Could not save MCMC chain")
         
         # warmup and thin
         Z = chain.samples[(warm_up * d):]
@@ -104,21 +110,23 @@ def create_ground_truth():
         Z = Z.astype(numpy.bool8)
         
         # dump ground truth samples
-        f = open(filename_Z, "w")
-        dump(Z, f)
-        f.close()
+        try:
+            f = open(filename_Z, "w")
+            dump(Z, f)
+            f.close()
+        except IOError:
+            print("Could not save Z")
     
     return Z, hopfield
 
 def run_kameleon_chain(Z, hopfield, start, num_iterations):
     threshold = 0.8
-    spread = 0.2
+    spread = 0.03
     gamma = 0.2
     kernel = HypercubeKernel(gamma)
     sampler = DiscreteKameleon(hopfield, kernel, Z, threshold, spread)
     params = MCMCParams(start=start, num_iterations=num_iterations)
     chain = MCMCChain(sampler, params)
-    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
     chain.run()
     
     return chain
@@ -131,17 +139,18 @@ def run_gibbs_chain(hopfield, start, num_iterations):
     sampler = Gibbs(distribution)
     params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations * d)
     chain = MCMCChain(sampler, params)
-    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=1000))
     chain.run()
     
     return chain
 
 def run_sm_chain(hopfield, start, num_iterations):
     current_state = [x for x in start]
-    sampler = StandardMetropolisDiscrete(hopfield, .3)
+    spread = 0.03
+    sampler = StandardMetropolisDiscrete(hopfield, spread)
     params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations)
     chain = MCMCChain(sampler, params)
-    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
+    chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=1000))
     chain.run()
     
     return chain
