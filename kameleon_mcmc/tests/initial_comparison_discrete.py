@@ -29,7 +29,7 @@ either expressed or implied, of the author.
 
 from cPickle import dump, load
 from matplotlib.pyplot import plot, show, legend
-from numpy import zeros, fill_diagonal, asarray, mean, arange, sqrt, linspace
+from numpy import zeros, fill_diagonal, asarray, arange, sqrt, linspace
 import numpy
 from numpy.random import rand, randn, randint
 import time
@@ -62,7 +62,7 @@ def create_ground_truth():
         print("No existing ground truth samples. Creating.")
         
         # the network to sample from
-        d = 5
+        d = 50
         b = randn(d)
         V = randn(d, d)
         W = V + V.T
@@ -70,13 +70,14 @@ def create_ground_truth():
         hopfield = Hopfield(W, b)
         
         # run a Gibbs
-        num_iterations = 1000000
+        num_iterations = 10000000
         
         current_state = [rand() < 0.5 for _ in range(d)]
 #         distribution = HopfieldFullConditionals(full_target=hopfield,
 #                                                 current_state=current_state)
 #         mcmc_sampler = Gibbs(distribution)
-        mcmc_sampler = StandardMetropolisDiscrete(hopfield, .3)
+        spread=.03
+        mcmc_sampler = StandardMetropolisDiscrete(hopfield, spread)
         mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations)
         chain = MCMCChain(mcmc_sampler, mcmc_params)
         
@@ -85,8 +86,8 @@ def create_ground_truth():
         chain.run()
         
         # warmup and thin
-        warm_up = 10000
-        thin = 100
+        warm_up = 100000
+        thin = 1000
         Z = chain.samples[(warm_up * d):]
         Z = Z[arange(len(Z), step=thin * d)]
         Z = Z.astype(numpy.bool8)
@@ -143,9 +144,10 @@ def main():
     d = hopfield.dimension
     
     print("Number of ground truth samples: %d" % len(Z))
-    
-    num_iterations = 500000
+
+    num_iterations = 200000
     warm_up = 1000
+    thin = 100
     
     start = randint(0, 2, d).astype(numpy.bool8)
     timestring = time.strftime("%Y-%m-%d_%H:%M:%S")
@@ -183,7 +185,6 @@ def main():
     
     # remove warm up and thin
     print("Removing warm up and thinning")
-    thin = 100
     S_g = gibbs_chain.samples[warm_up:]
     S_g = S_g[arange(len(S_g), step=thin * d)].astype(numpy.bool8)
     S_k = kameleon_chain.samples[warm_up:]
@@ -217,4 +218,5 @@ def main():
     show()
     
     
-main()
+if  __name__ =='__main__':
+    main()
