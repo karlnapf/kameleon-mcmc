@@ -116,7 +116,8 @@ class DiscreteRandomWalkProposal(Distribution):
         # simple binomial probability for d-1 dimensions, where the normaliser cancel
         result = k * log(self.spread) + (self.dimension - 1 - k) * log(1 - self.spread)
         
-        # cases with k=0 have zero probability, return -inf
+        # cases with k<0 have zero probability since one element is *always*
+        # changed, return -inf
         result[k < 0] = -inf
 
         return result
