@@ -26,7 +26,7 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-from numpy import zeros, eye, pi, concatenate, array, reshape, empty, arange
+from numpy import zeros, mean, eye, pi, concatenate, array, reshape, empty, arange, percentile
 
 from kameleon_mcmc.distribution.Gaussian import Gaussian
 from kameleon_mcmc.distribution.full_conditionals.GaussianFullConditionals import GaussianFullConditionals
@@ -37,13 +37,14 @@ from kameleon_mcmc.tools.MatrixTools import MatrixTools
 from kameleon_mcmc.kernel.GaussianKernel import GaussianKernel
 import time
 from kameleon_mcmc.tools.Visualise import Visualise
-from matplotlib.pyplot import show, hist
+from matplotlib.pyplot import show, hist, plot
 from pickle import dump, load
 import sys
+from numpy.ma.core import sort
 
 
 def read_samples():
-    f = open("/nfs/home2/dino/git/mmdTrueSamples.dat", "r")
+    f = open("/home/dino/git/mmdIIDTrueSamples.dat", "r")
     H0_samples = load(f)
     HA_samples = load(f)
     gaussian1 = load(f)
@@ -51,19 +52,21 @@ def read_samples():
     f.close()
     print 'P1:', gaussian1.mu, gaussian1.L.dot(gaussian1.L.T)
     print 'P2:', gaussian2.mu, gaussian2.L.dot(gaussian2.L.T)
-    #hist((H0_samples,HA_samples),50)
-    #show()
-    print H0_samples
-    print HA_samples
+    hist((H0_samples,HA_samples),50)
+    th=percentile(H0_samples,95)
+    print 'expected Type II: ', sum(HA_samples<th)/float(len(HA_samples))
+    #print H0_samples
+    #print HA_samples
+    show()
     return None
 
 def main():
     numTrials = 500
-    n=500
+    n=200
     Sigma1 = eye(2)
-    Sigma1[0, 0] = 10.0
-    Sigma1[1, 1] = 2.0
-    theta = pi / 4
+    Sigma1[0, 0] = 30.0
+    Sigma1[1, 1] = 1.0
+    theta = - pi / 4
     U = MatrixTools.rotation_matrix(theta)
     Sigma1 = U.T.dot(Sigma1).dot(U)
     print Sigma1
@@ -73,6 +76,11 @@ def main():
     oracle_samples1 = gaussian1.sample(n=n).samples
     oracle_samples2 = gaussian2.sample(n=n).samples
     
+    print 'mean1:', mean(oracle_samples1,0)
+    print 'mean2:', mean(oracle_samples2,0)
+    plot(oracle_samples1[:,0],oracle_samples1[:,1],'b*')
+    plot(oracle_samples2[:,0],oracle_samples2[:,1],'r*')
+    show()
     distribution1 = GaussianFullConditionals(gaussian1, list(gaussian1.mu))
     distribution2 = GaussianFullConditionals(gaussian2, list(gaussian2.mu))
     
@@ -85,39 +93,47 @@ def main():
     start = zeros(2)
     mcmc_params = MCMCParams(start=start, num_iterations=burnin+thin*n, burnin=burnin)
     sigma = GaussianKernel.get_sigma_median_heuristic(concatenate((oracle_samples1,oracle_samples2),axis=0))
+    print 'using bandwidth: ', sigma
     kernel = GaussianKernel(sigma=sigma)
     
     for ii in arange(numTrials):
         start =time.time()
         print 'trial:', ii
         
-        chain1 = MCMCChain(mcmc_sampler1, mcmc_params)
-        chain1.run()
-        gibbs_samples1 = chain1.get_samples_after_burnin()
-        gibbs_samples1 = gibbs_samples1[thin*arange(n)]
+        oracle_samples1 = gaussian1.sample(n=n).samples
+        oracle_samples1a = gaussian1.sample(n=n).samples
+        oracle_samples2 = gaussian2.sample(n=n).samples
         
-        chain1a = MCMCChain(mcmc_sampler1, mcmc_params)
-        chain1a.run()
-        gibbs_samples1a = chain1a.get_samples_after_burnin()
-        gibbs_samples1a = gibbs_samples1a[thin*arange(n)]
+        #         chain1 = MCMCChain(mcmc_sampler1, mcmc_params)
+        #         chain1.run()
+        #         gibbs_samples1 = chain1.get_samples_after_burnin()
+        #         gibbs_samples1 = gibbs_samples1[thin*arange(n)]
+        #         
+        #         chain1a = MCMCChain(mcmc_sampler1, mcmc_params)
+        #         chain1a.run()
+        #         gibbs_samples1a = chain1a.get_samples_after_burnin()
+        #         gibbs_samples1a = gibbs_samples1a[thin*arange(n)]
+        #         
+        #         chain2 = MCMCChain(mcmc_sampler2, mcmc_params)
+        #         chain2.run()
+        #         gibbs_samples2 = chain2.get_samples_after_burnin()
+        #         gibbs_samples2 = gibbs_samples2[thin*arange(n)]
         
-        chain2 = MCMCChain(mcmc_sampler2, mcmc_params)
-        chain2.run()
-        gibbs_samples2 = chain2.get_samples_after_burnin()
-        gibbs_samples2 = gibbs_samples2[thin*arange(n)]
         
-        
-        H0_samples[ii]=kernel.estimateMMD(gibbs_samples1,gibbs_samples1a)
-        HA_samples[ii]=kernel.estimateMMD(gibbs_samples1,gibbs_samples2)
+        #         H0_samples[ii]=kernel.estimateMMD(gibbs_samples1,gibbs_samples1a)
+        #         HA_samples[ii]=kernel.estimateMMD(gibbs_samples1,gibbs_samples2)
+        #         
+        H0_samples[ii]=kernel.estimateMMD(oracle_samples1,oracle_samples1a)
+        HA_samples[ii]=kernel.estimateMMD(oracle_samples1,oracle_samples2)
         end=time.time()
         print 'time elapsed: ', end-start
         
-    f = open("/nfs/home2/dino/git/mmdTrueSamples.dat", "w")
+    f = open("/home/dino/git/mmdIIDTrueSamples.dat", "w")
     dump(H0_samples, f)
     dump(HA_samples, f)
     dump(gaussian1, f)
     dump(gaussian2, f)
     f.close()
     return None
-#main()
+main()
 read_samples()
