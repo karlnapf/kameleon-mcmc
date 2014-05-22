@@ -40,7 +40,6 @@ from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
 from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
 from kameleon_mcmc.mcmc.MCMCParams import MCMCParams
 from kameleon_mcmc.mcmc.output.StatisticsOutput import StatisticsOutput
-from kameleon_mcmc.mcmc.output.StoreChainOutput import StoreChainOutput
 from kameleon_mcmc.mcmc.samplers.DiscreteKameleon import DiscreteKameleon
 from kameleon_mcmc.mcmc.samplers.Gibbs import Gibbs
 from kameleon_mcmc.mcmc.samplers.StandardMetropolisDiscrete import StandardMetropolisDiscrete
@@ -59,17 +58,24 @@ def create_ground_truth():
         f = open(filename_hopfield, "r")
         hopfield = load(f)
         f.close()
-        print("Loaded existing ground truth samples.")
+        print("Loaded existing ground truth samples and hopfield netword.")
     except IOError:
         print("No existing ground truth samples. Creating.")
         
         # the network to sample from
-        d = 50
-        b = randn(d)
-        V = randn(d, d)
-        W = V + V.T
-        fill_diagonal(W, zeros(d))
-        hopfield = Hopfield(W, b)
+        try:
+            f = open(filename_hopfield, "r")
+            hopfield = load(f)
+            f.close()
+            d = hopfield.dimension
+            print("Loaded hopfield network")
+        except IOError:
+            d = 50
+            b = randn(d)
+            V = randn(d, d)
+            W = V + V.T
+            fill_diagonal(W, zeros(d))
+            hopfield = Hopfield(W, b)
         
         # dump hopfield network
         f = open(filename_hopfield, "w")
@@ -85,13 +91,13 @@ def create_ground_truth():
 #         distribution = HopfieldFullConditionals(full_target=hopfield,
 #                                                 current_state=current_state)
 #         mcmc_sampler = Gibbs(distribution)
-        spread=.03
+        spread = .03
         mcmc_sampler = StandardMetropolisDiscrete(hopfield, spread)
         mcmc_params = MCMCParams(start=asarray(current_state, dtype=numpy.bool8), num_iterations=num_iterations)
         chain = MCMCChain(mcmc_sampler, mcmc_params)
         
         chain.append_mcmc_output(StatisticsOutput(plot_times=True, lag=10000))
-        #chain.append_mcmc_output(StoreChainOutput(".", lag=100000))
+        # chain.append_mcmc_output(StoreChainOutput(".", lag=100000))
         
     #     chain.append_mcmc_output(DiscretePlottingOutput(plot_from=0, lag=100))
         chain.run()
@@ -105,8 +111,8 @@ def create_ground_truth():
             print("Could not save MCMC chain")
         
         # warmup and thin
-        Z = chain.samples[(warm_up * d):]
-        Z = Z[arange(len(Z), step=thin * d)]
+        Z = chain.samples[(warm_up):]
+        Z = Z[arange(len(Z), step=thin)]
         Z = Z.astype(numpy.bool8)
         
         # dump ground truth samples
@@ -234,5 +240,5 @@ def main():
     show()
     
     
-if  __name__ =='__main__':
+if  __name__ == '__main__':
     main()
