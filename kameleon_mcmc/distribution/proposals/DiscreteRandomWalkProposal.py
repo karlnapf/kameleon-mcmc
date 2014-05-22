@@ -27,10 +27,10 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import mod, log, sum
+from numpy import mod, log, sum, zeros, arange, inf
 import numpy
 from numpy.matlib import repmat
-from numpy.random import rand
+from numpy.random import rand, permutation
 
 from kameleon_mcmc.distribution.Distribution import Distribution, Sample
 
@@ -77,8 +77,19 @@ class DiscreteRandomWalkProposal(Distribution):
         # copy mean vector a couple of times
         samples = repmat(self.mu, n, 1)
         
+        """
         # indices to flip, evenly distributed and the change probability is Bernoulli
         change_inds = rand(n, self.dimension) < self.spread
+        """
+        
+        # sample number of changes from binomial(spread, d-1) to have at least one change
+        num_changes = 1 + sum(rand(n, self.dimension - 1) < self.spread, 1)
+        
+        # randomly change that many indices
+        change_inds = zeros((n, self.dimension), dtype=numpy.bool8)
+        for i in range(n):
+            change_inds[i, arange(num_changes[i])] = True
+            change_inds[i] = change_inds[i, permutation(self.dimension)]
         
         # flip all chosen indices
         samples[change_inds] = mod(samples[change_inds] + 1, 2)
@@ -99,9 +110,14 @@ class DiscreteRandomWalkProposal(Distribution):
         if not X.shape[1] == self.dimension:
             raise ValueError("Dimension of X does not match own dimension")
 
-        # hamming distance for all elements in X
-        k = sum(X != self.mu, 1)
+        # hamming distance for all elements in X (one element is always changed, remove)
+        k = sum(X != self.mu, 1) - 1
+        
+        # simple binomial probability for d-1 dimensions, where the normaliser cancel
+        result = k * log(self.spread) + (self.dimension - 1 - k) * log(1 - self.spread)
+        
+        # cases with k=0 have zero probability, return -inf
+        result[k<0]=-inf
 
-        # simple binomial probability, where the normaliser cancel
-        return k * log(self.spread) + (self.dimension - k) * log(1 - self.spread)
+        return result
 

@@ -27,14 +27,14 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 
-from numpy import zeros, ones, asarray, mean, log
+from numpy import zeros, ones, asarray, log, inf
 import numpy
 from numpy.linalg.linalg import norm
 from numpy.random import rand, randint
 import unittest
 
-from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 from kameleon_mcmc.distribution.Distribution import Sample
+from kameleon_mcmc.distribution.proposals.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 
 
 class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
@@ -151,7 +151,8 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         s = dist.sample(n).samples
         
         for i in range(n):
-            self.assertTrue(all(s[i] == mu))
+            # exactly one change
+            self.assertTrue(sum(abs(s[i] - mu)) == 1)
             
     def test_sample_many_full_spread(self):
         n = 3
@@ -164,22 +165,6 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         for i in range(n):
             self.assertTrue(all(s[i] != mu))
             
-    def test_sample_many_half_spread(self):
-        n = 1000
-        d = 5
-        
-        for _ in range(100):
-            mu = randint(0, 2, d).astype(numpy.bool8)
-            spread = rand()
-            dist = DiscreteRandomWalkProposal(mu, spread)
-            s = dist.sample(n).samples
-            m = mean(s, 0)
-            for i in range(d):
-                # mean is either for positive of negative flip
-                # direction of flip is covered by other tests
-                diff = min(abs(m[i] - spread), abs(m[i] - 1 + spread))
-                self.assertAlmostEqual(diff, 0, delta=0.07) 
-        
     def test_log_pdf_wrong_type_none(self):
         d = 2
         mu = randint(0, 2, d).astype(numpy.bool8)
@@ -259,22 +244,29 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         spread = rand()
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[0]], dtype=numpy.bool8)
-        self.assertAlmostEqual(dist.log_pdf(X), log(1 - spread))
+        self.assertAlmostEqual(dist.log_pdf(X), -inf)
         
     def test_log_pdf_1d_1n_change(self):
         mu = asarray([0], dtype=numpy.bool8)
         spread = rand()
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[1]], dtype=numpy.bool8)
-        expected = log(spread)
+        expected = log(1.)
         self.assertAlmostEqual(dist.log_pdf(X), expected)
         
-    def test_log_pdf_2d_1n_change(self):
+    def test_log_pdf_2d_1n_change1(self):
+        mu = asarray([0, 0], dtype=numpy.bool8)
+        spread = rand()
+        dist = DiscreteRandomWalkProposal(mu, spread)
+        X = asarray([[1, 0]], dtype=numpy.bool8)
+        self.assertAlmostEqual(dist.log_pdf(X)[0], log(1. - spread))
+        
+    def test_log_pdf_2d_1n_change2(self):
         mu = asarray([0, 0], dtype=numpy.bool8)
         spread = rand()
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[1, 1]], dtype=numpy.bool8)
-        self.assertTrue(all(dist.log_pdf(X) == 2 * log(spread)))
+        self.assertTrue(all(dist.log_pdf(X) == log(spread)))
         
     def test_log_pdf_1d_2n(self):
         mu = asarray([0], dtype=numpy.bool8)
@@ -282,8 +274,10 @@ class DiscreteRandomWalkProposalUnitTest(unittest.TestCase):
         dist = DiscreteRandomWalkProposal(mu, spread)
         X = asarray([[1], [0]], dtype=numpy.bool8)
         log_liks = dist.log_pdf(X)
-        expected = asarray([log(spread), log(1 - spread)])
-        self.assertAlmostEqual(norm(log_liks - expected), 0)
+        expected = asarray([log(1.), -inf])
+        self.assertAlmostEqual(norm(log_liks[0] - expected[0]), 0)
+        self.assertEqual(log_liks[1], expected[1])
+        
         
 if __name__ == "__main__":
     unittest.main()
