@@ -88,6 +88,7 @@ class Kernel(object):
         ----'wild-center': wild bootstrap with empirical degeneration
         """
         n1=shape(sample1)[0]
+        n2=shape(sample2)[0]
         merged = concatenate( [sample1, sample2], axis=0 )
         merged_len=shape(merged)[0]
         numBlocks = merged_len/blockSize
@@ -110,9 +111,9 @@ class Kernel(object):
                 null_samples[i] = mean(Kpp[:n1,:n1])+mean(Kpp[n1:,n1:])-2*mean(Kpp[n1:,:n1])
                 
         elif method=='wild' or method=='wild-center':
-            if shape(sample1)[0]!=shape(sample2)[0]:
+            if n1!=n2:
                 raise ValueError("Wild bootstrap MMD available only on the same sample sizes")
-            alpha = exp(-1/blockSize)
+            alpha = exp(-1/float(blockSize))
             coreK = K[:n1,:n1]+K[n1:,n1:]-K[n1:,:n1]-K[:n1,n1:]
             for i in range(numShuffles):
                 """
@@ -125,6 +126,13 @@ class Kernel(object):
                     """
                     w = w - mean(w)
                 null_samples[i]=mean(outer(w,w)*coreK)
+        elif method=='wild2':
+            Kc=self.center_kernel_matrix(K)
+            alpha = exp(-1/float(blockSize))
+            for i in range(numShuffles):
+                wx=HelperFunctions.generateOU(n=n1,alpha=alpha)
+                wy=HelperFunctions.generateOU(n=n2,alpha=alpha)
+                null_samples[i]=mean(outer(wx,wx)*Kc[:n1,:n1])+mean(outer(wy,wy)*Kc[n1:,n1:])-2*mean(outer(wx,wy)*Kc[:n1,n1:])
         else:
             raise ValueError("Unknown null approximation method")
         return sum(mmd<null_samples)/float(numShuffles)
