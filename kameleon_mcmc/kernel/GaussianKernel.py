@@ -69,7 +69,7 @@ class GaussianKernel(Kernel):
 
     @staticmethod
     def get_sigma_median_heuristic(X):
-        dists=squareform(pdist(X, 'euclidean'))
+        dists=squareform(pdist(X, 'sqeuclidean'))
         median_dist=median(dists[dists>0])
         sigma=sqrt(0.5*median_dist)
         return sigma
