@@ -1,6 +1,7 @@
 #Code for Kernel Adaptive Metropolis-Hastings.
 
 See http://jmlr.org/proceedings/papers/v32/sejdinovic14.html
+
 Written (W) 2013-2014 Heiko Strathmann and Dino Sejdinovic
 
 Develop branch build status:
