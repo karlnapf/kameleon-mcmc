@@ -1,9 +1,11 @@
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+Develop branch build status:
 
-Written (W) 2013 Heiko Strathmann and Dino Sejdinovic
+[![Build Status](https://travis-ci.org/karlnapf/kameleon-mcmc.png)](https://travis-ci.org/karlnapf/kameleon-mcmc)
+https://travis-ci.org/karlnapf/kameleon-mcmc
+
+This software is licensed under a BSD license. See license.txt.
+
+Written (W) 2013-2014 Heiko Strathmann and Dino Sejdinovic
 
 Code for Adaptive Metropolis-Hastings.
 
