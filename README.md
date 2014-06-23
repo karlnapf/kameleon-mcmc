@@ -4,7 +4,7 @@ See http://jmlr.org/proceedings/papers/v32/sejdinovic14.html
 
 Written (W) 2013-2014 Heiko Strathmann and Dino Sejdinovic
 
-Develop branch build status:
+Build status:
 [![Build Status](https://travis-ci.org/karlnapf/kameleon-mcmc.png)](https://travis-ci.org/karlnapf/kameleon-mcmc)
 
 This software is licensed under a BSD license. See license.txt.
