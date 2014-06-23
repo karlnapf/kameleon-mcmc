@@ -36,7 +36,7 @@ from tempfile import NamedTemporaryFile
 import unittest
 
 from kameleon_mcmc.distribution.Bernoulli import Bernoulli
-from kameleon_mcmc.distribution.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
+from kameleon_mcmc.distribution.proposals.DiscreteRandomWalkProposal import DiscreteRandomWalkProposal
 from kameleon_mcmc.kernel.HypercubeKernel import HypercubeKernel
 from kameleon_mcmc.mcmc.MCMCChain import MCMCChain
 from kameleon_mcmc.mcmc.MCMCParams import MCMCParams

@@ -32,8 +32,8 @@ import numpy
 from numpy.random import rand, randint
 import unittest
 
-from kameleon_mcmc.distribution.AddDelSwapProposal import AddDelSwapProposal
 from kameleon_mcmc.distribution.Distribution import Sample
+from kameleon_mcmc.distribution.proposals.AddDelSwapProposal import AddDelSwapProposal
 
 
 class AddDelSwapProposalUnitTest(unittest.TestCase):
@@ -50,7 +50,7 @@ class AddDelSwapProposalUnitTest(unittest.TestCase):
     def test_contructor_wrong_mu_dim_too_large(self):
         mu = zeros((1, 2), dtype=numpy.bool8)
         spread = 1.
-        self.assertRaises(TypeError, AddDelSwapProposal, mu, spread)
+        self.assertRaises(ValueError, AddDelSwapProposal, mu, spread)
         
     def test_contructor_wrong_mu_dimension_0(self):
         mu = zeros(0, dtype=numpy.bool8)

@@ -71,7 +71,7 @@ class InfluenceCombinationUnitTest(unittest.TestCase):
         W = randn(h,d)
         biasx = randn(d,1)
         biash = randn(h)
-        self.assertRaises(TypeError, InfluenceCombination, W, biasx, biash)
+        self.assertRaises(ValueError, InfluenceCombination, W, biasx, biash)
         
     def test_contructor_W_and_biasx_dim_not_matching(self):
         d = 10 #number of visible units
