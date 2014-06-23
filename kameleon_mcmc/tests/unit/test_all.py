@@ -26,20 +26,8 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-import unittest
-from unittest.suite import TestSuite
+import os
 
-
-def load_tests(loader, tests, pattern):
-    """"
-    Discover and load all unit tests for kameleon_mcmc
-    """
-    
-    suite = TestSuite()
-    for all_test_suite in unittest.defaultTestLoader.discover('kameleon_mcmc.tests.unit', pattern='*Test.py'):
-        for test_suite in all_test_suite:
-            suite.addTests(test_suite)
-    return suite
 
 if __name__ == '__main__':
-    unittest.main()
+    os.system("python -m unittest discover . '*Test.py'")
