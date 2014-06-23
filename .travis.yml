@@ -4,5 +4,5 @@ python:
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 #install: PLEASE CHANGE ME
 # command to run tests, e.g. python setup.py test
-script:  export PYTHONPATH=$PYTHONPATH:~/kameleon-mcmc && python -m unittest kameleon-mcmc.kameleon_mcmc.tests.unit discover . '*Test.py'
+script:  export PYTHONPATH=$PYTHONPATH:~/kameleon-mcmc && python -m unittest discover kameleon_mcmc/tests/unit/ '*Test.py'
 
