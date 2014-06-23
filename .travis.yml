@@ -5,3 +5,4 @@ python:
 #install: PLEASE CHANGE ME
 # command to run tests, e.g. python setup.py test
 #script:  PLEASE CHANGE ME
+python -m unittest kameleon-mcmc.kameleon_mcmc.tests.unit discover . '*Test.py'
