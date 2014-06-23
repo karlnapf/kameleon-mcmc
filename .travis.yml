@@ -2,7 +2,7 @@ language: python
 python:
   - "3.4"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-#install: PLEASE CHANGE ME
+install: pip install -r requirements.txt
 # command to run tests, e.g. python setup.py test
 script:  export PYTHONPATH=$PYTHONPATH:~/kameleon-mcmc && python -m unittest discover kameleon_mcmc/tests/unit/ '*Test.py'
 
