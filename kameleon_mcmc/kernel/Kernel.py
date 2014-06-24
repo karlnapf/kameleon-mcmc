@@ -78,7 +78,7 @@ class Kernel(object):
             return mean(K11[:])+mean(K22[:])-2*mean(K12[:])
         
     @abstractmethod
-    def TwoSampleTest(self,sample1,sample2,numShuffles=1000,method='vanilla',blockSize=10):
+    def TwoSampleTest(self,sample1,sample2,numShuffles=1000,method='vanilla',blockSize=20):
         """
         Compute the p-value associated to the MMD between two samples
         method determines the null approximation procedure:
@@ -127,12 +127,14 @@ class Kernel(object):
                     w = w - mean(w)
                 null_samples[i]=mean(outer(w,w)*coreK)
         elif method=='wild2':
-            Kc=self.center_kernel_matrix(K)
+            
             alpha = exp(-1/float(blockSize))
             for i in range(numShuffles):
                 wx=HelperFunctions.generateOU(n=n1,alpha=alpha)
+                wx = wx - mean(wx)
                 wy=HelperFunctions.generateOU(n=n2,alpha=alpha)
-                null_samples[i]=mean(outer(wx,wx)*Kc[:n1,:n1])+mean(outer(wy,wy)*Kc[n1:,n1:])-2*mean(outer(wx,wy)*Kc[:n1,n1:])
+                wy = wy - mean(wy)
+                null_samples[i]=mean(outer(wx,wx)*K[:n1,:n1])+mean(outer(wy,wy)*K[n1:,n1:])-2*mean(outer(wx,wy)*K[:n1,n1:])
         else:
             raise ValueError("Unknown null approximation method")
         return sum(mmd<null_samples)/float(numShuffles)
