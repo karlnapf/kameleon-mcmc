@@ -16,6 +16,6 @@ All figures in the paper can be reproduced with scripts in kameleon_mcmc.paper_f
 
 The kameleon_mcmc.gp module contains code for sampling GP classification based distributions
 over hyperparameters, marginalised over the GP latent variables. The resulting
-marginal likelihood is not available in closed for and there has to be estimated.
+marginal likelihood is not available in the closed form and has to be estimated.
 The Shogun machine learning toolbox is used for this.
 See http://shogun-toolbox.org/
