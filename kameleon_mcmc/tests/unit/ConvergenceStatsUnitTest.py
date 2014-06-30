@@ -49,7 +49,7 @@ class ConvergenceStatsUnitTest(unittest.TestCase):
     def test_normaliser(self):
         x = randn(100)
         _, z = ConvergenceStats.autocorr(x)
-        self.assertEqual(z, sum(x**2))
+        self.assertEqual(z, sum(x ** 2))
         
     def test_normalise_param_true(self):
         x = randn(100)
@@ -59,7 +59,7 @@ class ConvergenceStatsUnitTest(unittest.TestCase):
     def test_normalise_param_false(self):
         x = randn(100)
         c, z = ConvergenceStats.autocorr(x, False)
-        self.assertEqual((c/z)[0], 1.)
+        self.assertEqual((c / z)[0], 1.)
         
     def test_normalise_param_default_is_true(self):
         x = randn(100)
