@@ -26,12 +26,10 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-
-from numpy import sum
-from numpy.random import randn
 import unittest
 
 from kameleon_mcmc.tools.ConvergenceStats import ConvergenceStats
+import numpy as np
 
 
 class ConvergenceStatsUnitTest(unittest.TestCase):
@@ -39,32 +37,24 @@ class ConvergenceStatsUnitTest(unittest.TestCase):
         self.assertRaises(TypeError, ConvergenceStats.autocorr, None)
         
     def test_wrong_input_type_normalise(self):
-        x = randn(100)
+        x = np.random.randn(100)
         self.assertRaises(TypeError, ConvergenceStats.autocorr, x, None)
         
     def test_wrong_array_shape_x(self):
-        x = randn(100, 1)
+        x = np.random.randn(100, 1)
         self.assertRaises(ValueError, ConvergenceStats.autocorr, x)
         
-    def test_normaliser(self):
-        x = randn(100)
-        _, z = ConvergenceStats.autocorr(x)
-        self.assertEqual(z, sum(x ** 2))
+    def test_normalisation(self):
+        x = np.random.randn(100)
+        acorr = ConvergenceStats.autocorr(x)
+        self.assertEqual(acorr[0], 1.)
         
-    def test_normalise_param_true(self):
-        x = randn(100)
-        c, _ = ConvergenceStats.autocorr(x, True)
-        self.assertEqual(c[0], 1.)
-        
-    def test_normalise_param_false(self):
-        x = randn(100)
-        c, z = ConvergenceStats.autocorr(x, False)
-        self.assertEqual((c / z)[0], 1.)
-        
-    def test_normalise_param_default_is_true(self):
-        x = randn(100)
-        c, _ = ConvergenceStats.autocorr(x)
-        self.assertEqual(c[0], 1.)
+    def test_result(self):
+        x = np.random.randn(100)
+        y = x - np.mean(x)
+        ynorm = np.sum(y ** 2)
+        acor = np.correlate(y, y, mode='same')[50:] / ynorm
+        self.assertTrue(all(acor == ConvergenceStats.autocorr(x)))
         
 if __name__ == "__main__":
     unittest.main()

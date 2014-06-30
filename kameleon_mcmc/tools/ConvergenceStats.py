@@ -26,8 +26,8 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
-import numpy as np
 from kameleon_mcmc.tools.GenericTests import GenericTests
+import numpy as np
 
 
 class ConvergenceStats():
@@ -36,7 +36,7 @@ class ConvergenceStats():
     '''
 
     @staticmethod
-    def autocorr(x, normalise=True):
+    def autocorr(x):
         """
         Computes the (optionally: normalised) auto-correlation function of a
         one dimensional sequence of numbers.
@@ -52,12 +52,16 @@ class ConvergenceStats():
         """
         
         GenericTests.check_type(x, "x", np.ndarray, 1)
-        GenericTests.check_type(normalise, "normalise", type(True))
         
-        acorr = np.correlate(x, x, mode='full')[len(x) - 1:]
-        sum_sq = np.sum(x ** 2)
-        if normalise:
-            acorr /= sum_sq
-            
-        return acorr, sum_sq
+        # normalise, compute norm
+        xunbiased = x - np.mean(x)
+        xnorm = np.sum(xunbiased ** 2)
+        
+        # convolve with itself
+        acor = np.correlate(xunbiased, xunbiased, mode='same')
+        
+        # use only second half, normalise
+        acor = acor[len(acor) / 2:] / xnorm
+        
+        return acor
         
