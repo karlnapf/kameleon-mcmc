@@ -35,10 +35,36 @@ from kameleon_mcmc.tools.ConvergenceStats import ConvergenceStats
 
 
 class ConvergenceStatsUnitTest(unittest.TestCase):
+    def test_wrong_input_type_x(self):
+        self.assertRaises(TypeError, ConvergenceStats.autocorr, None)
+        
+    def test_wrong_input_type_normalise(self):
+        x = randn(100)
+        self.assertRaises(TypeError, ConvergenceStats.autocorr, x, None)
+        
+    def test_wrong_array_shape_x(self):
+        x = randn(100, 1)
+        self.assertRaises(ValueError, ConvergenceStats.autocorr, x)
+        
     def test_normaliser(self):
         x = randn(100)
         _, z = ConvergenceStats.autocorr(x)
         self.assertEqual(z, sum(x**2))
+        
+    def test_normalise_param_true(self):
+        x = randn(100)
+        c, _ = ConvergenceStats.autocorr(x, True)
+        self.assertEqual(c[0], 1.)
+        
+    def test_normalise_param_false(self):
+        x = randn(100)
+        c, z = ConvergenceStats.autocorr(x, False)
+        self.assertEqual((c/z)[0], 1.)
+        
+    def test_normalise_param_default_is_true(self):
+        x = randn(100)
+        c, _ = ConvergenceStats.autocorr(x)
+        self.assertEqual(c[0], 1.)
         
 if __name__ == "__main__":
     unittest.main()

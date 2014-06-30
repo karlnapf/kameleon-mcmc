@@ -27,6 +27,7 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the author.
 """
 import numpy as np
+from kameleon_mcmc.tools.GenericTests import GenericTests
 
 
 class ConvergenceStats():
@@ -49,6 +50,9 @@ class ConvergenceStats():
         Outputs:
         Vector of autocorrelation values for a lag from zero to max possible
         """
+        
+        GenericTests.check_type(x, "x", np.ndarray, 1)
+        GenericTests.check_type(normalise, "normalise", type(True))
         
         acorr = np.correlate(x, x, mode='full')[len(x) - 1:]
         sum_sq = np.sum(x ** 2)
