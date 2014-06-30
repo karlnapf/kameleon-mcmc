@@ -38,7 +38,7 @@ class ConvergenceStats():
     @staticmethod
     def autocorr(x):
         """
-        Computes the (optionally: normalised) auto-correlation function of a
+        Computes the (normalised) auto-correlation function of a
         one dimensional sequence of numbers.
         
         Utilises the numpy correlate function that is based on an efficient
