@@ -28,7 +28,7 @@ either expressed or implied, of the author.
 """
 
 
-from numpy import zeros, inner, diag, allclose
+from numpy import zeros, inner, diag, allclose, fill_diagonal
 import numpy
 
 from kameleon_mcmc.distribution.Distribution import Distribution
@@ -87,4 +87,39 @@ class Hopfield(Distribution):
         for i in range(len(X)):
             result[i] = inner(X[i], self.bias + self.W.dot(X[i]))
         return result
+    
+    @staticmethod
+    def weights_from_patterns(P):
+        """
+        Computes a weight matrix so that the network has stationary points at a
+        number of given patterns,
+        
+        W_{ij} = \sum_{i=1}^n (2 p_i^n - 1)(2 p_j^n - 1) and
+        W_{ii} = 0
+        
+        where p_i^n is the i-th bit of the n-th pattern vector given in P.
+        (Note the conversion from {0,1} to {-1,+1} via 2x-1.)) 
+        
+        (Bias should be set to zero.)
+        """
+        GenericTests.check_type(P, "P", numpy.ndarray, required_shapelen=2)
+        
+        dim = P.shape[1]
+        n = P.shape[0]
+        
+        if n <= 0:
+            raise ValueError("Need at least one pattern.")
 
+        # train network
+        W = zeros((dim, dim))
+        for i in range(dim):
+            for j in range(i, dim):
+                for mu in range(n):
+                    W[i, j] += (2 * P[mu][i] - 1) * (2 * P[mu][j] - 1)
+                
+                # W[i,j] /= n
+                W[j, i] = W[i, j]
+        
+        fill_diagonal(W, 0)
+        return W
+        
