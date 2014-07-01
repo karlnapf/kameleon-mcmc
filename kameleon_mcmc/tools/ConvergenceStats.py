@@ -38,7 +38,7 @@ class ConvergenceStats():
     @staticmethod
     def autocorr(x):
         """
-        Computes the (normalised) auto-correlation function of a
+        Computes the ( normalised) auto-correlation function of a
         one dimensional sequence of numbers.
         
         Utilises the numpy correlate function that is based on an efficient
@@ -64,4 +64,74 @@ class ConvergenceStats():
         acor = acor[len(acor) / 2:] / xnorm
         
         return acor
+    
+    @staticmethod
+    def gelman_rubin(x):
+        """ Returns estimate of R for a set of traces.
+    
+        The Gelman-Rubin diagnostic tests for lack of convergence by comparing
+        the variance between multiple chains to the variance within each chain.
+        If convergence has been achieved, the between-chain and within-chain
+        variances should be identical. To be most effective in detecting evidence
+        for nonconvergence, each chain should have been initialized to starting
+        values that are dispersed relative to the target distribution.
+    
+        Parameters
+        ----------
+        x : array-like
+          A two-dimensional array containing the parallel traces (minimum 2)
+          of some stochastic parameter.
+    
+        Returns
+        -------
+        Rhat : float
+          Return the potential scale reduction factor, :math:`\hat{R}`
+    
+        Notes
+        -----
+    
+        The diagnostic is computed by:
+    
+          .. math:: \hat{R} = \frac{\hat{V}}{W}
+    
+        where :math:`W` is the within-chain variance and :math:`\hat{V}` is
+        the posterior variance estimate for the pooled traces. This is the
+        potential scale reduction factor, which converges to unity when each
+        of the traces is a sample from the target posterior. Values greater
+        than one indicate that one or more chains have not yet converged.
+    
+        References
+        ----------
+        Brooks and Gelman (1998)
+        Gelman and Rubin (1992)
         
+        Copyright
+        ---------
+        Taken from the pymc package 2.3
+        """
+    
+        if np.shape(x) < (2,):
+            raise ValueError(
+                'Gelman-Rubin diagnostic requires multiple chains of the same length.')
+    
+        m, n = np.shape(x)
+    
+        # Calculate between-chain variance
+        B_over_n = np.sum((np.mean(x, 1) - np.mean(x)) ** 2) / (m - 1)
+    
+        # Calculate within-chain variances
+        W = np.sum(
+            [(x[i] - xbar) ** 2 for i,
+             xbar in enumerate(np.mean(x,
+                                       1))]) / (m * (n - 1))
+    
+        # (over) estimate of variance
+        s2 = W * (n - 1) / n + B_over_n
+    
+        # Pooled posterior variance estimate
+        V = s2 + B_over_n / m
+    
+        # Calculate PSRF
+        R = V / W
+    
+        return R
