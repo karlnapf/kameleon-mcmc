@@ -36,7 +36,7 @@ class StandardMetropolisDiscrete(MCMCSampler):
     """
     A random walk on the hypercube. Flips a random number of components.
     """
-    def __init__(self, distribution, spread):
+    def __init__(self, distribution, spread, flip_at_least_one=True):
         if not isinstance(distribution, Distribution):
             raise TypeError("Target must be a Distribution object")
         
@@ -49,6 +49,7 @@ class StandardMetropolisDiscrete(MCMCSampler):
         MCMCSampler.__init__(self, distribution)
         
         self.spread = spread
+        self.flip_at_least_one = flip_at_least_one
     
     def __str__(self):
         s = self.__class__.__name__ + "=["
@@ -58,7 +59,7 @@ class StandardMetropolisDiscrete(MCMCSampler):
         return s
     
     def construct_proposal(self, y):
-        return DiscreteRandomWalkProposal(y, self.spread)
+        return DiscreteRandomWalkProposal(y, self.spread, self.flip_at_least_one)
     
     def adapt(self, mcmc_chain, step_output):
         """
