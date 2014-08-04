@@ -12,7 +12,7 @@ from kameleon_mcmc.kernel.Kernel import Kernel
 
 class LinearKernel(Kernel):
     def __init__(self):
-        Kernel.__init__()
+        Kernel.__init__(self)
         
     def __str__(self):
         s=self.__class__.__name__+ "=["
