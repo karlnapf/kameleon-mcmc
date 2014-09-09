@@ -8,6 +8,8 @@ Written (W) 2013 Heiko Strathmann
 Written (W) 2013 Dino Sejdinovic
 """
 
+from numpy import array
+
 from kameleon_mcmc.kernel.Kernel import Kernel
 
 
@@ -34,3 +36,17 @@ class PolynomialKernel(Kernel):
             Y = X
         
         return pow(self.theta+X.dot(Y.T), self.degree)
+    
+    def gradient(self, x, Y):
+        """
+        Computes the gradient of the Polynomial kernel wrt. to the left argument, i.e.
+        \nabla_x k(x,y)=\nabla_x (1+x^Ty)^d=d(1+x^Ty)^(d-1) y
+        
+        x - single sample on right hand side (1D vector)
+        Y - samples on left hand side (2D matrix)
+        """
+        assert(len(x.shape)==1)
+        assert(len(Y.shape)==2)
+        assert(len(x)==Y.shape[1])
+        
+        return self.degree*pow(1+x.dot(Y.T), self.degree)*Y
