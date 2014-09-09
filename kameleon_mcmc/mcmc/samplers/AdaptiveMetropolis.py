@@ -53,6 +53,7 @@ class AdaptiveMetropolis(MCMCSampler):
     
     @abstractmethod
     def scale_adapt(self,learn_scale,step_output):
+        # learn_scale is 1./iterations scheme, which is learning rate
         self.globalscale = exp(log(self.globalscale) + learn_scale * (exp(step_output.log_ratio) - self.accstar))
     
     @abstractmethod
@@ -65,6 +66,7 @@ class AdaptiveMetropolis(MCMCSampler):
     def adapt(self, mcmc_chain, step_output):
         iter_no = mcmc_chain.iteration
         if iter_no > self.sample_discard:
+            # 1./number_of_iterations (discard some samples in the beginning)
             learn_scale=1.0 / sqrt(iter_no - self.sample_discard + 1.0)
             #print "current learning rate: ", learn_scale
             if self.adapt_scale:
