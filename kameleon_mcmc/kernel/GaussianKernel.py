@@ -10,6 +10,7 @@ Written (W) 2013 Dino Sejdinovic
 
 from kameleon_mcmc.kernel.Kernel import Kernel
 from numpy import exp, shape, reshape, sqrt, median
+from numpy.random import permutation
 from scipy.spatial.distance import squareform, pdist, cdist
 
 class GaussianKernel(Kernel):
@@ -69,6 +70,9 @@ class GaussianKernel(Kernel):
 
     @staticmethod
     def get_sigma_median_heuristic(X):
+        n=shape(X)[0]
+        if n>1000:
+            X=X[permutation(n)[:1000],:]
         dists=squareform(pdist(X, 'sqeuclidean'))
         median_dist=median(dists[dists>0])
         sigma=sqrt(0.5*median_dist)
