@@ -73,9 +73,9 @@ class GaussianKernel(Kernel):
         n=shape(X)[0]
         if n>1000:
             X=X[permutation(n)[:1000],:]
-        dists=squareform(pdist(X, 'sqeuclidean'))
+        dists=squareform(pdist(X, 'euclidean'))
         median_dist=median(dists[dists>0])
-        sigma=sqrt(0.5*median_dist)
+        sigma=median_dist/sqrt(2.)
         return sigma
     
 #if __name__ == '__main__':
